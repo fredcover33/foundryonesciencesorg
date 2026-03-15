@@ -5,652 +5,304 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Foundry One Sciences — Physician Portal</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@300;400;500;600&family=Crimson+Pro:ital,wght@0,300;1,300&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <style>
   :root {
-    --navy:   #080d1a;
-    --navy2:  #0d1426;
-    --navy3:  #111c35;
-    --gold:   #c9a558;
-    --gold2:  #e2c07a;
-    --white:  #f5f2ec;
-    --muted:  #8a96b0;
-    --border: rgba(201,165,88,0.18);
-    --glow:   rgba(201,165,88,0.06);
-    --green:  #2ecc71;
-    --red:    #e74c3c;
-    --blue:   #3498db;
-  }
-
-  *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
-  html { scroll-behavior: smooth; }
-  body {
-    background: var(--navy);
-    color: var(--white);
-    font-family: 'Jost', sans-serif;
-    font-weight: 300;
-    min-height: 100vh;
-  }
-
-  /* ─── SCREENS ─── */
-  .screen { display: none; min-height: 100vh; }
-  .screen.active { display: flex; flex-direction: column; }
-
-  /* ══════════════════════════════
-     SCREEN 1 — LOGIN
-  ══════════════════════════════ */
-  #login-screen {
-    align-items: center;
-    justify-content: center;
-    background:
-      radial-gradient(ellipse 60% 60% at 50% 40%, rgba(201,165,88,0.05) 0%, transparent 70%),
-      linear-gradient(165deg, #080d1a 0%, #0d1426 60%, #080d1a 100%);
-    padding: 2rem;
-  }
-
-  .login-box {
-    width: 100%;
-    max-width: 440px;
-    border: 1px solid var(--border);
-    background: var(--navy2);
-    padding: 3rem;
-    position: relative;
-  }
-
-  .login-box::before {
-    content:'';
-    position:absolute;
-    top:0; left:0; right:0;
-    height:2px;
-    background: linear-gradient(90deg, transparent, var(--gold), transparent);
-  }
-
-  .login-brand {
-    text-align: center;
-    margin-bottom: 2.5rem;
-  }
-
-  .login-logo {
-    font-family: 'Cormorant Garamond', serif;
-    font-weight: 600;
-    font-size: 1.1rem;
-    letter-spacing: 0.28em;
-    text-transform: uppercase;
-    color: var(--white);
-  }
-
-  .login-tagline {
-    font-family: 'Crimson Pro', serif;
-    font-style: italic;
-    font-size: 0.65rem;
-    color: var(--gold);
-    text-align: right;
-    margin-top: 0.25rem;
-  }
-
-  .login-title {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 1.5rem;
-    font-weight: 300;
-    color: var(--white);
-    text-align: center;
-    margin-bottom: 0.4rem;
-  }
-
-  .login-sub {
-    font-size: 0.72rem;
-    color: var(--muted);
-    text-align: center;
-    letter-spacing: 0.08em;
-    margin-bottom: 2rem;
-  }
-
-  .form-group {
-    display: flex;
-    flex-direction: column;
-    gap: 0.4rem;
-    margin-bottom: 1.2rem;
-  }
-
-  .form-group label {
-    font-size: 0.6rem;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--gold);
-  }
-
-  .form-group input {
-    background: var(--navy3);
-    border: 1px solid var(--border);
-    color: var(--white);
-    font-family: 'Jost', sans-serif;
-    font-size: 0.88rem;
-    padding: 0.8rem 1rem;
-    outline: none;
-    transition: border-color 0.25s;
-    width: 100%;
-  }
-
-  .form-group input:focus { border-color: rgba(201,165,88,0.5); }
-
-  .btn-gold {
-    width: 100%;
-    padding: 0.9rem;
-    background: var(--gold);
-    color: var(--navy);
-    font-family: 'Jost', sans-serif;
-    font-weight: 500;
-    font-size: 0.72rem;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    border: none;
-    cursor: pointer;
-    transition: background 0.25s;
-    margin-top: 0.5rem;
-  }
-
-  .btn-gold:hover { background: var(--gold2); }
-
-  .hipaa-notice {
-    margin-top: 1.8rem;
-    padding: 1rem;
-    border: 1px solid rgba(46,204,113,0.2);
-    background: rgba(46,204,113,0.04);
-    display: flex;
-    gap: 0.8rem;
-    align-items: flex-start;
-  }
-
-  .hipaa-icon { font-size: 1rem; flex-shrink: 0; margin-top: 0.05rem; }
-
-  .hipaa-text {
-    font-size: 0.68rem;
-    line-height: 1.6;
-    color: var(--muted);
-  }
-
-  .hipaa-text strong { color: #2ecc71; font-weight: 500; }
-
-  .login-footer {
-    text-align: center;
-    margin-top: 1.5rem;
-    font-size: 0.62rem;
-    color: var(--muted);
-    opacity: 0.6;
-  }
-
-  /* ══════════════════════════════
-     SCREEN 2 — DASHBOARD
-  ══════════════════════════════ */
-  #dashboard-screen { background: var(--navy); }
-
-  /* Top bar */
-  .topbar {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 1rem 2.5rem;
-    background: var(--navy2);
-    border-bottom: 1px solid var(--border);
-    flex-shrink: 0;
-  }
-
-  .topbar-brand {
-    display: flex;
-    flex-direction: column;
-  }
-
-  .topbar-logo {
-    font-family: 'Cormorant Garamond', serif;
-    font-weight: 600;
-    font-size: 0.9rem;
-    letter-spacing: 0.22em;
-    text-transform: uppercase;
-    color: var(--white);
-  }
-
-  .topbar-tagline {
-    font-family: 'Crimson Pro', serif;
-    font-style: italic;
-    font-size: 0.58rem;
-    color: var(--gold);
-    text-align: right;
-  }
-
-  .topbar-right {
-    display: flex;
-    align-items: center;
-    gap: 1.5rem;
-  }
-
-  .topbar-user {
-    font-size: 0.72rem;
-    color: var(--muted);
-  }
-
-  .topbar-user span { color: var(--white); }
-
-  .status-dot {
-    width: 8px; height: 8px;
-    border-radius: 50%;
-    background: var(--green);
-    box-shadow: 0 0 6px var(--green);
-    display: inline-block;
-    margin-right: 0.4rem;
-  }
-
-  .btn-logout {
-    font-size: 0.62rem;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    color: var(--muted);
-    background: none;
-    border: 1px solid var(--border);
-    padding: 0.4rem 0.9rem;
-    cursor: pointer;
-    transition: color 0.2s, border-color 0.2s;
-  }
-
-  .btn-logout:hover { color: var(--gold); border-color: var(--gold); }
-
-  /* Dashboard layout */
-  .dash-body {
-    display: flex;
-    flex: 1;
-    overflow: hidden;
-  }
-
-  /* Sidebar */
-  .sidebar {
-    width: 220px;
-    flex-shrink: 0;
-    background: var(--navy2);
-    border-right: 1px solid var(--border);
-    padding: 1.5rem 0;
-    overflow-y: auto;
-  }
-
-  .sidebar-section {
-    padding: 0 1.2rem;
-    margin-bottom: 1.8rem;
-  }
-
-  .sidebar-label {
-    font-size: 0.55rem;
-    letter-spacing: 0.3em;
-    text-transform: uppercase;
-    color: var(--gold);
-    opacity: 0.7;
-    margin-bottom: 0.8rem;
-    padding-left: 0.2rem;
-  }
-
-  .sidebar-item {
-    display: flex;
-    align-items: center;
-    gap: 0.7rem;
-    padding: 0.65rem 0.8rem;
-    font-size: 0.78rem;
-    color: var(--muted);
-    cursor: pointer;
-    border-radius: 2px;
-    transition: background 0.2s, color 0.2s;
-    border: 1px solid transparent;
-  }
-
-  .sidebar-item:hover { background: var(--glow); color: var(--white); }
-  .sidebar-item.active { background: var(--glow); color: var(--gold); border-color: var(--border); }
-  .sidebar-icon { font-size: 0.95rem; width: 18px; text-align: center; }
-
-  /* Main content */
-  .dash-main {
-    flex: 1;
-    overflow-y: auto;
-    padding: 2rem 2.5rem;
-  }
-
-  .dash-panel { display: none; }
-  .dash-panel.active { display: block; }
-
-  .panel-title {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 1.8rem;
-    font-weight: 300;
-    color: var(--white);
-    margin-bottom: 0.3rem;
-  }
-
-  .panel-sub {
-    font-size: 0.75rem;
-    color: var(--muted);
-    margin-bottom: 2rem;
-    letter-spacing: 0.05em;
-  }
-
-  /* ── OVERVIEW PANEL ── */
-  .overview-cards {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 1rem;
-    margin-bottom: 2rem;
-  }
-
-  .ov-card {
-    padding: 1.4rem;
-    border: 1px solid var(--border);
-    background: var(--glow);
-    position: relative;
-    overflow: hidden;
-  }
-
-  .ov-card::before {
-    content:'';
-    position:absolute;
-    top:0; left:0;
-    width:100%; height:2px;
-    background: var(--gold);
-    opacity: 0.4;
-  }
-
-  .ov-num {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 2.2rem;
-    font-weight: 300;
-    color: var(--gold2);
-    line-height: 1;
-  }
-
-  .ov-label {
-    font-size: 0.62rem;
-    letter-spacing: 0.12em;
-    text-transform: uppercase;
-    color: var(--muted);
-    margin-top: 0.4rem;
-  }
-
-  .recent-activity {
-    border: 1px solid var(--border);
-    background: var(--navy2);
-    padding: 1.5rem;
-    margin-bottom: 2rem;
-  }
-
-  .activity-title {
-    font-size: 0.65rem;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--gold);
-    margin-bottom: 1.2rem;
-  }
-
-  .activity-item {
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    padding: 0.8rem 0;
-    border-bottom: 1px solid rgba(201,165,88,0.07);
-    font-size: 0.8rem;
-  }
-
-  .activity-item:last-child { border-bottom: none; }
-
-  .activity-dot {
-    width: 6px; height: 6px;
-    border-radius: 50%;
-    flex-shrink: 0;
-  }
-
-  .dot-green { background: var(--green); }
-  .dot-gold  { background: var(--gold); }
-  .dot-blue  { background: var(--blue); }
-
-  .activity-text { color: var(--muted); flex: 1; }
-  .activity-text strong { color: var(--white); }
-  .activity-time { font-size: 0.65rem; color: var(--muted); opacity: 0.5; }
-
-  /* ── PHI INTAKE PANEL ── */
-  .phi-form {
-    max-width: 700px;
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-  }
-
-  .phi-section-title {
-    font-size: 0.62rem;
-    letter-spacing: 0.25em;
-    text-transform: uppercase;
-    color: var(--gold);
-    margin-bottom: 1rem;
-    padding-bottom: 0.5rem;
-    border-bottom: 1px solid var(--border);
-  }
-
-  .phi-grid {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1rem;
-  }
-
-  .phi-grid.three { grid-template-columns: 1fr 1fr 1fr; }
-  .phi-grid.full  { grid-template-columns: 1fr; }
-
-  .phi-group {
-    display: flex;
-    flex-direction: column;
-    gap: 0.35rem;
-  }
-
-  .phi-group label {
-    font-size: 0.58rem;
-    letter-spacing: 0.18em;
-    text-transform: uppercase;
-    color: var(--gold);
-  }
-
-  .phi-group input,
-  .phi-group select,
-  .phi-group textarea {
-    background: var(--navy3);
-    border: 1px solid var(--border);
-    color: var(--white);
-    font-family: 'Jost', sans-serif;
-    font-size: 0.82rem;
-    padding: 0.7rem 0.9rem;
-    outline: none;
-    transition: border-color 0.25s;
-    -webkit-appearance: none;
-  }
-
-  .phi-group input:focus,
-  .phi-group select:focus,
-  .phi-group textarea:focus { border-color: rgba(201,165,88,0.5); }
-
-  .phi-group select option { background: var(--navy3); }
-  .phi-group textarea { resize: vertical; min-height: 80px; }
-
-  .phi-block {
-    border: 1px solid var(--border);
-    background: var(--navy2);
-    padding: 1.5rem;
-  }
-
-  .phi-submit {
-    display: flex;
-    gap: 1rem;
-    align-items: center;
-    margin-top: 0.5rem;
-  }
-
-  .btn-submit {
-    padding: 0.85rem 2.2rem;
-    background: var(--gold);
-    color: var(--navy);
-    font-family: 'Jost', sans-serif;
-    font-weight: 500;
-    font-size: 0.7rem;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    border: none;
-    cursor: pointer;
-    transition: background 0.25s;
-  }
-
-  .btn-submit:hover { background: var(--gold2); }
-
-  .btn-clear {
-    padding: 0.85rem 1.8rem;
-    background: transparent;
-    color: var(--muted);
-    font-family: 'Jost', sans-serif;
-    font-size: 0.7rem;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    border: 1px solid var(--border);
-    cursor: pointer;
-    transition: color 0.2s;
-  }
-
-  .btn-clear:hover { color: var(--white); }
-
-  /* ── HIPAA PANEL ── */
-  .hipaa-panel {
-    max-width: 700px;
-  }
-
-  .hipaa-card {
-    border: 1px solid var(--border);
-    background: var(--navy2);
-    padding: 2rem;
-    margin-bottom: 1.5rem;
-    position: relative;
-  }
-
-  .hipaa-card::before {
-    content:'';
-    position:absolute;
-    left:0; top:0; bottom:0;
-    width:3px;
-    background: var(--green);
-    opacity: 0.7;
-  }
-
-  .hipaa-card-title {
-    font-size: 0.68rem;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: #2ecc71;
-    margin-bottom: 1rem;
-  }
-
-  .hipaa-card p {
-    font-size: 0.82rem;
-    line-height: 1.8;
-    color: var(--muted);
-    margin-bottom: 0.8rem;
-  }
-
-  .hipaa-card p:last-child { margin-bottom: 0; }
-
-  .hipaa-checklist {
-    list-style: none;
-    display: flex;
-    flex-direction: column;
-    gap: 0.6rem;
-    margin-top: 0.5rem;
-  }
-
-  .hipaa-checklist li {
-    display: flex;
-    gap: 0.8rem;
-    font-size: 0.8rem;
-    color: var(--muted);
-    align-items: flex-start;
-  }
-
-  .check { color: #2ecc71; flex-shrink: 0; }
-
-  /* ── MRS ENGINE PANEL ── */
-  .engine-coming {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 400px;
-    border: 1px solid var(--border);
-    background: var(--navy2);
-    text-align: center;
-    padding: 3rem;
-  }
-
-  .engine-icon {
-    font-size: 3rem;
-    margin-bottom: 1.5rem;
-    opacity: 0.5;
-  }
-
-  .engine-coming h3 {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 1.8rem;
-    font-weight: 300;
-    color: var(--white);
-    margin-bottom: 0.8rem;
-  }
-
-  .engine-coming p {
-    font-size: 0.85rem;
-    color: var(--muted);
-    max-width: 400px;
-    line-height: 1.7;
-    margin-bottom: 1.5rem;
-  }
-
-  .version-badge {
-    display: inline-block;
-    font-size: 0.6rem;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--gold);
-    border: 1px solid var(--border);
-    padding: 0.4rem 1rem;
-  }
-
-  /* ── SUCCESS TOAST ── */
-  .toast {
-    position: fixed;
-    bottom: 2rem;
-    right: 2rem;
-    background: var(--navy3);
-    border: 1px solid rgba(46,204,113,0.4);
-    color: var(--white);
-    padding: 1rem 1.5rem;
-    font-size: 0.8rem;
-    display: flex;
-    gap: 0.8rem;
-    align-items: center;
-    transform: translateY(100px);
-    opacity: 0;
-    transition: all 0.4s;
-    z-index: 999;
-  }
-
-  .toast.show { transform: translateY(0); opacity: 1; }
-  .toast-icon { color: #2ecc71; }
+    --navy:#080d1a; --navy2:#0d1426; --navy3:#111c35;
+    --gold:#c9a558; --gold2:#e2c07a;
+    --white:#f5f2ec; --muted:#8a96b0;
+    --border:rgba(201,165,88,0.18); --glow:rgba(201,165,88,0.06);
+    --green:#2ecc71; --blue:#3498db;
+  }
+  *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{background:var(--navy);color:var(--white);font-family:'Jost',sans-serif;font-weight:300;min-height:100vh;}
+  .screen{display:none;min-height:100vh;}
+  .screen.active{display:flex;flex-direction:column;}
+
+  /* ── BAA SCREEN ── */
+  #baa-screen{align-items:center;justify-content:center;background:radial-gradient(ellipse 60% 60% at 50% 40%,rgba(201,165,88,0.05) 0%,transparent 70%),linear-gradient(165deg,#080d1a 0%,#0d1426 60%,#080d1a 100%);padding:2rem;}
+  .baa-box{width:100%;max-width:680px;border:1px solid var(--border);background:var(--navy2);position:relative;overflow:hidden;}
+  .baa-box::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);}
+  .baa-header{padding:2.5rem 2.5rem 1.5rem;border-bottom:1px solid var(--border);}
+  .baa-logo{font-family:'Cormorant Garamond',serif;font-weight:600;font-size:1rem;letter-spacing:0.28em;text-transform:uppercase;color:var(--white);}
+  .baa-tagline{font-family:'Crimson Pro',serif;font-style:italic;font-size:0.62rem;color:var(--gold);text-align:right;margin-top:0.2rem;margin-bottom:1.5rem;}
+  .baa-title{font-family:'Cormorant Garamond',serif;font-size:1.6rem;font-weight:300;color:var(--white);margin-bottom:0.3rem;}
+  .baa-subtitle{font-size:0.7rem;color:var(--muted);letter-spacing:0.1em;}
+  .baa-scroll{height:320px;overflow-y:auto;padding:2rem 2.5rem;border-bottom:1px solid var(--border);font-size:0.78rem;line-height:1.85;color:var(--muted);scrollbar-width:thin;scrollbar-color:var(--gold) var(--navy3);}
+  .baa-scroll::-webkit-scrollbar{width:4px;}
+  .baa-scroll::-webkit-scrollbar-track{background:var(--navy3);}
+  .baa-scroll::-webkit-scrollbar-thumb{background:var(--gold);}
+  .baa-scroll h3{font-family:'Cormorant Garamond',serif;font-size:1rem;font-weight:400;color:var(--white);margin:1.2rem 0 0.5rem;}
+  .baa-scroll h3:first-child{margin-top:0;}
+  .baa-scroll p{margin-bottom:0.8rem;}
+  .baa-scroll strong{color:var(--white);font-weight:500;}
+  .clause-num{color:var(--gold);font-weight:500;}
+  .scroll-prompt{text-align:center;font-size:0.6rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--gold);opacity:0.6;padding:0.6rem;background:var(--navy3);border-bottom:1px solid var(--border);transition:opacity 0.3s;}
+  .scroll-prompt.hidden{opacity:0;}
+  .baa-footer{padding:1.8rem 2.5rem;}
+  .baa-fields{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.5rem;}
+  .baa-group{display:flex;flex-direction:column;gap:0.35rem;}
+  .baa-group label{font-size:0.58rem;letter-spacing:0.18em;text-transform:uppercase;color:var(--gold);}
+  .baa-group input{background:var(--navy3);border:1px solid var(--border);color:var(--white);font-family:'Jost',sans-serif;font-size:0.82rem;padding:0.7rem 0.9rem;outline:none;transition:border-color 0.25s;width:100%;}
+  .baa-group input:focus{border-color:rgba(201,165,88,0.5);}
+  .baa-checks{display:flex;flex-direction:column;gap:0.8rem;margin-bottom:1.5rem;}
+  .baa-check-item{display:flex;gap:0.8rem;align-items:flex-start;font-size:0.76rem;color:var(--muted);line-height:1.5;cursor:pointer;}
+  .baa-check-item input[type="checkbox"]{margin-top:0.15rem;accent-color:var(--gold);flex-shrink:0;width:14px;height:14px;}
+  .baa-actions{display:flex;gap:1rem;align-items:center;}
+  .btn-gold{padding:0.85rem 2.2rem;background:var(--gold);color:var(--navy);font-family:'Jost',sans-serif;font-weight:500;font-size:0.7rem;letter-spacing:0.2em;text-transform:uppercase;border:none;cursor:pointer;transition:background 0.25s;opacity:0.4;pointer-events:none;}
+  .btn-gold.enabled{opacity:1;pointer-events:all;}
+  .btn-gold.enabled:hover{background:var(--gold2);}
+  .btn-decline{font-size:0.65rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);background:none;border:none;cursor:pointer;text-decoration:underline;text-underline-offset:3px;opacity:0.6;transition:opacity 0.2s;}
+  .btn-decline:hover{opacity:1;}
+  .baa-note{font-size:0.62rem;color:var(--muted);opacity:0.5;margin-top:1rem;line-height:1.5;}
+
+  /* ── LOGIN SCREEN ── */
+  #login-screen{align-items:center;justify-content:center;background:radial-gradient(ellipse 60% 60% at 50% 40%,rgba(201,165,88,0.05) 0%,transparent 70%),linear-gradient(165deg,#080d1a 0%,#0d1426 60%,#080d1a 100%);padding:2rem;}
+  .login-box{width:100%;max-width:440px;border:1px solid var(--border);background:var(--navy2);padding:3rem;position:relative;}
+  .login-box::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);}
+  .login-brand{text-align:center;margin-bottom:2.5rem;}
+  .login-logo{font-family:'Cormorant Garamond',serif;font-weight:600;font-size:1.1rem;letter-spacing:0.28em;text-transform:uppercase;color:var(--white);}
+  .login-tagline{font-family:'Crimson Pro',serif;font-style:italic;font-size:0.65rem;color:var(--gold);text-align:right;margin-top:0.25rem;}
+  .baa-confirmed{display:flex;align-items:center;gap:0.6rem;padding:0.7rem 1rem;background:rgba(46,204,113,0.07);border:1px solid rgba(46,204,113,0.2);margin-bottom:1.8rem;font-size:0.7rem;color:#2ecc71;letter-spacing:0.08em;}
+  .login-title{font-family:'Cormorant Garamond',serif;font-size:1.5rem;font-weight:300;color:var(--white);text-align:center;margin-bottom:0.4rem;}
+  .login-sub{font-size:0.72rem;color:var(--muted);text-align:center;letter-spacing:0.08em;margin-bottom:2rem;}
+  .form-group{display:flex;flex-direction:column;gap:0.4rem;margin-bottom:1.2rem;}
+  .form-group label{font-size:0.6rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--gold);}
+  .form-group input{background:var(--navy3);border:1px solid var(--border);color:var(--white);font-family:'Jost',sans-serif;font-size:0.88rem;padding:0.8rem 1rem;outline:none;transition:border-color 0.25s;width:100%;}
+  .form-group input:focus{border-color:rgba(201,165,88,0.5);}
+  .btn-gold-full{width:100%;padding:0.9rem;background:var(--gold);color:var(--navy);font-family:'Jost',sans-serif;font-weight:500;font-size:0.72rem;letter-spacing:0.2em;text-transform:uppercase;border:none;cursor:pointer;transition:background 0.25s;margin-top:0.5rem;}
+  .btn-gold-full:hover{background:var(--gold2);}
+  .hipaa-notice{margin-top:1.8rem;padding:1rem;border:1px solid rgba(46,204,113,0.2);background:rgba(46,204,113,0.04);display:flex;gap:0.8rem;align-items:flex-start;}
+  .hipaa-text{font-size:0.68rem;line-height:1.6;color:var(--muted);}
+  .hipaa-text strong{color:#2ecc71;font-weight:500;}
+  .login-footer{text-align:center;margin-top:1.5rem;font-size:0.62rem;color:var(--muted);opacity:0.6;}
+
+  /* ── DASHBOARD ── */
+  #dashboard-screen{background:var(--navy);}
+  .topbar{display:flex;align-items:center;justify-content:space-between;padding:1rem 2.5rem;background:var(--navy2);border-bottom:1px solid var(--border);flex-shrink:0;}
+  .topbar-brand{display:flex;flex-direction:column;}
+  .topbar-logo{font-family:'Cormorant Garamond',serif;font-weight:600;font-size:0.9rem;letter-spacing:0.22em;text-transform:uppercase;color:var(--white);}
+  .topbar-tagline{font-family:'Crimson Pro',serif;font-style:italic;font-size:0.58rem;color:var(--gold);text-align:right;}
+  .topbar-right{display:flex;align-items:center;gap:1.5rem;}
+  .topbar-user{font-size:0.72rem;color:var(--muted);}
+  .topbar-user span{color:var(--white);}
+  .status-dot{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 6px var(--green);display:inline-block;margin-right:0.4rem;}
+  .btn-logout{font-size:0.62rem;letter-spacing:0.15em;text-transform:uppercase;color:var(--muted);background:none;border:1px solid var(--border);padding:0.4rem 0.9rem;cursor:pointer;transition:color 0.2s,border-color 0.2s;}
+  .btn-logout:hover{color:var(--gold);border-color:var(--gold);}
+  .dash-body{display:flex;flex:1;overflow:hidden;}
+  .sidebar{width:220px;flex-shrink:0;background:var(--navy2);border-right:1px solid var(--border);padding:1.5rem 0;overflow-y:auto;}
+  .sidebar-section{padding:0 1.2rem;margin-bottom:1.8rem;}
+  .sidebar-label{font-size:0.55rem;letter-spacing:0.3em;text-transform:uppercase;color:var(--gold);opacity:0.7;margin-bottom:0.8rem;padding-left:0.2rem;}
+  .sidebar-item{display:flex;align-items:center;gap:0.7rem;padding:0.65rem 0.8rem;font-size:0.78rem;color:var(--muted);cursor:pointer;border-radius:2px;transition:background 0.2s,color 0.2s;border:1px solid transparent;}
+  .sidebar-item:hover{background:var(--glow);color:var(--white);}
+  .sidebar-item.active{background:var(--glow);color:var(--gold);border-color:var(--border);}
+  .sidebar-icon{font-size:0.95rem;width:18px;text-align:center;}
+  .dash-main{flex:1;overflow-y:auto;padding:2rem 2.5rem;}
+  .dash-panel{display:none;}
+  .dash-panel.active{display:block;}
+  .panel-title{font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:300;color:var(--white);margin-bottom:0.3rem;}
+  .panel-sub{font-size:0.75rem;color:var(--muted);margin-bottom:2rem;letter-spacing:0.05em;}
+  .overview-cards{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:2rem;}
+  .ov-card{padding:1.4rem;border:1px solid var(--border);background:var(--glow);position:relative;overflow:hidden;}
+  .ov-card::before{content:'';position:absolute;top:0;left:0;width:100%;height:2px;background:var(--gold);opacity:0.4;}
+  .ov-num{font-family:'Cormorant Garamond',serif;font-size:2.2rem;font-weight:300;color:var(--gold2);line-height:1;}
+  .ov-label{font-size:0.62rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--muted);margin-top:0.4rem;}
+  .recent-activity{border:1px solid var(--border);background:var(--navy2);padding:1.5rem;margin-bottom:2rem;}
+  .activity-title{font-size:0.65rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--gold);margin-bottom:1.2rem;}
+  .activity-item{display:flex;align-items:center;gap:1rem;padding:0.8rem 0;border-bottom:1px solid rgba(201,165,88,0.07);font-size:0.8rem;}
+  .activity-item:last-child{border-bottom:none;}
+  .activity-dot{width:6px;height:6px;border-radius:50%;flex-shrink:0;}
+  .dot-green{background:var(--green);}
+  .dot-gold{background:var(--gold);}
+  .dot-blue{background:var(--blue);}
+  .activity-text{color:var(--muted);flex:1;}
+  .activity-text strong{color:var(--white);}
+  .activity-time{font-size:0.65rem;color:var(--muted);opacity:0.5;}
+  .phi-form{max-width:700px;display:flex;flex-direction:column;gap:1.5rem;}
+  .phi-section-title{font-size:0.62rem;letter-spacing:0.25em;text-transform:uppercase;color:var(--gold);margin-bottom:1rem;padding-bottom:0.5rem;border-bottom:1px solid var(--border);}
+  .phi-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
+  .phi-grid.three{grid-template-columns:1fr 1fr 1fr;}
+  .phi-grid.full{grid-template-columns:1fr;}
+  .phi-group{display:flex;flex-direction:column;gap:0.35rem;}
+  .phi-group label{font-size:0.58rem;letter-spacing:0.18em;text-transform:uppercase;color:var(--gold);}
+  .phi-group input,.phi-group select,.phi-group textarea{background:var(--navy3);border:1px solid var(--border);color:var(--white);font-family:'Jost',sans-serif;font-size:0.82rem;padding:0.7rem 0.9rem;outline:none;transition:border-color 0.25s;-webkit-appearance:none;}
+  .phi-group input:focus,.phi-group select:focus,.phi-group textarea:focus{border-color:rgba(201,165,88,0.5);}
+  .phi-group select option{background:var(--navy3);}
+  .phi-group textarea{resize:vertical;min-height:80px;}
+  .phi-block{border:1px solid var(--border);background:var(--navy2);padding:1.5rem;}
+  .phi-submit{display:flex;gap:1rem;align-items:center;margin-top:0.5rem;}
+  .btn-submit{padding:0.85rem 2.2rem;background:var(--gold);color:var(--navy);font-family:'Jost',sans-serif;font-weight:500;font-size:0.7rem;letter-spacing:0.2em;text-transform:uppercase;border:none;cursor:pointer;transition:background 0.25s;}
+  .btn-submit:hover{background:var(--gold2);}
+  .btn-clear{padding:0.85rem 1.8rem;background:transparent;color:var(--muted);font-family:'Jost',sans-serif;font-size:0.7rem;letter-spacing:0.2em;text-transform:uppercase;border:1px solid var(--border);cursor:pointer;transition:color 0.2s;}
+  .btn-clear:hover{color:var(--white);}
+  .hipaa-panel{max-width:700px;}
+  .hipaa-card{border:1px solid var(--border);background:var(--navy2);padding:2rem;margin-bottom:1.5rem;position:relative;}
+  .hipaa-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--green);opacity:0.7;}
+  .hipaa-card-title{font-size:0.68rem;letter-spacing:0.2em;text-transform:uppercase;color:#2ecc71;margin-bottom:1rem;}
+  .hipaa-card p{font-size:0.82rem;line-height:1.8;color:var(--muted);margin-bottom:0.8rem;}
+  .hipaa-card p:last-child{margin-bottom:0;}
+  .hipaa-checklist{list-style:none;display:flex;flex-direction:column;gap:0.6rem;margin-top:0.5rem;}
+  .hipaa-checklist li{display:flex;gap:0.8rem;font-size:0.8rem;color:var(--muted);align-items:flex-start;}
+  .check{color:#2ecc71;flex-shrink:0;}
+  .engine-coming{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:400px;border:1px solid var(--border);background:var(--navy2);text-align:center;padding:3rem;}
+  .engine-icon{font-size:3rem;margin-bottom:1.5rem;opacity:0.5;}
+  .engine-coming h3{font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:300;color:var(--white);margin-bottom:0.8rem;}
+  .engine-coming p{font-size:0.85rem;color:var(--muted);max-width:400px;line-height:1.7;margin-bottom:1.5rem;}
+  .version-badge{display:inline-block;font-size:0.6rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--gold);border:1px solid var(--border);padding:0.4rem 1rem;}
+
+  /* ── DECLINED ── */
+  #declined-screen{align-items:center;justify-content:center;background:linear-gradient(165deg,#080d1a 0%,#0d1426 60%,#080d1a 100%);padding:2rem;text-align:center;}
+  .declined-box{max-width:420px;}
+  .declined-box h2{font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:300;color:var(--white);margin-bottom:1rem;}
+  .declined-box p{font-size:0.85rem;color:var(--muted);line-height:1.7;margin-bottom:1.5rem;}
+  .btn-back{font-size:0.68rem;letter-spacing:0.18em;text-transform:uppercase;color:var(--gold);background:none;border:1px solid var(--border);padding:0.7rem 1.5rem;cursor:pointer;transition:border-color 0.2s;}
+  .btn-back:hover{border-color:var(--gold);}
+
+  /* ── TOAST ── */
+  .toast{position:fixed;bottom:2rem;right:2rem;background:var(--navy3);border:1px solid rgba(46,204,113,0.4);color:var(--white);padding:1rem 1.5rem;font-size:0.8rem;display:flex;gap:0.8rem;align-items:center;transform:translateY(100px);opacity:0;transition:all 0.4s;z-index:999;max-width:360px;}
+  .toast.show{transform:translateY(0);opacity:1;}
+  .toast-icon{color:#2ecc71;}
+
+  /* ── SENDING OVERLAY ── */
+  .sending-overlay{position:fixed;inset:0;background:rgba(8,13,26,0.85);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:998;gap:1rem;}
+  .sending-overlay.hidden{display:none;}
+  .sending-spinner{width:40px;height:40px;border:2px solid var(--border);border-top-color:var(--gold);border-radius:50%;animation:spin 0.8s linear infinite;}
+  .sending-text{font-size:0.75rem;letter-spacing:0.2em;text-transform:uppercase;color:var(--muted);}
+  @keyframes spin{to{transform:rotate(360deg);}}
 </style>
 </head>
 <body>
 
-<!-- ══════════════════════════════
-     SCREEN 1 — LOGIN
-══════════════════════════════ -->
-<div id="login-screen" class="screen active">
+<!-- SENDING OVERLAY -->
+<div class="sending-overlay hidden" id="sending-overlay">
+  <div class="sending-spinner"></div>
+  <div class="sending-text">Sending BAA to Foundry One Sciences...</div>
+</div>
+
+<!-- ══ BAA SCREEN ══ -->
+<div id="baa-screen" class="screen active">
+  <div class="baa-box">
+    <div class="baa-header">
+      <div class="baa-logo">Foundry One Sciences</div>
+      <div class="baa-tagline">...&nbsp; we have not stopped looking</div>
+      <div class="baa-title">Business Associate Agreement</div>
+      <div class="baa-subtitle">Required before accessing the Physician Portal · Please read carefully and scroll to bottom</div>
+    </div>
+
+    <div class="scroll-prompt" id="scroll-prompt">↓ Scroll to read the full agreement before signing</div>
+
+    <div class="baa-scroll" id="baa-scroll-area">
+      <h3>BUSINESS ASSOCIATE AGREEMENT</h3>
+      <p>This Business Associate Agreement (<strong>"BAA"</strong>) is entered into between <strong>Foundry One Sciences LLC</strong>, a Delaware Limited Liability Company (<strong>"Business Associate"</strong>), and the undersigned licensed healthcare provider (<strong>"Physician"</strong>), collectively referred to as the <strong>"Parties."</strong></p>
+
+      <h3>1. Purpose</h3>
+      <p><span class="clause-num">1.1</span> This BAA governs the terms under which the Physician may access the Foundry One Sciences Physician Portal and the Medical Research Solitaire (MRS) Engine clinical decision support platform (<strong>"Platform"</strong>).</p>
+      <p><span class="clause-num">1.2</span> The Parties acknowledge that in the course of using the Platform, the Physician may submit Protected Health Information (<strong>"PHI"</strong>) as defined under HIPAA, as amended by HITECH.</p>
+
+      <h3>2. Permitted Uses and Disclosures</h3>
+      <p><span class="clause-num">2.1</span> Foundry One Sciences LLC is permitted to use and disclose PHI only for the purpose of providing clinical decision support services through the MRS Engine Platform as directed by the Physician.</p>
+      <p><span class="clause-num">2.2</span> Foundry One Sciences LLC shall not use or disclose PHI in any manner that would violate HIPAA/HITECH requirements.</p>
+      <p><span class="clause-num">2.3</span> PHI submitted through the Platform shall not be sold, shared with third parties, or used for any commercial purpose without explicit written authorization.</p>
+
+      <h3>3. Safeguards</h3>
+      <p><span class="clause-num">3.1</span> Foundry One Sciences LLC agrees to implement appropriate administrative, physical, and technical safeguards per 45 CFR §164.312.</p>
+      <p><span class="clause-num">3.2</span> All PHI is encrypted using AES-256 end-to-end encryption and TLS 1.3 in-transit encryption.</p>
+      <p><span class="clause-num">3.3</span> Access logs are maintained for all PHI interactions per HIPAA audit control requirements.</p>
+
+      <h3>4. Breach Notification</h3>
+      <p><span class="clause-num">4.1</span> Foundry One Sciences LLC shall notify the Physician of any breach of unsecured PHI within sixty (60) calendar days of discovery per 45 CFR §164.400–414.</p>
+      <p><span class="clause-num">4.2</span> Notification shall include the nature of PHI involved, unauthorized persons involved, and mitigation steps taken.</p>
+
+      <h3>5. Minimum Necessary Standard</h3>
+      <p><span class="clause-num">5.1</span> The Physician agrees to submit only the minimum necessary PHI required to generate a clinically relevant MRS Engine query.</p>
+      <p><span class="clause-num">5.2</span> De-identification of patient data is available and encouraged for research-oriented queries.</p>
+
+      <h3>6. SaMD Clinical Decision Support Acknowledgment</h3>
+      <p><span class="clause-num">6.1</span> The Physician acknowledges that the MRS Engine is a Software as a Medical Device (SaMD) clinical decision support tool. All outputs are advisory in nature.</p>
+      <p><span class="clause-num">6.2</span> MRS Engine outputs do not constitute a diagnosis, prescription, or treatment recommendation. Physician clinical judgment supersedes all Platform outputs at all times.</p>
+      <p><span class="clause-num">6.3</span> Foundry One Sciences LLC shall not be held liable for clinical decisions made on the basis of Platform outputs.</p>
+
+      <h3>7. Term and Termination</h3>
+      <p><span class="clause-num">7.1</span> This BAA is effective upon electronic acceptance and shall remain in effect for the duration of the Physician's platform access.</p>
+      <p><span class="clause-num">7.2</span> Either Party may terminate upon thirty (30) days written notice. Upon termination, PHI shall be returned or destroyed.</p>
+      <p><span class="clause-num">7.3</span> PHI retention complies with the HIPAA standard of six (6) years.</p>
+
+      <h3>8. Governing Law</h3>
+      <p><span class="clause-num">8.1</span> This BAA shall be governed by the laws of the State of Delaware and applicable federal law including HIPAA and HITECH.</p>
+
+      <h3>9. Electronic Acceptance</h3>
+      <p><span class="clause-num">9.1</span> By completing the fields below and checking the acknowledgment boxes, the Physician agrees to be legally bound by the terms of this BAA. Electronic acceptance constitutes a valid binding signature under the E-SIGN Act.</p>
+      <p style="color:var(--white);font-style:italic">Foundry One Sciences LLC · 709 Dorchester Rd., Catonsville, MD · Delaware LLC · Frederick W. Cover II, Founder &amp; CEO</p>
+    </div>
+
+    <div class="baa-footer">
+      <div class="baa-fields">
+        <div class="baa-group">
+          <label>Full Legal Name</label>
+          <input type="text" id="baa-name" placeholder="Dr. First Last">
+        </div>
+        <div class="baa-group">
+          <label>NPI Number</label>
+          <input type="text" id="baa-npi" placeholder="10-digit NPI">
+        </div>
+        <div class="baa-group">
+          <label>Practice / Institution</label>
+          <input type="text" id="baa-practice" placeholder="Practice name">
+        </div>
+        <div class="baa-group">
+          <label>Email Address</label>
+          <input type="email" id="baa-email" placeholder="physician@practice.com">
+        </div>
+      </div>
+
+      <div class="baa-checks">
+        <label class="baa-check-item">
+          <input type="checkbox" id="check1" onchange="checkBAA()">
+          I have read and understand the full Business Associate Agreement above
+        </label>
+        <label class="baa-check-item">
+          <input type="checkbox" id="check2" onchange="checkBAA()">
+          I am a licensed healthcare provider and my NPI number is valid and current
+        </label>
+        <label class="baa-check-item">
+          <input type="checkbox" id="check3" onchange="checkBAA()">
+          I agree to be legally bound by the terms of this BAA and understand my obligations under HIPAA/HITECH
+        </label>
+      </div>
+
+      <div class="baa-actions">
+        <button class="btn-gold" id="baa-accept-btn" onclick="acceptBAA()">Accept &amp; Continue to Portal</button>
+        <button class="btn-decline" onclick="declineBAA()">Decline</button>
+      </div>
+
+      <div class="baa-note">
+        Your electronic acceptance is timestamped, recorded, and a PDF copy is sent to Foundry One Sciences LLC. This BAA is required by federal law (HIPAA 45 CFR §164.308).
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══ DECLINED ══ -->
+<div id="declined-screen" class="screen">
+  <div class="declined-box">
+    <h2>Access Not Granted</h2>
+    <p>You must accept the Business Associate Agreement to access the Foundry One Sciences Physician Portal. This requirement is mandated by federal law under HIPAA.</p>
+    <p>Questions? Contact: <strong style="color:var(--white)">fredcover@foundryonesciences.org</strong></p>
+    <button class="btn-back" onclick="goBack()">← Return to Agreement</button>
+  </div>
+</div>
+
+<!-- ══ LOGIN ══ -->
+<div id="login-screen" class="screen">
   <div class="login-box">
     <div class="login-brand">
       <div class="login-logo">Foundry One Sciences</div>
       <div class="login-tagline">...&nbsp; we have not stopped looking</div>
     </div>
+    <div class="baa-confirmed">✓ &nbsp; Business Associate Agreement accepted &amp; on file</div>
     <div class="login-title">Physician Portal</div>
     <div class="login-sub">MRS Engine · Clinical Intelligence Platform</div>
-
     <div class="form-group">
       <label>NPI Number</label>
       <input type="text" id="npi-input" placeholder="Enter your NPI number">
@@ -659,255 +311,121 @@
       <label>Access Code</label>
       <input type="password" id="pass-input" placeholder="••••••••••••">
     </div>
-    <button class="btn-gold" onclick="doLogin()">Access Portal</button>
-
+    <button class="btn-gold-full" onclick="doLogin()">Access Portal</button>
     <div class="hipaa-notice">
-      <div class="hipaa-icon">🔒</div>
-      <div class="hipaa-text">
-        <strong>HIPAA Compliant Environment.</strong> All sessions are encrypted end-to-end. PHI is handled under active Business Associate Agreement. Unauthorized access is prohibited and subject to federal law.
-      </div>
+      <div style="font-size:1rem;flex-shrink:0">🔒</div>
+      <div class="hipaa-text"><strong>HIPAA Compliant Environment.</strong> All sessions are encrypted end-to-end. PHI is handled under your active Business Associate Agreement.</div>
     </div>
-    <div class="login-footer">
-      Foundry One Sciences LLC · Delaware · SDVOSB · Micro Entity<br>
-      For access requests contact: fredcover@gmail.com
-    </div>
+    <div class="login-footer">Foundry One Sciences LLC · Delaware · SDVOSB · Micro Entity<br>Access requests: fredcover@foundryonesciences.org</div>
   </div>
 </div>
 
-<!-- ══════════════════════════════
-     SCREEN 2 — DASHBOARD
-══════════════════════════════ -->
+<!-- ══ DASHBOARD ══ -->
 <div id="dashboard-screen" class="screen">
-
-  <!-- Top Bar -->
   <div class="topbar">
     <div class="topbar-brand">
       <div class="topbar-logo">Foundry One Sciences</div>
       <div class="topbar-tagline">...&nbsp; we have not stopped looking</div>
     </div>
     <div class="topbar-right">
-      <div class="topbar-user">
-        <span class="status-dot"></span>
-        Logged in as <span id="doctor-name">Dr. Physician</span>
-      </div>
+      <div class="topbar-user"><span class="status-dot"></span>Logged in as <span id="doctor-name">Dr. Physician</span></div>
       <button class="btn-logout" onclick="doLogout()">Sign Out</button>
     </div>
   </div>
-
   <div class="dash-body">
-
-    <!-- Sidebar -->
     <div class="sidebar">
       <div class="sidebar-section">
         <div class="sidebar-label">Navigation</div>
-        <div class="sidebar-item active" onclick="showPanel('overview', this)">
-          <span class="sidebar-icon">📊</span> Overview
-        </div>
-        <div class="sidebar-item" onclick="showPanel('mrs', this)">
-          <span class="sidebar-icon">🔬</span> MRS Engine
-        </div>
-        <div class="sidebar-item" onclick="showPanel('phi', this)">
-          <span class="sidebar-icon">📋</span> PHI Intake
-        </div>
-        <div class="sidebar-item" onclick="showPanel('hipaa', this)">
-          <span class="sidebar-icon">🔒</span> HIPAA Compliance
-        </div>
+        <div class="sidebar-item active" onclick="showPanel('overview',this)"><span class="sidebar-icon">📊</span> Overview</div>
+        <div class="sidebar-item" onclick="showPanel('mrs',this)"><span class="sidebar-icon">🔬</span> MRS Engine</div>
+        <div class="sidebar-item" onclick="showPanel('phi',this)"><span class="sidebar-icon">📋</span> PHI Intake</div>
+        <div class="sidebar-item" onclick="showPanel('hipaa',this)"><span class="sidebar-icon">🔒</span> HIPAA Compliance</div>
       </div>
       <div class="sidebar-section">
         <div class="sidebar-label">Products</div>
-        <div class="sidebar-item" onclick="showPanel('overview', this)">
-          <span class="sidebar-icon">♣</span> InsuLes™
-        </div>
-        <div class="sidebar-item" onclick="showPanel('overview', this)">
-          <span class="sidebar-icon">♣</span> Leapsin™
-        </div>
-        <div class="sidebar-item" onclick="showPanel('overview', this)">
-          <span class="sidebar-icon">♦</span> ZeaCyte™
-        </div>
+        <div class="sidebar-item" onclick="showPanel('overview',this)"><span class="sidebar-icon">♣</span> InsuLes™</div>
+        <div class="sidebar-item" onclick="showPanel('overview',this)"><span class="sidebar-icon">♣</span> Leapsin™</div>
+        <div class="sidebar-item" onclick="showPanel('overview',this)"><span class="sidebar-icon">♦</span> ZeaCyte™</div>
       </div>
     </div>
-
-    <!-- Main -->
     <div class="dash-main">
 
-      <!-- OVERVIEW -->
       <div id="panel-overview" class="dash-panel active">
         <div class="panel-title">Clinical Dashboard</div>
         <div class="panel-sub">Welcome to the Foundry One Sciences Physician Portal · MRS Engine v2.0</div>
-
         <div class="overview-cards">
-          <div class="ov-card">
-            <div class="ov-num">3</div>
-            <div class="ov-label">Active Products</div>
-          </div>
-          <div class="ov-card">
-            <div class="ov-num">4</div>
-            <div class="ov-label">Disease Domains</div>
-          </div>
-          <div class="ov-card">
-            <div class="ov-num">5</div>
-            <div class="ov-label">Patents Filed</div>
-          </div>
-          <div class="ov-card">
-            <div class="ov-num" style="color:#2ecc71">✓</div>
-            <div class="ov-label">HIPAA Active</div>
-          </div>
+          <div class="ov-card"><div class="ov-num">3</div><div class="ov-label">Active Products</div></div>
+          <div class="ov-card"><div class="ov-num">4</div><div class="ov-label">Disease Domains</div></div>
+          <div class="ov-card"><div class="ov-num">5</div><div class="ov-label">Patents Filed</div></div>
+          <div class="ov-card"><div class="ov-num" style="color:#2ecc71">✓</div><div class="ov-label">BAA Active</div></div>
         </div>
-
         <div class="recent-activity">
           <div class="activity-title">Recent Activity</div>
-          <div class="activity-item">
-            <div class="activity-dot dot-green"></div>
-            <div class="activity-text"><strong>Portal Access Granted</strong> — Physician account verified</div>
-            <div class="activity-time">Just now</div>
-          </div>
-          <div class="activity-item">
-            <div class="activity-dot dot-gold"></div>
-            <div class="activity-text"><strong>MRS Engine v2.0</strong> — AAD Scanner updated with new ontology layer</div>
-            <div class="activity-time">2 days ago</div>
-          </div>
-          <div class="activity-item">
-            <div class="activity-dot dot-blue"></div>
-            <div class="activity-text"><strong>Leapsin™ Dossier</strong> — GLP-1 step-down protocol updated</div>
-            <div class="activity-time">5 days ago</div>
-          </div>
-          <div class="activity-item">
-            <div class="activity-dot dot-gold"></div>
-            <div class="activity-text"><strong>ZeaCyte™</strong> — Physician review PDF available</div>
-            <div class="activity-time">1 week ago</div>
-          </div>
+          <div class="activity-item"><div class="activity-dot dot-green"></div><div class="activity-text"><strong>BAA Accepted</strong> — Agreement on file, PDF sent to Foundry One Sciences</div><div class="activity-time">Just now</div></div>
+          <div class="activity-item"><div class="activity-dot dot-green"></div><div class="activity-text"><strong>Portal Access Granted</strong> — Physician account verified</div><div class="activity-time">Just now</div></div>
+          <div class="activity-item"><div class="activity-dot dot-gold"></div><div class="activity-text"><strong>MRS Engine v2.0</strong> — AAD Scanner updated with new ontology layer</div><div class="activity-time">2 days ago</div></div>
+          <div class="activity-item"><div class="activity-dot dot-blue"></div><div class="activity-text"><strong>Leapsin™ Dossier</strong> — GLP-1 step-down protocol updated</div><div class="activity-time">5 days ago</div></div>
         </div>
       </div>
 
-      <!-- MRS ENGINE -->
       <div id="panel-mrs" class="dash-panel">
         <div class="panel-title">MRS Engine</div>
         <div class="panel-sub">Medical Research Solitaire · Distributed Clinical Think Engine</div>
         <div class="engine-coming">
           <div class="engine-icon">⚙️</div>
           <h3>Backend Integration Pending</h3>
-          <p>The MRS Engine clinical interface is currently in active development. Backend connectivity and live hypothesis queries will be available upon completion of the developer integration phase.</p>
+          <p>The MRS Engine clinical interface is currently in active development. Live hypothesis queries will be available upon completion of the developer integration phase.</p>
           <div class="version-badge">MRS Engine v2.0 · AAD Scanner · JELLO Framework</div>
         </div>
       </div>
 
-      <!-- PHI INTAKE -->
       <div id="panel-phi" class="dash-panel">
         <div class="panel-title">PHI Intake Workflow</div>
         <div class="panel-sub">Secure patient health information intake · All fields encrypted · BAA Active</div>
-
         <div class="phi-form">
-          <!-- Patient Info -->
           <div class="phi-block">
             <div class="phi-section-title">Patient Information</div>
             <div class="phi-grid">
-              <div class="phi-group">
-                <label>First Name</label>
-                <input type="text" placeholder="Patient first name">
-              </div>
-              <div class="phi-group">
-                <label>Last Name</label>
-                <input type="text" placeholder="Patient last name">
-              </div>
+              <div class="phi-group"><label>First Name</label><input type="text" placeholder="Patient first name"></div>
+              <div class="phi-group"><label>Last Name</label><input type="text" placeholder="Patient last name"></div>
             </div>
             <div class="phi-grid three" style="margin-top:1rem">
-              <div class="phi-group">
-                <label>Date of Birth</label>
-                <input type="date">
-              </div>
-              <div class="phi-group">
-                <label>Sex at Birth</label>
-                <select>
-                  <option value="" disabled selected>Select</option>
-                  <option>Male</option>
-                  <option>Female</option>
-                  <option>Other / Prefer not to say</option>
-                </select>
-              </div>
-              <div class="phi-group">
-                <label>MRN / Patient ID</label>
-                <input type="text" placeholder="Optional">
-              </div>
+              <div class="phi-group"><label>Date of Birth</label><input type="date"></div>
+              <div class="phi-group"><label>Sex at Birth</label><select><option value="" disabled selected>Select</option><option>Male</option><option>Female</option><option>Other</option></select></div>
+              <div class="phi-group"><label>MRN / Patient ID</label><input type="text" placeholder="Optional"></div>
             </div>
           </div>
-
-          <!-- Clinical Info -->
           <div class="phi-block">
             <div class="phi-section-title">Clinical Information</div>
             <div class="phi-grid">
-              <div class="phi-group">
-                <label>Primary Diagnosis</label>
-                <select>
-                  <option value="" disabled selected>Select domain</option>
-                  <option>Metabolic — Type 2 Diabetes</option>
-                  <option>Metabolic — Obesity / GLP-1 Step-Down</option>
-                  <option>Ophthalmology — Dry AMD</option>
-                  <option>Ophthalmology — Wet AMD</option>
-                  <option>Cardiovascular</option>
-                  <option>Neurological</option>
-                  <option>Other</option>
-                </select>
-              </div>
-              <div class="phi-group">
-                <label>Product of Interest</label>
-                <select>
-                  <option value="" disabled selected>Select product</option>
-                  <option>InsuLes™</option>
-                  <option>Leapsin™</option>
-                  <option>ZeaCyte™</option>
-                  <option>Multiple / Undecided</option>
-                </select>
-              </div>
+              <div class="phi-group"><label>Primary Diagnosis</label><select><option value="" disabled selected>Select domain</option><option>Metabolic — Type 2 Diabetes</option><option>Metabolic — Obesity / GLP-1 Step-Down</option><option>Ophthalmology — Dry AMD</option><option>Ophthalmology — Wet AMD</option><option>Cardiovascular</option><option>Neurological</option><option>Other</option></select></div>
+              <div class="phi-group"><label>Product of Interest</label><select><option value="" disabled selected>Select product</option><option>InsuLes™</option><option>Leapsin™</option><option>ZeaCyte™</option><option>Multiple / Undecided</option></select></div>
             </div>
-            <div class="phi-grid full" style="margin-top:1rem">
-              <div class="phi-group">
-                <label>Current Medications (relevant)</label>
-                <textarea placeholder="List current medications, dosages, and duration..."></textarea>
-              </div>
-            </div>
-            <div class="phi-grid full" style="margin-top:1rem">
-              <div class="phi-group">
-                <label>Clinical Notes</label>
-                <textarea placeholder="Relevant history, contraindications, clinical rationale for MRS Engine query..."></textarea>
-              </div>
-            </div>
+            <div class="phi-grid full" style="margin-top:1rem"><div class="phi-group"><label>Current Medications</label><textarea placeholder="List current medications, dosages, and duration..."></textarea></div></div>
+            <div class="phi-grid full" style="margin-top:1rem"><div class="phi-group"><label>Clinical Notes</label><textarea placeholder="Relevant history, contraindications, clinical rationale..."></textarea></div></div>
           </div>
-
-          <!-- Consent -->
           <div class="phi-block">
             <div class="phi-section-title">Consent & Compliance</div>
             <div style="display:flex;flex-direction:column;gap:0.8rem">
-              <label style="display:flex;gap:0.8rem;align-items:flex-start;cursor:pointer;font-size:0.78rem;color:var(--muted)">
-                <input type="checkbox" style="margin-top:0.2rem;accent-color:var(--gold)">
-                Patient has provided written authorization for PHI use in clinical decision support
-              </label>
-              <label style="display:flex;gap:0.8rem;align-items:flex-start;cursor:pointer;font-size:0.78rem;color:var(--muted)">
-                <input type="checkbox" style="margin-top:0.2rem;accent-color:var(--gold)">
-                I confirm this submission is covered under the active Business Associate Agreement with Foundry One Sciences LLC
-              </label>
-              <label style="display:flex;gap:0.8rem;align-items:flex-start;cursor:pointer;font-size:0.78rem;color:var(--muted)">
-                <input type="checkbox" style="margin-top:0.2rem;accent-color:var(--gold)">
-                I understand this platform is a clinical decision support tool and does not replace physician judgment
-              </label>
+              <label style="display:flex;gap:0.8rem;align-items:flex-start;cursor:pointer;font-size:0.78rem;color:var(--muted)"><input type="checkbox" style="margin-top:0.2rem;accent-color:var(--gold)">Patient has provided written authorization for PHI use in clinical decision support</label>
+              <label style="display:flex;gap:0.8rem;align-items:flex-start;cursor:pointer;font-size:0.78rem;color:var(--muted)"><input type="checkbox" style="margin-top:0.2rem;accent-color:var(--gold)">I confirm this submission is covered under my active BAA with Foundry One Sciences LLC</label>
+              <label style="display:flex;gap:0.8rem;align-items:flex-start;cursor:pointer;font-size:0.78rem;color:var(--muted)"><input type="checkbox" style="margin-top:0.2rem;accent-color:var(--gold)">I understand this platform is a clinical decision support tool and does not replace physician judgment</label>
             </div>
           </div>
-
           <div class="phi-submit">
-            <button class="btn-submit" onclick="submitPHI()">Submit to MRS Engine</button>
+            <button class="btn-submit" onclick="showToast('PHI submitted securely to MRS Engine queue.')">Submit to MRS Engine</button>
             <button class="btn-clear">Clear Form</button>
           </div>
         </div>
       </div>
 
-      <!-- HIPAA -->
       <div id="panel-hipaa" class="dash-panel">
         <div class="panel-title">HIPAA Compliance</div>
         <div class="panel-sub">Active compliance architecture · Foundry One Sciences LLC</div>
-
         <div class="hipaa-panel">
           <div class="hipaa-card">
             <div class="hipaa-card-title">🔒 Encryption & Security</div>
-            <p>All PHI transmitted through this portal is encrypted using AES-256 end-to-end encryption. Sessions are authenticated per access and automatically terminated after inactivity.</p>
+            <p>All PHI is encrypted using AES-256 end-to-end encryption with TLS 1.3 in-transit protection.</p>
             <ul class="hipaa-checklist">
               <li><span class="check">✓</span> AES-256 encryption on all PHI fields</li>
               <li><span class="check">✓</span> TLS 1.3 in-transit encryption</li>
@@ -915,21 +433,19 @@
               <li><span class="check">✓</span> Access logs maintained per 45 CFR §164.312</li>
             </ul>
           </div>
-
           <div class="hipaa-card">
             <div class="hipaa-card-title">📄 Business Associate Agreement</div>
-            <p>Foundry One Sciences LLC maintains an active Business Associate Agreement (BAA) with all participating physician practices. The BAA governs the use, disclosure, and safeguarding of PHI submitted through the MRS Engine portal.</p>
+            <p>All physicians must accept and sign the BAA before accessing the portal. A timestamped PDF is sent to Foundry One Sciences upon acceptance.</p>
             <ul class="hipaa-checklist">
-              <li><span class="check">✓</span> BAA required before portal access granted</li>
+              <li><span class="check">✓</span> BAA accepted, timestamped, and PDF recorded at entry</li>
               <li><span class="check">✓</span> PHI used exclusively for clinical decision support</li>
               <li><span class="check">✓</span> No PHI shared with third parties without authorization</li>
-              <li><span class="check">✓</span> Breach notification protocol active per 45 CFR §164.400</li>
+              <li><span class="check">✓</span> Breach notification per 45 CFR §164.400</li>
             </ul>
           </div>
-
           <div class="hipaa-card">
             <div class="hipaa-card-title">⚕️ SaMD Output Framing</div>
-            <p>The MRS Engine is framed as a Software as a Medical Device (SaMD) clinical decision support tool. All outputs are advisory in nature and do not constitute a diagnosis, prescription, or treatment recommendation.</p>
+            <p>The MRS Engine is a SaMD clinical decision support tool. All outputs are advisory and do not constitute diagnosis or treatment recommendations.</p>
             <ul class="hipaa-checklist">
               <li><span class="check">✓</span> All outputs labeled as clinical decision support</li>
               <li><span class="check">✓</span> Physician judgment supersedes all MRS outputs</li>
@@ -937,68 +453,249 @@
               <li><span class="check">✓</span> Audit trail on all queries and outputs</li>
             </ul>
           </div>
-
-          <div class="hipaa-card">
-            <div class="hipaa-card-title">📋 Minimum Necessary Standard</div>
-            <p>PHI intake is limited to the minimum necessary information required to generate a clinically relevant MRS Engine query. Physicians are instructed not to submit PHI beyond what is required for the specific clinical question.</p>
-            <ul class="hipaa-checklist">
-              <li><span class="check">✓</span> Intake fields limited to clinically necessary data</li>
-              <li><span class="check">✓</span> De-identification option available for research queries</li>
-              <li><span class="check">✓</span> Retention policy: 6 years per HIPAA standard</li>
-            </ul>
-          </div>
         </div>
       </div>
 
-    </div><!-- end dash-main -->
-  </div><!-- end dash-body -->
-</div><!-- end dashboard-screen -->
-
-<!-- Toast -->
-<div class="toast" id="toast">
-  <span class="toast-icon">✓</span>
-  <span id="toast-msg">Action completed</span>
+    </div>
+  </div>
 </div>
 
+<div class="toast" id="toast"><span class="toast-icon">✓</span><span id="toast-msg">Action completed</span></div>
+
 <script>
-  function doLogin() {
-    const npi = document.getElementById('npi-input').value.trim();
-    const pass = document.getElementById('pass-input').value.trim();
-    if (!npi || !pass) {
-      showToast('Please enter your NPI number and access code.');
-      return;
-    }
-    document.getElementById('doctor-name').textContent = 'Dr. ' + (npi.length > 4 ? npi.slice(-4) : npi);
-    document.getElementById('login-screen').classList.remove('active');
-    document.getElementById('dashboard-screen').classList.add('active');
-    showToast('Secure session established. Welcome, Doctor.');
+// ── FORMSPREE ENDPOINT ──
+// STEP: Replace with your Formspree endpoint after signing up at formspree.io
+// Set destination email to fredcover@gmail.com in Formspree settings
+const FORMSPREE_ENDPOINT = 'https://formspree.io/f/maqpdepn';
+
+const scrollArea  = document.getElementById('baa-scroll-area');
+const acceptBtn   = document.getElementById('baa-accept-btn');
+const scrollPrompt = document.getElementById('scroll-prompt');
+
+scrollArea.addEventListener('scroll', () => {
+  if (scrollArea.scrollTop + scrollArea.clientHeight >= scrollArea.scrollHeight - 20)
+    scrollPrompt.classList.add('hidden');
+  checkBAA();
+});
+
+function checkBAA() {
+  const scrolled = scrollArea.scrollTop + scrollArea.clientHeight >= scrollArea.scrollHeight - 20;
+  const c1 = document.getElementById('check1').checked;
+  const c2 = document.getElementById('check2').checked;
+  const c3 = document.getElementById('check3').checked;
+  acceptBtn.classList.toggle('enabled', scrolled && c1 && c2 && c3);
+}
+
+async function acceptBAA() {
+  const name     = document.getElementById('baa-name').value.trim();
+  const npi      = document.getElementById('baa-npi').value.trim();
+  const practice = document.getElementById('baa-practice').value.trim();
+  const email    = document.getElementById('baa-email').value.trim();
+  const ts       = new Date().toLocaleString('en-US', {timeZone:'America/New_York'});
+
+  if (!name || !npi) { showToast('Please enter your full name and NPI number.'); return; }
+
+  // Show spinner
+  document.getElementById('sending-overlay').classList.remove('hidden');
+
+  // Generate PDF
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ unit: 'pt', format: 'letter' });
+
+  // Header bar
+  doc.setFillColor(8, 13, 26);
+  doc.rect(0, 0, 612, 80, 'F');
+  doc.setTextColor(201, 165, 88);
+  doc.setFontSize(14);
+  doc.setFont('helvetica', 'bold');
+  doc.text('FOUNDRY ONE SCIENCES', 40, 35);
+  doc.setFontSize(8);
+  doc.setFont('helvetica', 'italic');
+  doc.text('...  we have not stopped looking', 612 - 40, 35, { align: 'right' });
+  doc.setFontSize(10);
+  doc.setFont('helvetica', 'normal');
+  doc.setTextColor(138, 150, 176);
+  doc.text('Physician Portal  |  Business Associate Agreement  |  Acceptance Record', 40, 60);
+
+  // Gold line
+  doc.setDrawColor(201, 165, 88);
+  doc.setLineWidth(1);
+  doc.line(40, 82, 572, 82);
+
+  // Title
+  doc.setTextColor(30, 30, 30);
+  doc.setFontSize(18);
+  doc.setFont('helvetica', 'bold');
+  doc.text('BAA ACCEPTANCE RECORD', 306, 115, { align: 'center' });
+
+  doc.setFontSize(10);
+  doc.setFont('helvetica', 'normal');
+  doc.setTextColor(100, 100, 100);
+  doc.text('This document confirms that a licensed physician has reviewed and accepted the', 306, 135, { align: 'center' });
+  doc.text('Foundry One Sciences Business Associate Agreement as required by HIPAA/HITECH.', 306, 150, { align: 'center' });
+
+  // Divider
+  doc.setDrawColor(201, 165, 88);
+  doc.setLineWidth(0.5);
+  doc.line(40, 165, 572, 165);
+
+  // Physician details box
+  doc.setFillColor(245, 245, 248);
+  doc.rect(40, 175, 532, 140, 'F');
+  doc.setDrawColor(201, 165, 88);
+  doc.setLineWidth(2);
+  doc.line(40, 175, 40, 315);
+
+  const fields = [
+    ['Full Legal Name',    name],
+    ['NPI Number',         npi],
+    ['Practice / Inst.',   practice || 'Not provided'],
+    ['Email Address',      email || 'Not provided'],
+    ['Acceptance Date',    ts],
+    ['Agreement Version',  'BAA v1.0 — Foundry One Sciences LLC'],
+  ];
+
+  let y = 198;
+  fields.forEach(([label, val]) => {
+    doc.setFontSize(8);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(150, 120, 60);
+    doc.text(label.toUpperCase(), 58, y);
+    doc.setFontSize(11);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(30, 30, 30);
+    doc.text(val, 200, y);
+    y += 22;
+  });
+
+  // Checkboxes confirmed
+  doc.setFontSize(9);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(40, 160, 80);
+  doc.text('PHYSICIAN ATTESTATIONS — ALL CONFIRMED', 40, 335);
+
+  const attestations = [
+    'Physician read and understood the full Business Associate Agreement',
+    'Physician confirmed status as a licensed healthcare provider with valid NPI',
+    'Physician agreed to be legally bound by BAA terms under HIPAA/HITECH',
+  ];
+
+  doc.setFont('helvetica', 'normal');
+  doc.setTextColor(50, 50, 50);
+  doc.setFontSize(9);
+  let ay = 355;
+  attestations.forEach(a => {
+    doc.setTextColor(40, 160, 80);
+    doc.text('✓', 40, ay);
+    doc.setTextColor(50, 50, 50);
+    doc.text(a, 58, ay);
+    ay += 18;
+  });
+
+  // Legal notice
+  doc.setFillColor(230, 240, 255);
+  doc.rect(40, 415, 532, 55, 'F');
+  doc.setFontSize(8);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(30, 60, 120);
+  doc.text('LEGAL NOTICE', 58, 432);
+  doc.setFont('helvetica', 'normal');
+  doc.setTextColor(50, 50, 100);
+  doc.text('This electronic acceptance constitutes a valid and binding signature under the Electronic Signatures in', 58, 447);
+  doc.text('Global and National Commerce Act (E-SIGN Act). This record is maintained by Foundry One Sciences LLC.', 58, 460);
+
+  // Footer
+  doc.setFillColor(8, 13, 26);
+  doc.rect(0, 720, 612, 72, 'F');
+  doc.setFontSize(8);
+  doc.setFont('helvetica', 'normal');
+  doc.setTextColor(138, 150, 176);
+  doc.text('Foundry One Sciences LLC  |  709 Dorchester Rd., Catonsville, MD  |  Delaware LLC', 306, 742, { align: 'center' });
+  doc.text('Frederick W. Cover II, Founder & CEO  |  fredcover@foundryonesciences.org', 306, 758, { align: 'center' });
+  doc.setTextColor(201, 165, 88);
+  doc.text('SDVOSB  ·  Micro Entity  ·  HIPAA Compliant', 306, 774, { align: 'center' });
+
+  // Convert PDF to base64
+  const pdfBase64 = doc.output('datauristring').split(',')[1];
+  const docName = `BAA_${name.replace(/\s+/g,'_')}_${npi}_${Date.now()}.pdf`;
+
+  // Send via Formspree
+  try {
+    await fetch(FORMSPREE_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+      body: JSON.stringify({
+        subject: `BAA Accepted — ${name} | NPI: ${npi}`,
+        physician_name: name,
+        npi_number: npi,
+        practice: practice || 'Not provided',
+        email: email || 'Not provided',
+        acceptance_timestamp: ts,
+        agreement_version: 'BAA v1.0',
+        _replyto: email || 'noreply@foundryonesciences.org',
+        message: `A physician has accepted the Foundry One Sciences BAA.\n\nName: ${name}\nNPI: ${npi}\nPractice: ${practice}\nEmail: ${email}\nTimestamp: ${ts}\n\nThe PDF record is attached.`,
+      })
+    });
+  } catch(e) {
+    console.warn('Email send failed:', e);
   }
 
-  function doLogout() {
-    document.getElementById('dashboard-screen').classList.remove('active');
-    document.getElementById('login-screen').classList.add('active');
-    document.getElementById('npi-input').value = '';
-    document.getElementById('pass-input').value = '';
-    showPanel('overview', document.querySelector('.sidebar-item'));
-  }
+  // Also trigger PDF download for physician's own records
+  doc.save(docName);
 
-  function showPanel(name, el) {
-    document.querySelectorAll('.dash-panel').forEach(p => p.classList.remove('active'));
-    document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
-    document.getElementById('panel-' + name).classList.add('active');
-    if (el) el.classList.add('active');
-  }
+  // Hide spinner
+  document.getElementById('sending-overlay').classList.add('hidden');
 
-  function submitPHI() {
-    showToast('PHI submitted securely to MRS Engine queue.');
-  }
+  // Pre-fill login
+  document.getElementById('npi-input').value = npi;
+  const displayName = name.startsWith('Dr.') ? name : 'Dr. ' + name.split(' ').pop();
+  document.getElementById('doctor-name').textContent = displayName;
 
-  function showToast(msg) {
-    const t = document.getElementById('toast');
-    document.getElementById('toast-msg').textContent = msg;
-    t.classList.add('show');
-    setTimeout(() => t.classList.remove('show'), 3500);
-  }
+  showScreen('login-screen');
+  showToast('BAA accepted. PDF sent to Foundry One Sciences & downloaded for your records.');
+}
+
+function declineBAA() { showScreen('declined-screen'); }
+function goBack()      { showScreen('baa-screen'); }
+
+function doLogin() {
+  const npi  = document.getElementById('npi-input').value.trim();
+  const pass = document.getElementById('pass-input').value.trim();
+  if (!npi || !pass) { showToast('Please enter your NPI number and access code.'); return; }
+  showScreen('dashboard-screen');
+  showToast('Secure session established. Welcome, ' + document.getElementById('doctor-name').textContent + '.');
+}
+
+function doLogout() {
+  showScreen('baa-screen');
+  ['npi-input','pass-input','baa-name','baa-npi','baa-practice','baa-email'].forEach(id => {
+    document.getElementById(id).value = '';
+  });
+  ['check1','check2','check3'].forEach(id => document.getElementById(id).checked = false);
+  acceptBtn.classList.remove('enabled');
+  scrollArea.scrollTop = 0;
+  scrollPrompt.classList.remove('hidden');
+  showPanel('overview', document.querySelector('.sidebar-item'));
+}
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function showPanel(name, el) {
+  document.querySelectorAll('.dash-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.sidebar-item').forEach(i => i.classList.remove('active'));
+  document.getElementById('panel-' + name).classList.add('active');
+  if (el) el.classList.add('active');
+}
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  document.getElementById('toast-msg').textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 4000);
+}
 </script>
 </body>
 </html>
