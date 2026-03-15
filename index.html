@@ -24,9 +24,15 @@
   #welcome-screen {
     align-items: center;
     justify-content: center;
-    position: relative;
+    position: fixed;
+    inset: 0;
     overflow: hidden;
     background: var(--navy);
+    z-index: 50;
+  }
+
+  #welcome-screen.hidden-screen {
+    display: none;
   }
 
   .welcome-bg {
@@ -186,7 +192,8 @@
   }
 
   /* ── BAA SCREEN ── */
-  #baa-screen{align-items:center;justify-content:center;background:radial-gradient(ellipse 60% 60% at 50% 40%,rgba(201,165,88,0.05) 0%,transparent 70%),linear-gradient(165deg,#080d1a 0%,#0d1426 60%,#080d1a 100%);padding:2rem;}
+  #baa-screen{align-items:center;justify-content:center;background:radial-gradient(ellipse 60% 60% at 50% 40%,rgba(201,165,88,0.05) 0%,transparent 70%),linear-gradient(165deg,#080d1a 0%,#0d1426 60%,#080d1a 100%);padding:2rem;opacity:0;transition:opacity 1.5s ease;}
+  #baa-screen.fade-in{opacity:1;}
   .baa-box{width:100%;max-width:680px;border:1px solid var(--border);background:var(--navy2);position:relative;overflow:hidden;}
   .baa-box::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);}
   .baa-header{padding:2.5rem 2.5rem 1.5rem;border-bottom:1px solid var(--border);}
@@ -365,13 +372,13 @@
       <span class="w-badge">⚕️ Licensed Physicians Only</span>
       <span class="w-badge">🧬 MRS Engine v2.0</span>
     </div>
-    <button class="welcome-enter" onclick="showScreen('baa-screen')">
+    <button class="welcome-enter" onclick="enterPortal()">
       Enter Portal
       <span class="enter-arrow">→</span>
     </button>
     <div class="welcome-notice">
-      Access requires acceptance of a Business Associate Agreement.<br>
-      For portal access requests contact: <strong>fredcover@gmail.com</strong>
+      Licensed physicians only. For portal access requests contact:<br>
+      <strong>fredcover@gmail.com</strong>
     </div>
   </div>
   <div class="welcome-footer">
@@ -865,8 +872,19 @@ function doLogin() {
   showToast('Secure session established. Welcome, ' + document.getElementById('doctor-name').textContent + '.');
 }
 
+function enterPortal() {
+  document.getElementById('welcome-screen').classList.add('hidden-screen');
+  showScreen('baa-screen');
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      document.getElementById('baa-screen').classList.add('fade-in');
+    });
+  });
+}
+
 function doLogout() {
-  showScreen('welcome-screen');
+  document.getElementById('welcome-screen').classList.remove('hidden-screen');
+  document.getElementById('welcome-screen').style.display = 'flex';
   ['npi-input','pass-input','baa-name','baa-npi','baa-practice','baa-email'].forEach(id => {
     document.getElementById(id).value = '';
   });
