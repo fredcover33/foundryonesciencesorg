@@ -20,6 +20,171 @@
   .screen{display:none;min-height:100vh;}
   .screen.active{display:flex;flex-direction:column;}
 
+  /* ── WELCOME SCREEN ── */
+  #welcome-screen {
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    overflow: hidden;
+    background: var(--navy);
+  }
+
+  .welcome-bg {
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 70% 60% at 60% 50%, rgba(201,165,88,0.07) 0%, transparent 65%),
+      radial-gradient(ellipse 40% 50% at 20% 80%, rgba(17,28,53,0.95) 0%, transparent 60%),
+      linear-gradient(165deg, #080d1a 0%, #0d1426 50%, #080d1a 100%);
+  }
+
+  .welcome-grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(201,165,88,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(201,165,88,0.04) 1px, transparent 1px);
+    background-size: 70px 70px;
+    mask-image: radial-gradient(ellipse 80% 80% at 65% 50%, black 0%, transparent 70%);
+  }
+
+  .welcome-content {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 2rem;
+    animation: fadeUp 1s 0.2s both;
+  }
+
+  .welcome-brand { margin-bottom: 2rem; }
+
+  .welcome-logo {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 600;
+    font-size: 1rem;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    color: var(--white);
+  }
+
+  .welcome-tagline {
+    font-family: 'Crimson Pro', serif;
+    font-style: italic;
+    font-size: 0.65rem;
+    color: var(--gold);
+    text-align: right;
+    margin-top: 0.25rem;
+    letter-spacing: 0.06em;
+  }
+
+  .welcome-divider {
+    width: 1px;
+    height: 50px;
+    background: linear-gradient(to bottom, transparent, var(--gold), transparent);
+    margin-bottom: 2rem;
+    opacity: 0.5;
+  }
+
+  .welcome-title {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 300;
+    font-size: clamp(3.5rem, 8vw, 6rem);
+    line-height: 1.0;
+    color: var(--white);
+    margin-bottom: 1.5rem;
+    letter-spacing: -0.01em;
+  }
+
+  .welcome-title em {
+    font-style: italic;
+    color: var(--gold2);
+  }
+
+  .welcome-sub {
+    font-size: 0.88rem;
+    line-height: 1.8;
+    color: var(--muted);
+    max-width: 480px;
+    margin-bottom: 2rem;
+  }
+
+  .welcome-badges {
+    display: flex;
+    gap: 0.8rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    margin-bottom: 2.8rem;
+  }
+
+  .w-badge {
+    font-size: 0.62rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--gold);
+    border: 1px solid var(--border);
+    padding: 0.4rem 0.9rem;
+    background: var(--glow);
+  }
+
+  .welcome-enter {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 3rem;
+    background: var(--gold);
+    color: var(--navy);
+    font-family: 'Jost', sans-serif;
+    font-weight: 500;
+    font-size: 0.8rem;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    border: none;
+    cursor: pointer;
+    transition: background 0.25s, transform 0.2s, gap 0.2s;
+    margin-bottom: 2rem;
+  }
+
+  .welcome-enter:hover {
+    background: var(--gold2);
+    transform: translateY(-2px);
+    gap: 1.4rem;
+  }
+
+  .enter-arrow {
+    font-size: 1rem;
+    transition: transform 0.2s;
+  }
+
+  .welcome-enter:hover .enter-arrow { transform: translateX(4px); }
+
+  .welcome-notice {
+    font-size: 0.7rem;
+    color: var(--muted);
+    opacity: 0.6;
+    line-height: 1.7;
+  }
+
+  .welcome-notice strong { color: var(--muted); opacity: 1; }
+
+  .welcome-footer {
+    position: absolute;
+    bottom: 1.5rem;
+    font-size: 0.6rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--muted);
+    opacity: 0.35;
+    z-index: 2;
+  }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
   /* ── BAA SCREEN ── */
   #baa-screen{align-items:center;justify-content:center;background:radial-gradient(ellipse 60% 60% at 50% 40%,rgba(201,165,88,0.05) 0%,transparent 70%),linear-gradient(165deg,#080d1a 0%,#0d1426 60%,#080d1a 100%);padding:2rem;}
   .baa-box{width:100%;max-width:680px;border:1px solid var(--border);background:var(--navy2);position:relative;overflow:hidden;}
@@ -178,6 +343,40 @@
 <div class="sending-overlay hidden" id="sending-overlay">
   <div class="sending-spinner"></div>
   <div class="sending-text">Sending BAA to Foundry One Sciences...</div>
+</div>
+
+<!-- ══ WELCOME SCREEN ══ -->
+<div id="welcome-screen" class="screen active">
+  <div class="welcome-bg"></div>
+  <div class="welcome-grid"></div>
+  <div class="welcome-content">
+    <div class="welcome-brand">
+      <div class="welcome-logo">Foundry One Sciences</div>
+      <div class="welcome-tagline">...&nbsp; we have not stopped looking</div>
+    </div>
+    <div class="welcome-divider"></div>
+    <h1 class="welcome-title">Physician<br><em>Portal</em></h1>
+    <p class="welcome-sub">
+      Secure access to the Medical Research Solitaire Engine —<br>
+      clinical decision support built on cross-domain drug hypothesis intelligence.
+    </p>
+    <div class="welcome-badges">
+      <span class="w-badge">🔒 HIPAA Compliant</span>
+      <span class="w-badge">⚕️ Licensed Physicians Only</span>
+      <span class="w-badge">🧬 MRS Engine v2.0</span>
+    </div>
+    <button class="welcome-enter" onclick="showScreen('baa-screen')">
+      Enter Portal
+      <span class="enter-arrow">→</span>
+    </button>
+    <div class="welcome-notice">
+      Access requires acceptance of a Business Associate Agreement.<br>
+      For portal access requests contact: <strong>fredcover@gmail.com</strong>
+    </div>
+  </div>
+  <div class="welcome-footer">
+    Foundry One Sciences LLC &nbsp;·&nbsp; Delaware &nbsp;·&nbsp; SDVOSB &nbsp;·&nbsp; Micro Entity
+  </div>
 </div>
 
 <!-- ══ BAA SCREEN ══ -->
@@ -667,7 +866,7 @@ function doLogin() {
 }
 
 function doLogout() {
-  showScreen('baa-screen');
+  showScreen('welcome-screen');
   ['npi-input','pass-input','baa-name','baa-npi','baa-practice','baa-email'].forEach(id => {
     document.getElementById(id).value = '';
   });
