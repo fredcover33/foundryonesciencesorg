@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Foundry One Sciences — Physician Portal</title>
+<title>Foundry One Sciences &mdash; Physician Portal</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@300;400;500;600&family=Crimson+Pro:ital,wght@0,300;1,300&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{--navy:#080d1a;--navy2:#0d1426;--navy3:#111c35;--gold:#c9a558;--gold2:#e2c07a;--white:#f5f2ec;--muted:#8a96b0;--border:rgba(201,165,88,0.18);--glow:rgba(201,165,88,0.06);--green:#2ecc71;--red:#e74c3c;--blue:#3498db;--amber:#e8a020;}
@@ -153,8 +153,8 @@ html,body{height:100%;font-family:'Jost',sans-serif;font-weight:300;background:v
 .bm-section{margin-bottom:1.8rem;}
 .bm-sec-title{font-size:.6rem;letter-spacing:.18em;text-transform:uppercase;color:var(--muted);margin-bottom:.8rem;display:flex;align-items:center;gap:.6rem;}
 .bm-sec-title::after{content:'';flex:1;height:1px;background:var(--border);}
-.delivered-banner{display:flex;align-items:center;gap:1rem;padding:1rem 1.2rem;background:rgba(46,204,113,.06);border:1px solid rgba(46,204,113,.2);margin-bottom:1.5rem;}
-.db-icon{color:var(--green);font-size:1.1rem;}
+.delivered-banner{display:flex;align-items:flex-start;gap:1rem;padding:1rem 1.2rem;background:rgba(46,204,113,.06);border:1px solid rgba(46,204,113,.2);margin-bottom:1.5rem;}
+.db-icon{color:var(--green);font-size:1.1rem;flex-shrink:0;margin-top:.1rem;}
 .db-text{font-size:.78rem;line-height:1.6;}
 .db-text strong{color:var(--green);}
 .db-text span{color:var(--muted);font-size:.68rem;display:block;}
@@ -581,15 +581,15 @@ textarea {
     <div class="wtag">...&nbsp; we have not stopped looking</div>
     <div class="wdiv"></div>
     <h1 class="wtitle">Physician<br><em>Portal</em></h1>
-    <p class="wsub">Secure access to the Medical Research Solitaire Engine — clinical decision support built on cross-domain drug hypothesis intelligence.</p>
+    <p class="wsub">Secure access to the Medical Research Solitaire Engine &mdash; clinical decision support built on cross-domain drug hypothesis intelligence.</p>
     <div class="wbadges">
-      <span class="wbadge">🔒 HIPAA Compliant</span>
-      <span class="wbadge">⚕️ Licensed Physicians Only</span>
-      <span class="wbadge">🧬 MRS Engine v2.0</span>
+      <span class="wbadge">&#128274; HIPAA Compliant</span>
+      <span class="wbadge">&#9877;&#65039; Licensed Physicians Only</span>
+      <span class="wbadge">&#129516; MRS Engine v2.0</span>
     </div>
-    <button class="wenter" onclick="showScreen('baa-screen')">Enter Portal <span style="font-size:1rem">→</span></button>
+    <button class="wenter" onclick="showScreen('baa-screen')">Enter Portal <span style="font-size:1rem">&#8594;</span></button>
   </div>
-  <div class="wfooter">Foundry One Sciences LLC &nbsp;·&nbsp; Delaware &nbsp;·&nbsp; SDVOSB &nbsp;·&nbsp; Micro Entity</div>
+  <div class="wfooter">Foundry One Sciences LLC &nbsp;&middot;&nbsp; Delaware &nbsp;&middot;&nbsp; SDVOSB &nbsp;&middot;&nbsp; Micro Entity</div>
 </div>
 
 <div id="baa-screen" class="screen">
@@ -599,14 +599,14 @@ textarea {
       <div class="baa-logo">Foundry One Sciences</div>
       <div class="baa-tag">...&nbsp; we have not stopped looking</div>
       <div class="baa-title">Business Associate Agreement</div>
-      <div class="baa-sub">Required before accessing the Physician Portal · Please read carefully and scroll to bottom</div>
+      <div class="baa-sub">Required before accessing the Physician Portal &middot; Please read carefully and scroll to bottom</div>
     </div>
-    <div class="scroll-prompt" id="scroll-prompt">↓ Scroll to read the full agreement before signing</div>
+    <div class="scroll-prompt" id="scroll-prompt">&#8595; Scroll to read the full agreement before signing</div>
     <div class="baa-scroll" id="baa-scroll-area">
       <h3>BUSINESS ASSOCIATE AGREEMENT</h3>
       <p>This Business Associate Agreement (<strong>"BAA"</strong>) is entered into between <strong>Foundry One Sciences LLC</strong>, a Delaware Limited Liability Company (<strong>"Business Associate"</strong>), and the undersigned licensed healthcare provider (<strong>"Covered Entity / Physician"</strong>).</p>
       <h3>1. Definitions</h3>
-      <p><strong>Protected Health Information (PHI)</strong> means any individually identifiable health information as defined under 45 C.F.R. § 160.103. <strong>De-identified Information</strong> means health information processed to remove all 18 HIPAA Safe Harbor identifiers per 45 C.F.R. § 164.514(b).</p>
+      <p><strong>Protected Health Information (PHI)</strong> means any individually identifiable health information as defined under 45 C.F.R. &sect; 160.103. <strong>De-identified Information</strong> means health information processed to remove all 18 HIPAA Safe Harbor identifiers per 45 C.F.R. &sect; 164.514(b).</p>
       <h3>2. Obligations of Business Associate</h3>
       <p>Foundry One Sciences LLC agrees to: (a) not use or disclose PHI other than as permitted; (b) use appropriate safeguards; (c) report any breach within 72 hours; (d) ensure subcontractors agree to equivalent restrictions; (e) make records available to HHS; (f) return or destroy PHI upon termination.</p>
       <h3>3. Permitted Uses and Disclosures</h3>
@@ -643,8 +643,8 @@ textarea {
   <div class="dec-box">
     <h2>Access Not Granted</h2>
     <p>You must accept the Business Associate Agreement to access the portal.</p>
-    <p>Questions? Contact: <strong style="color:var(--white)"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="3b5d495e5f58544d5e497b5d544e555f494254555e4858525e55585e481554495c">[email&#160;protected]</a></strong></p>
-    <button class="btn-back" onclick="showScreen('baa-screen')">← Return to Agreement</button>
+    <p>Questions? Contact: <strong style="color:var(--white)">fredcover@foundryonesciences.org</strong></p>
+    <button class="btn-back" onclick="showScreen('baa-screen')">&#8592; Return to Agreement</button>
   </div>
 </div>
 
@@ -653,17 +653,17 @@ textarea {
   <div class="login-box">
     <div class="login-logo">Foundry One Sciences</div>
     <div class="login-tag">...&nbsp; we have not stopped looking</div>
-    <div class="baa-confirmed">✓ &nbsp; Business Associate Agreement accepted &amp; on file</div>
+    <div class="baa-confirmed">&#10003; &nbsp; Business Associate Agreement accepted &amp; on file</div>
     <div class="login-title">Physician Portal</div>
-    <div class="login-sub">MRS Engine · Clinical Intelligence Platform</div>
+    <div class="login-sub">MRS Engine &middot; Clinical Intelligence Platform</div>
     <div class="form-group"><label>NPI Number</label><input type="text" id="npi-input" placeholder="Enter your NPI number"></div>
-    <div class="form-group"><label>Access Code</label><input type="password" id="pass-input" placeholder="••••••••••••"></div>
+    <div class="form-group"><label>Access Code</label><input type="password" id="pass-input" placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;"></div>
     <button class="btn-gold-full" onclick="doLogin()">Access Portal</button>
     <div class="hipaa-notice">
-      <div style="font-size:1rem;flex-shrink:0">🔒</div>
+      <div style="font-size:1rem;flex-shrink:0">&#128274;</div>
       <div class="hipaa-text"><strong>HIPAA Compliant Environment.</strong> All sessions encrypted end-to-end under your active BAA.</div>
     </div>
-    <div class="login-footer">Foundry One Sciences LLC · Delaware · SDVOSB · Micro Entity<br>Access requests: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="7d1b0f18191e120b180f3d1b120813190f041213180e1e1418131e180e53120f1a">[email&#160;protected]</a></div>
+    <div class="login-footer">Foundry One Sciences LLC &middot; Delaware &middot; SDVOSB &middot; Micro Entity<br>Access requests: fredcover@foundryonesciences.org</div>
   </div>
   </div>
 </div>
@@ -679,17 +679,17 @@ textarea {
   <div class="dash-body">
     <div class="sidebar">
       <div class="sidebar-section">Navigation</div>
-      <div class="sidebar-item active" onclick="showPanel('overview',this)"><span class="si-icon">⊡</span> Overview</div>
-      <div class="sidebar-item" onclick="showPanel('intake',this)"><span class="si-icon">＋</span> New Patient Query</div>
-      <div class="sidebar-item" onclick="showPanel('cases',this)"><span class="si-icon">◈</span> Active Cases <span class="notif-badge" id="notif-count">2</span></div>
+      <div class="sidebar-item active" onclick="showPanel('overview',this)"><span class="si-icon">&#8881;</span> Overview</div>
+      <div class="sidebar-item" onclick="showPanel('intake',this)"><span class="si-icon">&#65291;</span> New Patient Query</div>
+      <div class="sidebar-item" onclick="showPanel('cases',this)"><span class="si-icon">&#9672;</span> Active Cases <span class="notif-badge" id="notif-count">2</span></div>
       <div class="sidebar-section" style="margin-top:1rem;">Compliance</div>
-      <div class="sidebar-item" onclick="showPanel('hipaa',this)"><span class="si-icon">⊛</span> HIPAA &amp; Compliance</div>
+      <div class="sidebar-item" onclick="showPanel('hipaa',this)"><span class="si-icon">&#8859;</span> HIPAA &amp; Compliance</div>
     </div>
     <div class="dash-main">
 
       <div class="dash-panel active" id="panel-overview">
         <div class="panel-title">Overview</div>
-        <div class="panel-sub">Welcome back, <span id="doc-name-display">Dr. Smith</span> — your practice dashboard</div>
+        <div class="panel-sub">Welcome back, <span id="doc-name-display">Dr. Smith</span> &mdash; your practice dashboard</div>
         <div class="stats-grid">
           <div class="stat-card s-gold"><div class="stat-label">Total Queries</div><div class="stat-val">14</div><div class="stat-sub">Since enrollment</div></div>
           <div class="stat-card s-green"><div class="stat-label">Briefs Delivered</div><div class="stat-val">12</div><div class="stat-sub">To physician email</div></div>
@@ -698,24 +698,24 @@ textarea {
         </div>
         <div class="activity-card">
           <div class="ac-title">Recent Activity</div>
-          <div class="ac-item"><div class="ac-dot green"></div><div class="ac-text">Brief delivered — Token MRS-0019 · Metabolic / Insulin Resistance</div><div class="ac-time">2h ago</div></div>
-          <div class="ac-item"><div class="ac-dot blue"></div><div class="ac-text">Query submitted — Token MRS-0020 · Cardiovascular comorbidity w/ T2DM</div><div class="ac-time">4h ago</div></div>
-          <div class="ac-item"><div class="ac-dot gold"></div><div class="ac-text">New case intake — MRS-0021 · Pending de-identification</div><div class="ac-time">Today 9:14am</div></div>
-          <div class="ac-item"><div class="ac-dot green"></div><div class="ac-text">Brief delivered — Token MRS-0018 · Neurological / Cognitive Decline</div><div class="ac-time">Yesterday</div></div>
-          <div class="ac-item"><div class="ac-dot muted"></div><div class="ac-text">Practice enrolled — BAA accepted and on file</div><div class="ac-time">Mar 10</div></div>
+          <div class="ac-item"><div class="ac-dot green"></div><div class="ac-text">Brief delivered &mdash; Token MRS-0019 &middot; Metabolic / Insulin Resistance</div><div class="ac-time">2h ago</div></div>
+          <div class="ac-item"><div class="ac-dot blue"></div><div class="ac-text">Query submitted &mdash; Token MRS-0020 &middot; Cardiovascular comorbidity w/ T2DM</div><div class="ac-time">4h ago</div></div>
+          <div class="ac-item"><div class="ac-dot gold"></div><div class="ac-text">New case intake &mdash; MRS-0021 &middot; Pending de-identification</div><div class="ac-time">Today 9:14am</div></div>
+          <div class="ac-item"><div class="ac-dot green"></div><div class="ac-text">Brief delivered &mdash; Token MRS-0018 &middot; Neurological / Cognitive Decline</div><div class="ac-time">Yesterday</div></div>
+          <div class="ac-item"><div class="ac-dot muted"></div><div class="ac-text">Practice enrolled &mdash; BAA accepted and on file</div><div class="ac-time">Mar 10</div></div>
         </div>
       </div>
 
       <div class="dash-panel" id="panel-intake">
         <div class="panel-title">New Patient Query</div>
-        <div class="panel-sub">MRS Clinical Profile Intake Form v3.0 — Token-Only Protocol</div>
+        <div class="panel-sub">MRS Clinical Profile Intake Form v3.0 &mdash; Token-Only Protocol</div>
         <div class="intake-wrapper">
           <div class="page-wrap">
             <div class="form-header">
-              <div class="eyebrow">Foundry One Sciences LLC — Medical Research Solitaire Engine</div>
+              <div class="eyebrow">Foundry One Sciences LLC &mdash; Medical Research Solitaire Engine</div>
               <h1>Clinical Profile Intake Form</h1>
               <div class="tagline">...&nbsp; we have not stopped looking</div>
-              <div class="doc-title">Version 3.0 &nbsp;·&nbsp; Initial Patient Consultation &nbsp;·&nbsp; Token-Only Protocol</div>
+              <div class="doc-title">Version 3.0 &nbsp;&middot;&nbsp; Initial Patient Consultation &nbsp;&middot;&nbsp; Token-Only Protocol</div>
             </div>
             <!-- ALERTS -->
 <div class="alert alert-danger">
@@ -1224,18 +1224,18 @@ textarea {
         <div class="panel-title">HIPAA &amp; Compliance</div>
         <div class="panel-sub">Current security posture and architecture overview</div>
         <div class="hipaa-grid">
-          <div class="hipaa-card"><div class="hc-icon">🔐</div><div class="hc-title">Encryption</div><div class="hc-text">AES-256 at rest · TLS 1.3 in transit. PHI never stored in plaintext. Intake Vault isolated from MRS Engine layer.</div></div>
-          <div class="hipaa-card"><div class="hc-icon">🪪</div><div class="hc-title">Authentication</div><div class="hc-text">NPI-based login with MFA enforcement. Session timeout: 15 min. Failed login lockout: 5 attempts.</div></div>
-          <div class="hipaa-card"><div class="hc-icon">⚖️</div><div class="hc-title">De-identification</div><div class="hc-text">Safe Harbor per 45 C.F.R. § 164.514(b). 18 identifiers stripped. Token assigned. PHI never enters MRS Engine.</div></div>
-          <div class="hipaa-card"><div class="hc-icon">📋</div><div class="hc-title">Audit Logging</div><div class="hc-text">Immutable event log. HIPAA retention: 6 years. Breach alert: 72-hour notification policy.</div></div>
+          <div class="hipaa-card"><div class="hc-icon">&#128272;</div><div class="hc-title">Encryption</div><div class="hc-text">AES-256 at rest &middot; TLS 1.3 in transit. PHI never stored in plaintext. Intake Vault isolated from MRS Engine layer.</div></div>
+          <div class="hipaa-card"><div class="hc-icon">&#128219;</div><div class="hc-title">Authentication</div><div class="hc-text">NPI-based login with MFA enforcement. Session timeout: 15 min. Failed login lockout: 5 attempts.</div></div>
+          <div class="hipaa-card"><div class="hc-icon">&#9878;&#65039;</div><div class="hc-title">De-identification</div><div class="hc-text">Safe Harbor per 45 C.F.R. &sect; 164.514(b). 18 identifiers stripped. Token assigned. PHI never enters MRS Engine.</div></div>
+          <div class="hipaa-card"><div class="hc-icon">&#128203;</div><div class="hc-title">Audit Logging</div><div class="hc-text">Immutable event log. HIPAA retention: 6 years. Breach alert: 72-hour notification policy.</div></div>
         </div>
         <div class="activity-card">
           <div class="ac-title">Compliance Status</div>
-          <div class="compliance-bar"><span class="cb-label">Business Associate Agreement</span><span class="cb-val">✓ Accepted &amp; on file</span></div>
-          <div class="compliance-bar"><span class="cb-label">PHI Handling Protocol</span><span class="cb-val">✓ Active</span></div>
-          <div class="compliance-bar"><span class="cb-label">SaMD Output Framing</span><span class="cb-val">✓ Enforced on all briefs</span></div>
-          <div class="compliance-bar"><span class="cb-label">Audit Log</span><span class="cb-val">✓ Running</span></div>
-          <div class="compliance-bar"><span class="cb-label">Breach Response Plan</span><span class="cb-val">✓ On file — 72h notification</span></div>
+          <div class="compliance-bar"><span class="cb-label">Business Associate Agreement</span><span class="cb-val">&#10003; Accepted &amp; on file</span></div>
+          <div class="compliance-bar"><span class="cb-label">PHI Handling Protocol</span><span class="cb-val">&#10003; Active</span></div>
+          <div class="compliance-bar"><span class="cb-label">SaMD Output Framing</span><span class="cb-val">&#10003; Enforced on all briefs</span></div>
+          <div class="compliance-bar"><span class="cb-label">Audit Log</span><span class="cb-val">&#10003; Running</span></div>
+          <div class="compliance-bar"><span class="cb-label">Breach Response Plan</span><span class="cb-val">&#10003; On file &mdash; 72h notification</span></div>
         </div>
       </div>
 
@@ -1247,35 +1247,35 @@ textarea {
   <div class="brief-modal">
     <div class="bm-header">
       <div><div class="bm-token" id="modal-token">MRS-0019</div><div class="bm-condition" id="modal-condition">Metabolic / Insulin Resistance</div></div>
-      <button class="bm-close" onclick="closeModal()">✕ Close</button>
+      <button class="bm-close" onclick="closeModal()">&#10005; Close</button>
     </div>
     <div class="bm-body">
       <div class="delivered-banner" id="modal-delivered">
-        <div class="db-icon">✓</div>
+        <div class="db-icon">&#10003;</div>
         <div class="db-text">
           <strong>Research brief securely delivered to physician email</strong>
           <span id="modal-time">fredcover@foundryonesciences.org</span>
           <span style="color:var(--gold);margin-top:.4rem;display:block;border-top:1px solid rgba(201,165,88,.2);padding-top:.4rem;">&#128206; &nbsp; Physician Billing Support Statement attached &mdash; CPT documentation for enhanced E/M and care management billing included with this delivery</span>
         </div>
       </div>
-      <div id="modal-pending-banner" style="display:none;padding:1rem 1.2rem;background:rgba(52,152,219,.06);border:1px solid rgba(52,152,219,.2);font-size:.78rem;color:var(--blue);margin-bottom:1.5rem;">⟳ &nbsp; MRS Engine processing this query.</div>
+      <div id="modal-pending-banner" style="display:none;padding:1rem 1.2rem;background:rgba(52,152,219,.06);border:1px solid rgba(52,152,219,.2);font-size:.78rem;color:var(--blue);margin-bottom:1.5rem;">&#8635; &nbsp; MRS Engine processing this query.</div>
       <div class="bm-section">
         <div class="bm-sec-title">JELLO Classification</div>
         <div class="jello-legend">
-          <div class="jl-item"><div class="jl-swatch" style="background:#e74c3c"></div>Red — Molecular</div>
-          <div class="jl-item"><div class="jl-swatch" style="background:#f1c40f"></div>Yellow — Cellular</div>
-          <div class="jl-item"><div class="jl-swatch" style="background:#2ecc71"></div>Green — Systemic</div>
-          <div class="jl-item"><div class="jl-swatch" style="background:#3498db"></div>Blue — Cross-Domain</div>
-          <div class="jl-item"><div class="jl-swatch" style="background:#9b59b6"></div>Violet — Translational</div>
+          <div class="jl-item"><div class="jl-swatch" style="background:#e74c3c"></div>Red &mdash; Molecular</div>
+          <div class="jl-item"><div class="jl-swatch" style="background:#f1c40f"></div>Yellow &mdash; Cellular</div>
+          <div class="jl-item"><div class="jl-swatch" style="background:#2ecc71"></div>Green &mdash; Systemic</div>
+          <div class="jl-item"><div class="jl-swatch" style="background:#3498db"></div>Blue &mdash; Cross-Domain</div>
+          <div class="jl-item"><div class="jl-swatch" style="background:#9b59b6"></div>Violet &mdash; Translational</div>
         </div>
         <div class="jello-bar" id="modal-jello"></div>
       </div>
       <div class="bm-section">
         <div class="bm-sec-title">Top Insights</div>
         <div class="insight-list">
-          <div class="insight-item"><div class="ii-dot" style="background:#3498db"></div><div><div class="ii-text">Cross-domain signal: GLP-1 receptor agonist pathway and peripheral nerve regeneration markers — under-explored intersection in T2DM neuropathy literature.</div><div class="ii-src">Cardio-Metabolic × Neurological · JELLO Flavor: Endocrine-Neuro</div></div></div>
-          <div class="insight-item"><div class="ii-dot" style="background:#2ecc71"></div><div><div class="ii-text">Combined berberine + metformin showed significant NCV score improvement in three independent cohorts — not yet in standard-of-care guidelines.</div><div class="ii-src">Metabolic Systemic · JELLO Flavor: Phytochemical-Pharmaceutical</div></div></div>
-          <div class="insight-item"><div class="ii-dot" style="background:#f1c40f"></div><div><div class="ii-text">Cellular insulin signaling dysregulation in Schwann cells — 2023–2024 literature suggests mitochondrial intervention window.</div><div class="ii-src">Cellular · JELLO Flavor: Mitochondrial-Neurocellular</div></div></div>
+          <div class="insight-item"><div class="ii-dot" style="background:#3498db"></div><div><div class="ii-text">Cross-domain signal: GLP-1 receptor agonist pathway and peripheral nerve regeneration markers &mdash; under-explored intersection in T2DM neuropathy literature.</div><div class="ii-src">Cardio-Metabolic &times; Neurological &middot; JELLO Flavor: Endocrine-Neuro</div></div></div>
+          <div class="insight-item"><div class="ii-dot" style="background:#2ecc71"></div><div><div class="ii-text">Combined berberine + metformin showed significant NCV score improvement in three independent cohorts &mdash; not yet in standard-of-care guidelines.</div><div class="ii-src">Metabolic Systemic &middot; JELLO Flavor: Phytochemical-Pharmaceutical</div></div></div>
+          <div class="insight-item"><div class="ii-dot" style="background:#f1c40f"></div><div><div class="ii-text">Cellular insulin signaling dysregulation in Schwann cells &mdash; 2023&ndash;2024 literature suggests mitochondrial intervention window.</div><div class="ii-src">Cellular &middot; JELLO Flavor: Mitochondrial-Neurocellular</div></div></div>
         </div>
       </div>
       <div class="bm-section">
@@ -1286,9 +1286,9 @@ textarea {
   </div>
 </div>
 
-<div id="toast"><span style="color:var(--green)">✓</span><span id="toast-msg"></span></div>
+<div id="toast"><span style="color:var(--green)">&#10003;</span><span id="toast-msg"></span></div>
 
-<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+<script>
 const cases=[
   {token:"MRS-0019",condition:"Metabolic / Insulin Resistance — T2DM w/ Peripheral Neuropathy",date:"Mar 17, 2026 · 9:14am",status:"complete",jello:["green","blue","yellow"]},
   {token:"MRS-0020",condition:"Cardiovascular Comorbidity w/ T2DM",date:"Mar 16, 2026 · 3:22pm",status:"processing",jello:["blue","red"]},
@@ -1515,4 +1515,17 @@ function addMedRow() {
 
 // Pre-populate tables with starter rows
 (function init() {
-  for (var i = 0; i < 6; i++) a
+  for (var i = 0; i < 6; i++) addLabRow('bioBody');
+  for (var i = 0; i < 5; i++) addComorbRow();
+  for (var i = 0; i < 5; i++) addTxRow();
+  for (var i = 0; i < 6; i++) addMedRow();
+  for (var i = 0; i < 6; i++) addLabRow('labBody');
+})();
+
+function handleSubmit() {
+  alert('Gate passed.\n\nIn production this submits the structured clinical profile to the MRS Engine API.\n\nPatient token, all structured data, and physician hypothesis are packaged and transmitted securely to Layer 1 for research processing.');
+}
+
+</script>
+</body>
+</html>
