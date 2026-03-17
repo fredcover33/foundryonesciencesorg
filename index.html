@@ -11,7 +11,7 @@
 html,body{height:100%;font-family:'Jost',sans-serif;font-weight:300;background:var(--navy);color:var(--white);}
 .screen{display:none;min-height:100vh;}
 .screen.active{display:flex;flex-direction:column;}
- 
+
 /* WELCOME */
 #welcome-screen{align-items:center;justify-content:center;position:relative;overflow:hidden;background:var(--navy);}
 .wb{position:absolute;inset:0;background:radial-gradient(ellipse 70% 60% at 60% 50%,rgba(201,165,88,.07) 0%,transparent 65%),linear-gradient(165deg,#080d1a 0%,#0d1426 50%,#080d1a 100%);}
@@ -30,7 +30,7 @@ html,body{height:100%;font-family:'Jost',sans-serif;font-weight:300;background:v
 .wenter:hover{background:var(--gold2);transform:translateY(-2px);gap:1.4rem;}
 .wfooter{position:absolute;bottom:1.5rem;font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);opacity:.35;z-index:2;}
 @keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
- 
+
 /* BAA */
 #baa-screen{align-items:center;justify-content:center;background:radial-gradient(ellipse 60% 60% at 50% 40%,rgba(201,165,88,.05) 0%,transparent 70%),linear-gradient(165deg,#080d1a 0%,#0d1426 60%,#080d1a 100%);padding:2rem;}
 .baa-box{width:100%;max-width:680px;border:1px solid var(--border);background:var(--navy2);position:relative;overflow:hidden;}
@@ -60,14 +60,14 @@ html,body{height:100%;font-family:'Jost',sans-serif;font-weight:300;background:v
 .btn-accept.enabled:hover{background:var(--gold2);}
 .btn-decline{padding:.8rem 1.5rem;background:none;color:var(--muted);font-family:'Jost',sans-serif;font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;border:1px solid var(--border);cursor:pointer;transition:border-color .2s,color .2s;}
 .btn-decline:hover{border-color:var(--red);color:var(--red);}
- 
+
 /* DECLINED */
 #declined-screen{align-items:center;justify-content:center;background:linear-gradient(165deg,#080d1a 0%,#0d1426 60%,#080d1a 100%);padding:2rem;text-align:center;}
 .dec-box h2{font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:300;margin-bottom:1rem;}
 .dec-box p{font-size:.85rem;color:var(--muted);line-height:1.7;margin-bottom:1.5rem;}
 .btn-back{font-size:.68rem;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);background:none;border:1px solid var(--border);padding:.7rem 1.5rem;cursor:pointer;transition:border-color .2s;}
 .btn-back:hover{border-color:var(--gold);}
- 
+
 /* LOGIN */
 #login-screen{align-items:center;justify-content:center;background:radial-gradient(ellipse 60% 60% at 50% 40%,rgba(201,165,88,.05) 0%,transparent 70%),linear-gradient(165deg,#080d1a 0%,#0d1426 60%,#080d1a 100%);padding:2rem;}
 .login-box{width:100%;max-width:440px;border:1px solid var(--border);background:var(--navy2);padding:3rem;position:relative;}
@@ -87,7 +87,7 @@ html,body{height:100%;font-family:'Jost',sans-serif;font-weight:300;background:v
 .hipaa-text{font-size:.72rem;color:var(--muted);line-height:1.6;}
 .hipaa-text strong{color:rgba(245,242,236,.7);}
 .login-footer{font-size:.6rem;color:var(--muted);opacity:.4;text-align:center;margin-top:1.5rem;line-height:1.7;}
- 
+
 /* DASHBOARD */
 #dashboard-screen{flex-direction:column;}
 .topbar{display:flex;align-items:center;justify-content:space-between;padding:.9rem 2rem;background:var(--navy2);border-bottom:1px solid var(--border);flex-shrink:0;}
@@ -131,7 +131,7 @@ html,body{height:100%;font-family:'Jost',sans-serif;font-weight:300;background:v
 .ac-dot.gold{background:var(--gold);}.ac-dot.green{background:var(--green);}.ac-dot.blue{background:var(--blue);}.ac-dot.muted{background:var(--muted);opacity:.4;}
 .ac-text{flex:1;font-size:.78rem;color:rgba(245,242,236,.8);}
 .ac-time{font-size:.65rem;color:var(--muted);opacity:.6;flex-shrink:0;}
- 
+
 /* INTAKE */
 .intake-card{background:var(--navy2);border:1px solid var(--border);padding:2rem;margin-bottom:1.5rem;}
 .intake-card-title{font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-bottom:1.2rem;display:flex;align-items:center;gap:.6rem;}
@@ -170,7 +170,7 @@ html,body{height:100%;font-family:'Jost',sans-serif;font-weight:300;background:v
 .is-sub{font-size:.8rem;color:var(--muted);line-height:1.7;margin-bottom:1.5rem;}
 .is-token{display:inline-block;font-size:.85rem;letter-spacing:.15em;color:var(--gold);border:1px solid var(--border);padding:.5rem 1.5rem;}
 .btn-new{margin-top:1.5rem;padding:.7rem 2rem;background:none;color:var(--gold);border:1px solid var(--border);font-family:'Jost',sans-serif;font-size:.72rem;letter-spacing:.15em;text-transform:uppercase;cursor:pointer;}
- 
+
 /* CASES */
 .cases-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;}
 .cases-filter{display:flex;gap:.5rem;}
@@ -193,7 +193,7 @@ html,body{height:100%;font-family:'Jost',sans-serif;font-weight:300;background:v
 .status-dot.complete{background:var(--green);}.status-dot.processing{background:var(--blue);}.status-dot.pending{background:var(--muted);}
 .case-chevron{color:var(--muted);font-size:.8rem;}
 .case-card:hover .case-chevron{color:var(--gold);}
- 
+
 /* BRIEF MODAL */
 .modal-overlay{position:fixed;inset:0;background:rgba(8,13,26,.85);z-index:100;display:none;align-items:center;justify-content:center;padding:1.5rem;}
 .modal-overlay.open{display:flex;}
@@ -231,7 +231,7 @@ html,body{height:100%;font-family:'Jost',sans-serif;font-weight:300;background:v
 .ii-src{font-size:.65rem;color:var(--muted);margin-top:.2rem;}
 .samd-notice{font-size:.7rem;color:var(--muted);line-height:1.7;border:1px solid var(--border);padding:1rem;background:rgba(0,0,0,.15);}
 .samd-notice strong{color:rgba(245,242,236,.6);}
- 
+
 /* HIPAA */
 .hipaa-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.5rem;}
 .hipaa-card{background:var(--navy2);border:1px solid var(--border);padding:1.3rem;}
@@ -241,14 +241,401 @@ html,body{height:100%;font-family:'Jost',sans-serif;font-weight:300;background:v
 .compliance-bar{background:var(--navy2);border:1px solid var(--border);padding:1.2rem 1.5rem;display:flex;align-items:center;justify-content:space-between;margin-bottom:.6rem;}
 .cb-label{font-size:.75rem;color:var(--muted);}
 .cb-val{font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--green);}
- 
+
+/* ── MRS INTAKE FORM STYLES ── */
+.intake-wrapper{background:#EFEFEC;padding:1.5rem;margin:-2rem;}
+
+:root {
+  --navy: #1B2A4A;
+  --navy-mid: #243560;
+  --gold: #C9A84C;
+  --gold-lt: #FEF9EE;
+  --gold-dk: #7B5E00;
+  --red: #C0392B;
+  --red-lt: #FFF0F0;
+  --blue: #2980B9;
+  --blue-lt: #EBF5FF;
+  --green: #27AE60;
+  --gray: #4A4A4A;
+  --lgray: #F7F7F5;
+  --border: #D8D8D4;
+  --white: #FFFFFF;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 16px; }
+body {
+  font-family: 'Source Sans 3', sans-serif;
+  font-weight: 400;
+  background: #EFEFEC;
+  color: var(--gray);
+  line-height: 1.6;
+  padding: 2rem 1rem;
+}
+.page-wrap { max-width: 1100px; margin: 0 auto; }
+
+/* ── HEADER ── */
+.form-header {
+  background: var(--navy);
+  border-radius: 12px 12px 0 0;
+  padding: 2rem 2.5rem 1.75rem;
+  border-bottom: 4px solid var(--gold);
+}
+.form-header .eyebrow {
+  font-size: 11px;
+  letter-spacing: .18em;
+  text-transform: uppercase;
+  color: #8899BB;
+  margin-bottom: .5rem;
+}
+.form-header h1 {
+  font-family: 'Libre Baskerville', serif;
+  font-size: 28px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: .35rem;
+}
+.form-header .tagline {
+  font-size: 14px;
+  font-style: italic;
+  color: var(--gold);
+  margin-bottom: 1rem;
+}
+.form-header .doc-title {
+  display: inline-block;
+  background: var(--gold);
+  color: var(--navy);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  padding: .35rem 1rem;
+  border-radius: 4px;
+}
+
+/* ── ALERTS ── */
+.alert {
+  padding: 1rem 1.5rem;
+  font-size: 14px;
+  line-height: 1.55;
+  font-weight: 500;
+}
+.alert-danger { background: var(--red-lt); border-left: 5px solid var(--red); color: var(--red); }
+.alert-info { background: var(--gold-lt); border-left: 5px solid var(--gold); color: #5A3E00; font-weight: 400; }
+.alert-blue { background: var(--blue-lt); border-left: 4px solid var(--blue); color: #1A4F72; font-weight: 400; }
+.alert-gate {
+  background: #FFFBF0;
+  border: 2px solid var(--gold);
+  border-radius: 8px;
+  padding: 1rem 1.25rem;
+  font-size: 14px;
+  color: #5A3E00;
+  line-height: 1.55;
+}
+.alert-gate strong { display: block; color: var(--red); font-size: 14px; margin-bottom: .4rem; }
+
+/* ── SECTION ── */
+.section {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-top: none;
+}
+.section:first-of-type { border-top: 1px solid var(--border); }
+.section-header {
+  background: var(--navy);
+  padding: .9rem 1.75rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+.sec-label {
+  font-size: 11px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--gold);
+  font-weight: 600;
+  white-space: nowrap;
+}
+.section-header h2 {
+  font-family: 'Libre Baskerville', serif;
+  font-size: 16px;
+  font-weight: 400;
+  color: #fff;
+}
+.section-header .sec-note {
+  font-size: 12px;
+  color: #8899BB;
+  font-style: italic;
+  margin-left: auto;
+}
+.section-body { padding: 1.75rem 2rem; }
+.section-body > * + * { margin-top: 1.25rem; }
+
+/* anomaly section */
+.anomaly-header { background: var(--red) !important; }
+.anomaly-header .sec-label { color: #FFCDD2 !important; }
+
+/* gate section */
+.gate-header { background: var(--gold) !important; }
+.gate-header .sec-label { color: #4A2E00 !important; }
+.gate-header h2 { color: #1A1200 !important; }
+.gate-header .sec-note { color: #6B4E10 !important; }
+
+/* ── FORM FIELDS ── */
+.field { margin-bottom: 1.25rem; }
+.field:last-child { margin-bottom: 0; }
+.field label {
+  display: block;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--navy);
+  margin-bottom: .4rem;
+}
+.field label .req { color: var(--red); margin-left: 3px; }
+.field label .note {
+  display: block;
+  font-size: 12px;
+  font-weight: 400;
+  color: #888;
+  margin-top: 2px;
+  line-height: 1.4;
+}
+.field label .min-note {
+  display: inline-block;
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--red);
+  margin-left: 6px;
+}
+
+input[type="text"],
+input[type="number"],
+input[type="date"],
+select,
+textarea {
+  width: 100%;
+  padding: .6rem .85rem;
+  font-size: 14px;
+  font-family: 'Source Sans 3', sans-serif;
+  border: 1.5px solid var(--border);
+  border-radius: 6px;
+  background: var(--white);
+  color: var(--gray);
+  transition: border-color .15s, box-shadow .15s;
+  appearance: auto;
+}
+input[type="text"]:focus,
+input[type="number"]:focus,
+input[type="date"]:focus,
+select:focus,
+textarea:focus {
+  outline: none;
+  border-color: var(--navy);
+  box-shadow: 0 0 0 3px rgba(27,42,74,.1);
+}
+textarea {
+  resize: vertical;
+  line-height: 1.65;
+  min-height: 90px;
+}
+
+/* grid layouts */
+.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
+.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.25rem; }
+.grid-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 1rem; }
+@media (max-width: 700px) {
+  .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+}
+
+/* radio / checkbox groups */
+.radio-group, .check-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: .55rem 1.1rem;
+  margin-top: .35rem;
+}
+.radio-group label, .check-group label {
+  display: flex;
+  align-items: center;
+  gap: .4rem;
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--gray);
+  cursor: pointer;
+  white-space: nowrap;
+}
+.radio-group input[type="radio"],
+.check-group input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+  cursor: pointer;
+  accent-color: var(--navy);
+}
+
+/* word counter */
+.wc-wrap {
+  display: flex;
+  align-items: center;
+  gap: .6rem;
+  margin-top: .35rem;
+  font-size: 12.5px;
+}
+.wc-text { font-weight: 600; }
+.wc-ok { color: var(--green); }
+.wc-warn { color: var(--red); }
+.wc-neutral { color: #888; }
+.wc-bar-bg {
+  flex: 1;
+  height: 5px;
+  background: #E0E0DC;
+  border-radius: 5px;
+  overflow: hidden;
+  max-width: 200px;
+}
+.wc-bar-fill { height: 100%; border-radius: 5px; transition: width .2s, background .2s; }
+
+/* ── TABLES ── */
+.data-table-wrap { overflow-x: auto; }
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13.5px;
+  table-layout: fixed;
+}
+.data-table th {
+  background: var(--navy);
+  color: #fff;
+  font-weight: 600;
+  font-size: 12.5px;
+  padding: .6rem .75rem;
+  text-align: left;
+  white-space: nowrap;
+}
+.data-table td {
+  padding: .2rem .3rem;
+  border-bottom: 1px solid #EBEBEB;
+  vertical-align: middle;
+}
+.data-table tr:nth-child(even) td { background: var(--lgray); }
+.data-table td input,
+.data-table td select {
+  border: none;
+  background: transparent;
+  font-size: 13.5px;
+  padding: .3rem .4rem;
+  width: 100%;
+  border-radius: 4px;
+}
+.data-table td input:focus,
+.data-table td select:focus {
+  background: #EEF3FB;
+  border: 1px solid var(--navy);
+  outline: none;
+  box-shadow: none;
+}
+.del-btn {
+  background: none;
+  border: none;
+  color: #CCC;
+  font-size: 16px;
+  cursor: pointer;
+  padding: .2rem .4rem;
+  border-radius: 4px;
+  transition: color .15s;
+}
+.del-btn:hover { color: var(--red); }
+.add-row-btn {
+  background: none;
+  border: 1px dashed var(--border);
+  color: var(--blue);
+  font-size: 13px;
+  font-family: 'Source Sans 3', sans-serif;
+  cursor: pointer;
+  padding: .4rem .85rem;
+  border-radius: 5px;
+  margin-top: .5rem;
+  transition: background .15s, border-color .15s;
+}
+.add-row-btn:hover { background: var(--blue-lt); border-color: var(--blue); }
+
+/* familial matrix */
+.fam-table { width: 100%; border-collapse: collapse; font-size: 13.5px; table-layout: fixed; }
+.fam-table th {
+  background: var(--navy);
+  color: #fff;
+  font-size: 12.5px;
+  font-weight: 600;
+  padding: .6rem .6rem;
+  text-align: center;
+}
+.fam-table th:first-child { text-align: left; padding-left: .85rem; }
+.fam-table td {
+  padding: .35rem .5rem;
+  border-bottom: 1px solid #EBEBEB;
+  text-align: center;
+  vertical-align: middle;
+}
+.fam-table td:first-child { text-align: left; font-size: 13.5px; padding-left: .85rem; }
+.fam-table tr:nth-child(even) td { background: var(--lgray); }
+.fam-table td input,
+.fam-table td select {
+  font-size: 13px;
+  padding: .3rem .4rem;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  width: 100%;
+  background: var(--white);
+}
+.fam-table td input:focus,
+.fam-table td select:focus { border-color: var(--navy); outline: none; }
+
+/* ── SUBMIT AREA ── */
+.submit-area {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-top: none;
+  border-radius: 0 0 12px 12px;
+  padding: 2rem;
+  text-align: center;
+}
+.submit-btn {
+  background: var(--navy);
+  color: #fff;
+  border: none;
+  padding: .9rem 3rem;
+  font-size: 16px;
+  font-family: 'Source Sans 3', sans-serif;
+  font-weight: 600;
+  border-radius: 8px;
+  cursor: pointer;
+  letter-spacing: .04em;
+  transition: background .2s, opacity .2s;
+}
+.submit-btn:hover:not(:disabled) { background: var(--navy-mid); }
+.submit-btn:disabled { opacity: .35; cursor: not-allowed; }
+.gate-status {
+  font-size: 13.5px;
+  color: #888;
+  margin-top: .85rem;
+  display: flex;
+  justify-content: center;
+  gap: 1.25rem;
+  flex-wrap: wrap;
+}
+.g-ok { color: var(--green); font-weight: 600; }
+.g-bad { color: var(--red); font-weight: 600; }
+
+/* divider */
+.divider { border: none; border-top: 1px solid var(--border); margin: 1.25rem 0; }
+
 /* TOAST */
 #toast{position:fixed;bottom:2rem;right:2rem;background:var(--navy3);border:1px solid rgba(46,204,113,.4);color:var(--white);padding:1rem 1.5rem;font-size:.8rem;display:flex;gap:.8rem;align-items:center;transform:translateY(100px);opacity:0;transition:all .4s;z-index:999;}
 #toast.show{transform:translateY(0);opacity:1;}
 </style>
 </head>
 <body>
- 
+
 <!-- WELCOME -->
 <div id="welcome-screen" class="screen active">
   <div class="wb"></div>
@@ -268,7 +655,7 @@ html,body{height:100%;font-family:'Jost',sans-serif;font-weight:300;background:v
   </div>
   <div class="wfooter">Foundry One Sciences LLC &nbsp;·&nbsp; Delaware &nbsp;·&nbsp; SDVOSB &nbsp;·&nbsp; Micro Entity</div>
 </div>
- 
+
 <!-- BAA -->
 <div id="baa-screen" class="screen">
   <div style="display:flex;align-items:center;justify-content:center;min-height:100vh;padding:2rem;background:radial-gradient(ellipse 60% 60% at 50% 40%,rgba(201,165,88,.05) 0%,transparent 70%),linear-gradient(165deg,#080d1a 0%,#0d1426 60%,#080d1a 100%);">
@@ -316,17 +703,17 @@ html,body{height:100%;font-family:'Jost',sans-serif;font-weight:300;background:v
   </div>
   </div>
 </div>
- 
+
 <!-- DECLINED -->
 <div id="declined-screen" class="screen" style="align-items:center;justify-content:center;background:linear-gradient(165deg,#080d1a 0%,#0d1426 60%,#080d1a 100%);text-align:center;">
   <div class="dec-box">
     <h2>Access Not Granted</h2>
     <p>You must accept the Business Associate Agreement to access the Foundry One Sciences Physician Portal. This requirement is mandated by federal law under HIPAA.</p>
-    <p>Questions? Contact: <strong style="color:var(--white)">fredcover@foundryonesciences.org</strong></p>
+    <p>Questions? Contact: <strong style="color:var(--white)"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="99ffebfcfdfaf6effcebd9fff6ecf7fdebe0f6f7fceafaf0fcf7fafceab7f6ebfe">[email&#160;protected]</a></strong></p>
     <button class="btn-back" onclick="showScreen('baa-screen')">← Return to Agreement</button>
   </div>
 </div>
- 
+
 <!-- LOGIN -->
 <div id="login-screen" class="screen">
   <div style="display:flex;align-items:center;justify-content:center;min-height:100vh;padding:2rem;background:radial-gradient(ellipse 60% 60% at 50% 40%,rgba(201,165,88,.05) 0%,transparent 70%),linear-gradient(165deg,#080d1a 0%,#0d1426 60%,#080d1a 100%);">
@@ -343,11 +730,11 @@ html,body{height:100%;font-family:'Jost',sans-serif;font-weight:300;background:v
       <div style="font-size:1rem;flex-shrink:0">🔒</div>
       <div class="hipaa-text"><strong>HIPAA Compliant Environment.</strong> All sessions are encrypted end-to-end. PHI is handled under your active Business Associate Agreement.</div>
     </div>
-    <div class="login-footer">Foundry One Sciences LLC · Delaware · SDVOSB · Micro Entity<br>Access requests: fredcover@foundryonesciences.org</div>
+    <div class="login-footer">Foundry One Sciences LLC · Delaware · SDVOSB · Micro Entity<br>Access requests: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="4127332425222e37243301272e342f2533382e2f24322228242f2224326f2e3326">[email&#160;protected]</a></div>
   </div>
   </div>
 </div>
- 
+
 <!-- DASHBOARD -->
 <div id="dashboard-screen" class="screen">
   <div class="topbar">
@@ -370,7 +757,7 @@ html,body{height:100%;font-family:'Jost',sans-serif;font-weight:300;background:v
       <div class="sidebar-item" onclick="showPanel('hipaa',this)"><span class="si-icon">⊛</span> HIPAA &amp; Compliance</div>
     </div>
     <div class="dash-main">
- 
+
       <!-- OVERVIEW -->
       <div class="dash-panel active" id="panel-overview">
         <div class="panel-title">Overview</div>
@@ -390,79 +777,501 @@ html,body{height:100%;font-family:'Jost',sans-serif;font-weight:300;background:v
           <div class="ac-item"><div class="ac-dot muted"></div><div class="ac-text">Practice enrolled — BAA accepted and on file</div><div class="ac-time">Mar 10</div></div>
         </div>
       </div>
- 
+
       <!-- INTAKE -->
       <div class="dash-panel" id="panel-intake">
         <div class="panel-title">New Patient Query</div>
-        <div class="panel-sub">Complete all fields. PHI is de-identified before entering the MRS Engine.</div>
-        <div id="intake-form-body">
-          <div class="intake-card">
-            <div class="intake-card-title">Patient Information</div>
-            <div class="intake-grid three">
-              <div class="if-group"><label>First Name</label><input type="text" placeholder="Jane"></div>
-              <div class="if-group"><label>Last Name</label><input type="text" placeholder="Doe"></div>
-              <div class="if-group"><label>Date of Birth</label><input type="date"></div>
+        <div class="panel-sub">MRS Clinical Profile Intake Form v3.0 — Token-Only Protocol</div>
+        <div class="intake-wrapper">
+          <div class="page-wrap">
+            <div class="form-header">
+              <div class="eyebrow">Foundry One Sciences LLC — Medical Research Solitaire Engine</div>
+              <h1>Clinical Profile Intake Form</h1>
+              <div class="tagline">...&nbsp; we have not stopped looking</div>
+              <div class="doc-title">Version 3.0 &nbsp;·&nbsp; Initial Patient Consultation &nbsp;·&nbsp; Token-Only Protocol</div>
             </div>
-            <div class="intake-grid" style="margin-top:1rem;">
-              <div class="if-group"><label>Patient ID / Chart #</label><input type="text" placeholder="Practice chart number (stays local, not uploaded)"></div>
-              <div class="if-group"><label>Insurance / Payer (optional)</label><input type="text" placeholder="Aetna, Medicare, etc."></div>
-            </div>
-          </div>
-          <div class="intake-card">
-            <div class="intake-card-title">Clinical Profile</div>
-            <div class="intake-grid">
-              <div class="if-group"><label>Primary Condition / Chief Complaint</label><input type="text" placeholder="e.g. Type 2 Diabetes w/ peripheral neuropathy"></div>
-              <div class="if-group"><label>Secondary Conditions</label><input type="text" placeholder="e.g. Hypertension, Obesity (BMI 34)"></div>
-            </div>
-            <div class="intake-grid full" style="margin-top:1rem;">
-              <div class="if-group"><label>Current Medications (list all)</label><textarea placeholder="Metformin 1000mg BID&#10;Lisinopril 10mg QD&#10;Atorvastatin 40mg QHS&#10;…"></textarea></div>
-            </div>
-            <div class="intake-grid" style="margin-top:1rem;">
-              <div class="if-group"><label>Known Allergies</label><input type="text" placeholder="NKDA, or list drug / substance allergies"></div>
-              <div class="if-group"><label>Relevant Labs (summary)</label><input type="text" placeholder="HbA1c 9.2%, eGFR 58, LDL 112"></div>
-            </div>
-            <div class="intake-grid full" style="margin-top:1rem;">
-              <div class="if-group"><label>Specific Research Question (optional)</label><textarea style="min-height:65px" placeholder="e.g. Are there emerging combinatorial protocols for GLP-1 step-down in insulin-resistant T2DM with renal compromise?"></textarea></div>
-            </div>
-          </div>
-          <div class="intake-card">
-            <div class="intake-card-title">Supporting Documents</div>
-            <div class="upload-zone" onclick="simulateUpload(this)">
-              <div class="upload-icon">↑</div>
-              <div class="upload-text">Click to attach lab reports, imaging notes, or prior records<br><strong>Accepted: PDF, JPG, PNG · Max 25MB per file</strong><br>Files are encrypted on upload and never stored in identifiable form.</div>
-            </div>
-            <div id="file-list" style="margin-top:.8rem;display:flex;flex-direction:column;gap:.4rem;"></div>
-          </div>
-          <div class="intake-card">
-            <div class="intake-card-title">Urgency Level</div>
-            <div class="urgency-row">
-              <button class="urgency-btn sel-routine" onclick="setUrgency(this,'routine')">Routine (48–72h)</button>
-              <button class="urgency-btn" onclick="setUrgency(this,'priority')">Priority (24h)</button>
-              <button class="urgency-btn" onclick="setUrgency(this,'urgent')">Urgent (&lt;12h)</button>
-            </div>
-          </div>
-          <div class="intake-card">
-            <div class="intake-card-title">Patient Authorization</div>
-            <div class="consent-block">
-              <div class="consent-row"><input type="checkbox" id="con1"><label for="con1">Patient has provided written HIPAA authorization for this research query (signed form on file at practice).</label></div>
-              <div class="consent-row"><input type="checkbox" id="con2"><label for="con2">I confirm that submitting this query is within the scope of care for this patient and is clinically appropriate.</label></div>
-            </div>
-          </div>
-          <div class="submit-bar" style="margin-top:1.2rem;">
-            <div class="submit-note">🔒 Data is encrypted in transit · PHI de-identified before MRS Engine entry</div>
-            <button class="btn-submit" onclick="submitIntake()">Submit Query →</button>
-          </div>
-        </div>
-        <div class="intake-success" id="intake-success">
-          <div class="is-icon">✓</div>
-          <div class="is-title">Query Submitted Successfully</div>
-          <div class="is-sub">Patient PHI has been de-identified and passed to the MRS Engine queue.<br>The physician will receive the research brief by secure email within the selected timeframe.</div>
-          <div class="is-token" id="new-token">MRS-0022</div>
-          <div style="margin-top:.8rem;font-size:.7rem;color:var(--muted);">Case token assigned · Track status in Active Cases</div>
-          <button class="btn-new" onclick="resetIntake()">← Submit Another Query</button>
+            <form id="intakeForm" novalidate>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!-- SECTION A -->
+<div class="section">
+  <div class="section-header">
+    <span class="sec-label">Section A</span>
+    <h2>For Office Use Only</h2>
+    <span class="sec-note">Completed by staff before handing to physician</span>
+  </div>
+  <div class="section-body">
+    <div class="grid-2">
+      <div class="field">
+        <label>Patient Token <span class="req">*</span>
+          <span class="note">Physician-assigned alphanumeric code only — no patient name (e.g. 7842 or PT-2026-001)</span>
+        </label>
+        <input type="text" placeholder="e.g. PT-2026-001">
+      </div>
+      <div class="field">
+        <label>Submission Date <span class="req">*</span></label>
+        <input type="date">
+      </div>
+    </div>
+    <div class="grid-2">
+      <div class="field">
+        <label>Practice ID <span class="req">*</span>
+          <span class="note">Assigned by Foundry One Sciences at onboarding</span>
+        </label>
+        <input type="text" placeholder="Practice ID">
+      </div>
+      <div class="field">
+        <label>Submitting Staff Initials
+          <span class="note">2–4 initials for audit record</span>
+        </label>
+        <input type="text" placeholder="e.g. JKL" maxlength="4">
+      </div>
+    </div>
+    <div class="field">
+      <label>Receiving Physician Name <span class="req">*</span></label>
+      <input type="text" placeholder="Licensed physician who will receive the research output">
+    </div>
+    <div class="grid-2">
+      <div class="field">
+        <label>Submission Priority <span class="req">*</span></label>
+        <div class="radio-group">
+          <label><input type="radio" name="priority" value="standard"> Standard (24–48 hr)</label>
+          <label><input type="radio" name="priority" value="urgent"> Urgent (same day)</label>
+          <label><input type="radio" name="priority" value="routine"> Routine (weekly batch)</label>
         </div>
       </div>
- 
+      <div class="field">
+        <label>Output Focus Requested</label>
+        <div class="check-group">
+          <label><input type="checkbox"> Drug interactions</label>
+          <label><input type="checkbox"> Emerging treatments</label>
+          <label><input type="checkbox"> Cross-domain scan</label>
+          <label><input type="checkbox"> Caution signal</label>
+          <label><input type="checkbox"> Full analysis</label>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!-- SECTION B -->
+<div class="section">
+  <div class="section-header">
+    <span class="sec-label">Section B</span>
+    <h2>Primary Clinical Presentation</h2>
+    <span class="sec-note">Completed by the physician</span>
+  </div>
+  <div class="section-body">
+    <div class="alert alert-blue">Write as you would for a specialist colleague seeing this patient for the first time. Minimum word counts are enforced on narrative fields and shown below each one. The engine reads your clinical language directly — specificity and detail produce better output.</div>
+
+    <div class="field">
+      <label>B.1 — Primary Diagnosis <span class="req">*</span>
+        <span class="note">Confirmed or working diagnosis. Include any diagnostic uncertainty. <span class="min-note">Minimum 25 words</span></span>
+      </label>
+      <textarea id="b1" rows="4" placeholder="Enter primary diagnosis and any relevant diagnostic context, including the degree of certainty and any differential considerations..." oninput="countWords('b1','wc_b1',25)"></textarea>
+      <div class="wc-wrap" id="wc_b1"></div>
+    </div>
+
+    <div class="grid-3">
+      <div class="field">
+        <label>B.2 — ICD-10 Code <span class="req">*</span>
+          <span class="note">e.g. E11.9</span>
+        </label>
+        <input type="text" placeholder="ICD-10 code">
+      </div>
+      <div class="field">
+        <label>B.3 — Duration / Onset <span class="req">*</span>
+          <span class="note">e.g. since March 2022</span>
+        </label>
+        <input type="text" placeholder="How long present?">
+      </div>
+      <div class="field">
+        <label>Duration in Months
+          <span class="note">Numeric — for engine classification</span>
+        </label>
+        <input type="number" min="0" placeholder="e.g. 36">
+      </div>
+    </div>
+
+    <div class="grid-2">
+      <div class="field">
+        <label>B.4 — Condition Status <span class="req">*</span></label>
+        <div class="radio-group">
+          <label><input type="radio" name="b4"> Active / Ongoing</label>
+          <label><input type="radio" name="b4"> In Remission</label>
+          <label><input type="radio" name="b4"> Newly Diagnosed (&lt;6 mo)</label>
+          <label><input type="radio" name="b4"> Chronic / Stable</label>
+          <label><input type="radio" name="b4"> Acute / Unstable</label>
+        </div>
+      </div>
+      <div class="field">
+        <label>B.5 — Primary Disease Domain <span class="req">*</span></label>
+        <div class="radio-group">
+          <label><input type="radio" name="b5"> Oncology</label>
+          <label><input type="radio" name="b5"> Cardiovascular</label>
+          <label><input type="radio" name="b5"> Neurological</label>
+          <label><input type="radio" name="b5"> Metabolic</label>
+          <label><input type="radio" name="b5"> Ophthalmologic</label>
+          <label><input type="radio" name="b5"> Infectious</label>
+          <label><input type="radio" name="b5"> Multi-domain</label>
+        </div>
+      </div>
+    </div>
+
+    <div class="field">
+      <label>B.6 — Key Biomarkers and Vital Signs <span class="req">*</span>
+        <span class="note">Numeric values only in the Value column. Do not use text in the Value field. &nbsp; Flag: H = High &nbsp; L = Low &nbsp; C = Critical &nbsp; N = Normal</span>
+      </label>
+      <div class="data-table-wrap">
+        <table class="data-table" id="bioTable">
+          <colgroup>
+            <col style="width:26%"><col style="width:12%"><col style="width:9%"><col style="width:18%"><col style="width:13%"><col style="width:9%"><col style="width:13%">
+          </colgroup>
+          <thead><tr><th>Biomarker / Vital Sign</th><th>Value</th><th>Unit</th><th>Reference Range</th><th>Date</th><th>Flag</th><th>Delete</th></tr></thead>
+          <tbody id="bioBody"></tbody>
+        </table>
+      </div>
+      <button type="button" class="add-row-btn" onclick="addLabRow('bioBody')">+ Add biomarker row</button>
+    </div>
+
+    <div class="field">
+      <label>B.7 — Secondary Conditions and Comorbidities <span class="req">*</span>
+        <span class="note">List all — include conditions that seem unrelated. The engine decides what is relevant. Include duration for each.</span>
+      </label>
+      <div class="data-table-wrap">
+        <table class="data-table" id="comorbTable">
+          <colgroup>
+            <col style="width:32%"><col style="width:13%"><col style="width:13%"><col style="width:18%"><col style="width:16%"><col style="width:8%">
+          </colgroup>
+          <thead><tr><th>Condition / Diagnosis</th><th>ICD-10</th><th>Duration (months)</th><th>Domain</th><th>Status</th><th>Del</th></tr></thead>
+          <tbody id="comorbBody"></tbody>
+        </table>
+      </div>
+      <button type="button" class="add-row-btn" onclick="addComorbRow()">+ Add condition</button>
+    </div>
+
+    <div class="field">
+      <label>B.8 — Treatment History and Failures <span class="req">*</span>
+        <span class="note">List every treatment tried — failed, discontinued, and partially effective. Treatment failures are the most valuable signal in the engine. Do not summarize — list individually.</span>
+      </label>
+      <div class="data-table-wrap">
+        <table class="data-table" id="txTable">
+          <colgroup>
+            <col style="width:27%"><col style="width:11%"><col style="width:16%"><col style="width:27%"><col style="width:14%"><col style="width:5%">
+          </colgroup>
+          <thead><tr><th>Treatment / Intervention</th><th>Duration (mo)</th><th>Outcome</th><th>Why Discontinued</th><th>Specialty</th><th>Del</th></tr></thead>
+          <tbody id="txBody"></tbody>
+        </table>
+      </div>
+      <button type="button" class="add-row-btn" onclick="addTxRow()">+ Add treatment</button>
+    </div>
+
+    <div class="field">
+      <label>B.9 — Familial Pattern Matrix <span class="req">*</span>
+        <span class="note">Complete every row. Use "Unknown" for adopted patients or unknown history. Do not leave blank — Unknown ≠ None and is clinically significant.</span>
+      </label>
+      <div class="data-table-wrap">
+        <table class="fam-table">
+          <colgroup>
+            <col style="width:22%"><col style="width:11%"><col style="width:11%"><col style="width:12%"><col style="width:14%"><col style="width:13%"><col style="width:17%">
+          </colgroup>
+          <thead>
+            <tr>
+              <th>Condition</th><th>Father</th><th>Mother</th><th>Sibling(s)</th><th>Grandparent(s)</th><th>Age of Onset</th><th>Unknown / N/A</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Cancer — specify type</td>
+              <td><input type="text" placeholder="specify type"></td>
+              <td><input type="text" placeholder="specify type"></td>
+              <td><input type="text" placeholder="specify type"></td>
+              <td><input type="text" placeholder="specify type"></td>
+              <td><input type="number" min="0" max="120" placeholder="age"></td>
+              <td><select><option value="">—</option><option>Unknown</option><option>N/A</option></select></td>
+            </tr>
+            <tr>
+              <td>Cardiovascular disease</td>
+              <td><select><option>—</option><option>Yes</option><option>No</option></select></td>
+              <td><select><option>—</option><option>Yes</option><option>No</option></select></td>
+              <td><select><option>—</option><option>Yes</option><option>No</option></select></td>
+              <td><select><option>—</option><option>Yes</option><option>No</option></select></td>
+              <td><input type="number" min="0" max="120" placeholder="age"></td>
+              <td><select><option value="">—</option><option>Unknown</option><option>N/A</option></select></td>
+            </tr>
+            <tr>
+              <td>Neurological disorder</td>
+              <td><select><option>—</option><option>Yes</option><option>No</option></select></td>
+              <td><select><option>—</option><option>Yes</option><option>No</option></select></td>
+              <td><select><option>—</option><option>Yes</option><option>No</option></select></td>
+              <td><select><option>—</option><option>Yes</option><option>No</option></select></td>
+              <td><input type="number" min="0" max="120" placeholder="age"></td>
+              <td><select><option value="">—</option><option>Unknown</option><option>N/A</option></select></td>
+            </tr>
+            <tr>
+              <td>Metabolic / Diabetes</td>
+              <td><select><option>—</option><option>Yes</option><option>No</option></select></td>
+              <td><select><option>—</option><option>Yes</option><option>No</option></select></td>
+              <td><select><option>—</option><option>Yes</option><option>No</option></select></td>
+              <td><select><option>—</option><option>Yes</option><option>No</option></select></td>
+              <td><input type="number" min="0" max="120" placeholder="age"></td>
+              <td><select><option value="">—</option><option>Unknown</option><option>N/A</option></select></td>
+            </tr>
+            <tr>
+              <td>Autoimmune condition</td>
+              <td><select><option>—</option><option>Yes</option><option>No</option></select></td>
+              <td><select><option>—</option><option>Yes</option><option>No</option></select></td>
+              <td><select><option>—</option><option>Yes</option><option>No</option></select></td>
+              <td><select><option>—</option><option>Yes</option><option>No</option></select></td>
+              <td><input type="number" min="0" max="120" placeholder="age"></td>
+              <td><select><option value="">—</option><option>Unknown</option><option>N/A</option></select></td>
+            </tr>
+            <tr>
+              <td>Mental health condition</td>
+              <td><select><option>—</option><option>Yes</option><option>No</option></select></td>
+              <td><select><option>—</option><option>Yes</option><option>No</option></select></td>
+              <td><select><option>—</option><option>Yes</option><option>No</option></select></td>
+              <td><select><option>—</option><option>Yes</option><option>No</option></select></td>
+              <td><input type="number" min="0" max="120" placeholder="age"></td>
+              <td><select><option value="">—</option><option>Unknown</option><option>N/A</option></select></td>
+            </tr>
+            <tr>
+              <td>Rare / genetic disorder</td>
+              <td><select><option>—</option><option>Yes</option><option>No</option></select></td>
+              <td><select><option>—</option><option>Yes</option><option>No</option></select></td>
+              <td><select><option>—</option><option>Yes</option><option>No</option></select></td>
+              <td><select><option>—</option><option>Yes</option><option>No</option></select></td>
+              <td><input type="number" min="0" max="120" placeholder="age"></td>
+              <td><select><option value="">—</option><option>Unknown</option><option>N/A</option></select></td>
+            </tr>
+            <tr>
+              <td>Other — specify</td>
+              <td><input type="text" placeholder="specify"></td>
+              <td><input type="text" placeholder="specify"></td>
+              <td><input type="text" placeholder="specify"></td>
+              <td><input type="text" placeholder="specify"></td>
+              <td><input type="number" min="0" max="120" placeholder="age"></td>
+              <td><select><option value="">—</option><option>Unknown</option><option>N/A</option></select></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div style="margin-top:.85rem">
+        <label>Genetic Testing</label>
+        <div class="radio-group">
+          <label><input type="radio" name="genetics"> Not performed</label>
+          <label><input type="radio" name="genetics"> Performed — results attached</label>
+          <label><input type="radio" name="genetics"> Pending</label>
+          <label><input type="radio" name="genetics"> Declined by patient</label>
+          <label><input type="radio" name="genetics"> Unknown</label>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!-- SECTION B.10 — ANOMALY -->
+<div class="section">
+  <div class="section-header anomaly-header">
+    <span class="sec-label">B.10 — Clinical Anomaly</span>
+    <h2 style="color:#fff">The One Finding That Does Not Fit</h2>
+    <span class="sec-note" style="color:#FFCDD2">Minimum 50 words — primary trigger for caution signal</span>
+  </div>
+  <div class="section-body">
+    <div class="alert-gate">
+      <strong>Highest-value field on this form — minimum 50 words required</strong>
+      Describe the single clinical finding, symptom, lab value, response pattern, or behavioral anomaly that does not fit the standard presentation of the primary diagnosis. The thing that keeps you up at night. The result you circled on the lab report. The symptom that doesn't fit any of the boxes. This is the primary trigger for the PROCEED WITH CAUTION signal. Write <em>None</em> clearly if nothing is anomalous — do not leave this field blank.
+    </div>
+    <div class="field">
+      <label>Clinical Anomaly Description <span class="req">*</span></label>
+      <textarea id="b10" rows="8" placeholder="Describe the anomalous finding in clinical detail. What doesn't fit? What is your instinct pointing at? Be specific..." oninput="countWords('b10','wc_b10',50)"></textarea>
+      <div class="wc-wrap" id="wc_b10"></div>
+    </div>
+    <div class="grid-3">
+      <div class="field">
+        <label>Anomaly Duration
+          <span class="note">How long has this been present?</span>
+        </label>
+        <input type="text" placeholder="e.g. 6 months, since 2024">
+      </div>
+      <div class="field">
+        <label>Duration in Months (numeric)</label>
+        <input type="number" min="0" placeholder="e.g. 6">
+      </div>
+      <div class="field">
+        <label>Anomaly Domain</label>
+        <select>
+          <option value="">Select domain</option>
+          <option>Oncology</option>
+          <option>Cardiovascular</option>
+          <option>Neurological</option>
+          <option>Metabolic</option>
+          <option>Infectious</option>
+          <option>Immunological</option>
+          <option>Unknown / Cross-domain</option>
+        </select>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!-- SECTION C — MEDICATIONS -->
+<div class="section">
+  <div class="section-header">
+    <span class="sec-label">Section C</span>
+    <h2>Current Medications</h2>
+    <span class="sec-note">All prescriptions, OTC medications, and supplements</span>
+  </div>
+  <div class="section-body">
+    <div class="alert alert-blue">Include every medication, supplement, and vitamin — even occasional ones. Drug interaction cross-domain signals frequently emerge from combinations that seem unrelated. Dosage must be numeric.</div>
+    <div class="data-table-wrap">
+      <table class="data-table" id="medTable">
+        <colgroup>
+          <col style="width:26%"><col style="width:10%"><col style="width:8%"><col style="width:13%"><col style="width:11%"><col style="width:20%"><col style="width:12%">
+        </colgroup>
+        <thead><tr><th>Medication / Supplement Name</th><th>Dosage</th><th>Unit</th><th>Frequency</th><th>Duration (mo)</th><th>Prescribing Specialty</th><th>Delete</th></tr></thead>
+        <tbody id="medBody"></tbody>
+      </table>
+    </div>
+    <button type="button" class="add-row-btn" onclick="addMedRow()">+ Add medication</button>
+    <div class="field" style="margin-top:1.25rem">
+      <label>Known Allergies and Contraindications
+        <span class="note">Include reaction type for each entry</span>
+      </label>
+      <textarea id="allergies" rows="4" placeholder="List all known drug allergies, reactions, and documented contraindications. Include the type of reaction for each."></textarea>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!-- SECTION D — LABS -->
+<div class="section">
+  <div class="section-header">
+    <span class="sec-label">Section D</span>
+    <h2>Laboratory Values and Diagnostics</h2>
+    <span class="sec-note">Numeric values only — do not filter for relevance</span>
+  </div>
+  <div class="section-body">
+    <div class="alert alert-blue">Enter all available lab values — do not filter for what seems relevant. Cross-domain biomarker signals are often found in results physicians consider unremarkable. Flag: H = High &nbsp; L = Low &nbsp; C = Critical &nbsp; N = Normal</div>
+    <div class="data-table-wrap">
+      <table class="data-table" id="labTable">
+        <colgroup>
+          <col style="width:25%"><col style="width:12%"><col style="width:8%"><col style="width:17%"><col style="width:12%"><col style="width:8%"><col style="width:18%">
+        </colgroup>
+        <thead><tr><th>Lab Test / Biomarker</th><th>Result (numeric)</th><th>Unit</th><th>Reference Range</th><th>Date</th><th>Flag</th><th>Delete</th></tr></thead>
+        <tbody id="labBody"></tbody>
+      </table>
+    </div>
+    <button type="button" class="add-row-btn" onclick="addLabRow('labBody')">+ Add lab value</button>
+    <div class="field" style="margin-top:1.25rem">
+      <label>Imaging, Pathology, and Specialty Diagnostics
+        <span class="note">Include date, modality, and key findings for each study</span>
+      </label>
+      <textarea id="imaging" rows="5" placeholder="e.g. MRI brain 03/2026 — no acute findings, mild periventricular changes&#10;EKG 02/2026 — normal sinus rhythm, no ST changes&#10;Colonoscopy 01/2026 — 2 small polyps removed, pathology benign"></textarea>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!-- SECTION E — GATE FIELD -->
+<div class="section">
+  <div class="section-header gate-header">
+    <span class="sec-label" style="color:#4A2E00">Section E — Gate Field</span>
+    <h2 style="color:#1A1200">Physician Mechanistic Hypothesis</h2>
+    <span class="sec-note" style="color:#6B4E10">75 words minimum — form gates on this field</span>
+  </div>
+  <div class="section-body">
+    <div class="alert-gate">
+      <strong>FORM DOES NOT SUBMIT WITHOUT 75 WORDS MINIMUM IN THIS SECTION</strong>
+      Write as a physician thinking out loud to a trusted colleague. What biological mechanism do you believe underlies this patient's presentation? What connections between their conditions, medications, lab anomalies, and clinical history do you suspect? What would you test if you had unlimited diagnostic resources? What published research have you read that feels relevant but you can't quite place? A generic chart summary does not satisfy this requirement. The engine is looking for your clinical intuition — the reasoning that isn't in the chart.
+    </div>
+    <div class="field">
+      <label>Physician Mechanistic Hypothesis <span class="req">*</span></label>
+      <textarea id="secE" rows="14" placeholder="Write your clinical reasoning, suspected mechanisms, cross-domain intuitions, and differential thinking. First person is encouraged. Be as specific and speculative as you want — this is not a legal document. Consider: why has this patient not responded as expected? What biological system might be driving what you're seeing? What connection between two seemingly unrelated conditions might explain the anomaly?" oninput="countWords('secE','wc_secE',75);updateGate()"></textarea>
+      <div class="wc-wrap" id="wc_secE"></div>
+    </div>
+    <div class="grid-2">
+      <div class="field">
+        <label>Hypothesis Confidence Level</label>
+        <div class="radio-group">
+          <label><input type="radio" name="confidence"> Speculative — early intuition</label>
+          <label><input type="radio" name="confidence"> Moderate — pattern recognition</label>
+          <label><input type="radio" name="confidence"> Strong — mechanistic evidence</label>
+          <label><input type="radio" name="confidence"> High — literature-supported</label>
+        </div>
+      </div>
+      <div class="field">
+        <label>Specific Research Areas to Investigate
+          <span class="note">Compounds, pathways, mechanisms, or domains to focus on</span>
+        </label>
+        <textarea rows="5" placeholder="e.g. SGLT-2 inhibitor mechanism in non-diabetic cardiovascular patients&#10;Gut-brain axis inflammatory signaling&#10;Zeaxanthin and CD8 T cell modulation in AMD progression"></textarea>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!-- SECTION F — ATTESTATION -->
+<div class="section">
+  <div class="section-header">
+    <span class="sec-label">Section F</span>
+    <h2>Physician Attestation and Signature</h2>
+  </div>
+  <div class="section-body">
+    <div class="alert alert-info">By submitting, the physician confirms: (1) Clinical data is accurate to the best of their knowledge as of the date submitted; (2) The research output will be reviewed as research intelligence only and does not replace independent clinical judgment; (3) All clinical decisions arising from the output remain the sole responsibility of the reviewing physician; (4) This submission complies with the token-only protocol — no patient personal identifiers are included; (5) The mechanistic hypothesis in Section E reflects independent physician clinical reasoning.</div>
+    <div class="grid-2" style="margin-top:1.25rem">
+      <div class="field">
+        <label>Physician Full Name <span class="req">*</span></label>
+        <input type="text" placeholder="Full legal name">
+      </div>
+      <div class="field">
+        <label>NPI Number <span class="req">*</span>
+          <span class="note">10-digit National Provider Identifier</span>
+        </label>
+        <input type="text" placeholder="10-digit NPI" maxlength="10">
+      </div>
+    </div>
+    <div class="grid-2">
+      <div class="field">
+        <label>Signature Date <span class="req">*</span></label>
+        <input type="date">
+      </div>
+      <div class="field">
+        <label>Digital Attestation Confirmation <span class="req">*</span></label>
+        <div class="check-group" style="margin-top:.5rem">
+          <label>
+            <input type="checkbox" id="attestCheck" onchange="updateGate()">
+            I confirm the above attestation and that no patient personal identifiers are included in this submission
+          </label>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SUBMIT -->
+<div class="submit-area">
+  <button type="button" class="submit-btn" id="submitBtn" disabled onclick="handleSubmit()">
+    Submit Clinical Profile to MRS Engine
+  </button>
+  <div class="gate-status">
+    <span id="gate_e" class="g-bad">Section E needs 75 words</span>
+    <span>·</span>
+    <span id="gate_att" class="g-bad">Attestation not confirmed</span>
+  </div>
+  <p style="font-size:12px;color:#AAA;margin-top:1rem">
+    Foundry One Sciences LLC &nbsp;·&nbsp; MRS Clinical Profile Intake Form v3.0 &nbsp;·&nbsp; Token-Only Protocol &nbsp;·&nbsp; foundryonesciences.com &nbsp;·&nbsp; 302-416-1854
+  </p>
+</div>
+
+</form>
+          </div>
+        </div>
+      </div>
+
       <!-- ACTIVE CASES -->
       <div class="dash-panel" id="panel-cases">
         <div class="cases-header">
@@ -476,7 +1285,7 @@ html,body{height:100%;font-family:'Jost',sans-serif;font-weight:300;background:v
         </div>
         <div class="case-list" id="case-list"></div>
       </div>
- 
+
       <!-- HIPAA -->
       <div class="dash-panel" id="panel-hipaa">
         <div class="panel-title">HIPAA &amp; Compliance</div>
@@ -496,11 +1305,11 @@ html,body{height:100%;font-family:'Jost',sans-serif;font-weight:300;background:v
           <div class="compliance-bar"><span class="cb-label">Breach Response Plan</span><span class="cb-val">✓ On file — 72h notification</span></div>
         </div>
       </div>
- 
+
     </div>
   </div>
 </div>
- 
+
 <!-- BRIEF MODAL -->
 <div class="modal-overlay" id="brief-modal">
   <div class="brief-modal">
@@ -514,7 +1323,7 @@ html,body{height:100%;font-family:'Jost',sans-serif;font-weight:300;background:v
     <div class="bm-body">
       <div class="delivered-banner" id="modal-delivered">
         <div class="db-icon">✓</div>
-        <div class="db-text"><strong>Research brief securely delivered to physician email</strong><span id="modal-time">Today · fredcover@foundryonesciences.org</span></div>
+        <div class="db-text"><strong>Research brief securely delivered to physician email</strong><span id="modal-time">Today · <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="06607463626569706374466069736862747f69686375656f636865637528697461">[email&#160;protected]</a></span></div>
       </div>
       <div id="modal-pending-banner" style="display:none;padding:1rem 1.2rem;background:rgba(52,152,219,.06);border:1px solid rgba(52,152,219,.2);font-size:.78rem;color:var(--blue);margin-bottom:1.5rem;">⟳ &nbsp; MRS Engine is processing this query. Estimated delivery within selected timeframe.</div>
       <div class="bm-section">
@@ -543,10 +1352,10 @@ html,body{height:100%;font-family:'Jost',sans-serif;font-weight:300;background:v
     </div>
   </div>
 </div>
- 
+
 <div id="toast"><span style="color:var(--green)">✓</span><span id="toast-msg"></span></div>
- 
-<script>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 const cases=[
   {token:'MRS-0019',condition:'Metabolic / Insulin Resistance — T2DM w/ Peripheral Neuropathy',date:'Mar 17, 2026 · 9:14am',status:'complete',jello:['green','blue','yellow']},
   {token:'MRS-0020',condition:'Cardiovascular Comorbidity w/ T2DM',date:'Mar 16, 2026 · 3:22pm',status:'processing',jello:['blue','red']},
@@ -555,7 +1364,7 @@ const cases=[
   {token:'MRS-0017',condition:'Hypertension-Resistant w/ Metabolic Syndrome',date:'Mar 12, 2026',status:'complete',jello:['green','blue']},
 ];
 let filterState='all';
- 
+
 function renderCases(filter){
   const list=document.getElementById('case-list');
   const filtered=filter==='all'?cases:cases.filter(c=>c.status===filter);
@@ -571,14 +1380,14 @@ function renderCases(filter){
     <div class="case-chevron">›</div>
   </div>`).join('');
 }
- 
+
 function filterCases(f,el){
   filterState=f;
   document.querySelectorAll('.cf-btn').forEach(b=>b.classList.remove('active'));
   el.classList.add('active');
   renderCases(f);
 }
- 
+
 function openCase(token){
   const c=cases.find(x=>x.token===token);
   if(!c)return;
@@ -596,14 +1405,14 @@ function openCase(token){
   }
   document.getElementById('brief-modal').classList.add('open');
 }
- 
+
 function closeModal(){document.getElementById('brief-modal').classList.remove('open');}
- 
+
 function showScreen(id){
   document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
   document.getElementById(id).classList.add('active');
 }
- 
+
 function showPanel(name,el){
   document.querySelectorAll('.dash-panel').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.sidebar-item').forEach(i=>i.classList.remove('active'));
@@ -611,18 +1420,18 @@ function showPanel(name,el){
   if(el)el.classList.add('active');
   if(name==='cases')renderCases(filterState);
 }
- 
+
 const scrollArea=document.getElementById('baa-scroll-area');
 const scrollPrompt=document.getElementById('scroll-prompt');
 scrollArea.addEventListener('scroll',function(){
   if(this.scrollTop+this.clientHeight>=this.scrollHeight-30)scrollPrompt.classList.add('hidden');
 });
- 
+
 function checkBAA(){
   const ok=document.getElementById('check1').checked&&document.getElementById('check2').checked&&document.getElementById('check3').checked&&document.getElementById('baa-name').value.trim()&&document.getElementById('baa-npi').value.trim();
   document.getElementById('accept-btn').classList.toggle('enabled',!!ok);
 }
- 
+
 function acceptBAA(){
   const name=document.getElementById('baa-name').value.trim();
   const npi=document.getElementById('baa-npi').value.trim();
@@ -633,9 +1442,9 @@ function acceptBAA(){
   showScreen('login-screen');
   showToast('BAA accepted and on file. Welcome, '+docName+'.');
 }
- 
+
 function declineBAA(){showScreen('declined-screen');}
- 
+
 function doLogin(){
   const npi=document.getElementById('npi-input').value.trim();
   const pass=document.getElementById('pass-input').value.trim();
@@ -644,7 +1453,7 @@ function doLogin(){
   renderCases('all');
   showToast('Secure session established. Welcome, '+document.getElementById('doctor-name').textContent+'.');
 }
- 
+
 function doLogout(){
   showScreen('welcome-screen');
   document.getElementById('npi-input').value='';
@@ -655,12 +1464,12 @@ function doLogout(){
   scrollArea.scrollTop=0;
   scrollPrompt.classList.remove('hidden');
 }
- 
+
 function setUrgency(el,val){
   document.querySelectorAll('.urgency-btn').forEach(b=>b.className='urgency-btn');
   el.classList.add('sel-'+val);
 }
- 
+
 function simulateUpload(){
   const files=['Lab_Results_CBC_Mar2026.pdf','Imaging_MRI_Brain.pdf','Medication_Reconciliation.pdf'];
   const name=files[Math.floor(Math.random()*files.length)];
@@ -671,7 +1480,7 @@ function simulateUpload(){
   list.appendChild(item);
   showToast(name+' uploaded securely.');
 }
- 
+
 function submitIntake(){
   if(!document.getElementById('con1').checked||!document.getElementById('con2').checked){showToast('Please confirm both patient authorization checkboxes.');return;}
   document.getElementById('intake-form-body').style.display='none';
@@ -682,20 +1491,5 @@ function submitIntake(){
   badge.textContent=parseInt(badge.textContent)+1;
   showToast('Query submitted · Token MRS-0'+num+' assigned.');
 }
- 
-function resetIntake(){
-  document.getElementById('intake-form-body').style.display='block';
-  document.getElementById('intake-success').style.display='none';
-  document.getElementById('file-list').innerHTML='';
-  ['con1','con2'].forEach(id=>document.getElementById(id).checked=false);
-}
- 
-function showToast(msg){
-  const t=document.getElementById('toast');
-  document.getElementById('toast-msg').textContent=msg;
-  t.classList.add('show');
-  setTimeout(()=>t.classList.remove('show'),3500);
-}
-</script>
-</body>
-</html>
+
+functio
