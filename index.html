@@ -4,15 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Foundry One Sciences — Physician Portal</title>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@300;400;500;600&family=Crimson+Pro:ital,wght@0,300;1,300&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@300;400;500;600&family=Crimson+Pro:ital,wght@0,300;1,300&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{--navy:#080d1a;--navy2:#0d1426;--navy3:#111c35;--gold:#c9a558;--gold2:#e2c07a;--white:#f5f2ec;--muted:#8a96b0;--border:rgba(201,165,88,0.18);--glow:rgba(201,165,88,0.06);--green:#2ecc71;--red:#e74c3c;--blue:#3498db;--amber:#e8a020;}
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
 html,body{height:100%;font-family:'Jost',sans-serif;font-weight:300;background:var(--navy);color:var(--white);}
 .screen{display:none;min-height:100vh;}
 .screen.active{display:flex;flex-direction:column;}
-
-/* WELCOME */
 #welcome-screen{align-items:center;justify-content:center;position:relative;overflow:hidden;background:var(--navy);}
 .wb{position:absolute;inset:0;background:radial-gradient(ellipse 70% 60% at 60% 50%,rgba(201,165,88,.07) 0%,transparent 65%),linear-gradient(165deg,#080d1a 0%,#0d1426 50%,#080d1a 100%);}
 .wg{position:absolute;inset:0;background-image:linear-gradient(rgba(201,165,88,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(201,165,88,.04) 1px,transparent 1px);background-size:60px 60px;animation:gridFade 4s ease-in-out infinite alternate;}
@@ -30,8 +28,6 @@ html,body{height:100%;font-family:'Jost',sans-serif;font-weight:300;background:v
 .wenter:hover{background:var(--gold2);transform:translateY(-2px);gap:1.4rem;}
 .wfooter{position:absolute;bottom:1.5rem;font-size:.6rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);opacity:.35;z-index:2;}
 @keyframes fadeUp{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
-
-/* BAA */
 #baa-screen{align-items:center;justify-content:center;background:radial-gradient(ellipse 60% 60% at 50% 40%,rgba(201,165,88,.05) 0%,transparent 70%),linear-gradient(165deg,#080d1a 0%,#0d1426 60%,#080d1a 100%);padding:2rem;}
 .baa-box{width:100%;max-width:680px;border:1px solid var(--border);background:var(--navy2);position:relative;overflow:hidden;}
 .baa-box::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);}
@@ -58,17 +54,11 @@ html,body{height:100%;font-family:'Jost',sans-serif;font-weight:300;background:v
 .btn-accept{flex:1;padding:.8rem;background:var(--gold);color:var(--navy);font-family:'Jost',sans-serif;font-weight:500;font-size:.75rem;letter-spacing:.18em;text-transform:uppercase;border:none;cursor:pointer;opacity:.4;pointer-events:none;transition:opacity .3s,background .2s;}
 .btn-accept.enabled{opacity:1;pointer-events:all;}
 .btn-accept.enabled:hover{background:var(--gold2);}
-.btn-decline{padding:.8rem 1.5rem;background:none;color:var(--muted);font-family:'Jost',sans-serif;font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;border:1px solid var(--border);cursor:pointer;transition:border-color .2s,color .2s;}
-.btn-decline:hover{border-color:var(--red);color:var(--red);}
-
-/* DECLINED */
+.btn-decline{padding:.8rem 1.5rem;background:none;color:var(--muted);font-family:'Jost',sans-serif;font-size:.75rem;letter-spacing:.1em;text-transform:uppercase;border:1px solid var(--border);cursor:pointer;}
 #declined-screen{align-items:center;justify-content:center;background:linear-gradient(165deg,#080d1a 0%,#0d1426 60%,#080d1a 100%);padding:2rem;text-align:center;}
 .dec-box h2{font-family:'Cormorant Garamond',serif;font-size:1.8rem;font-weight:300;margin-bottom:1rem;}
 .dec-box p{font-size:.85rem;color:var(--muted);line-height:1.7;margin-bottom:1.5rem;}
-.btn-back{font-size:.68rem;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);background:none;border:1px solid var(--border);padding:.7rem 1.5rem;cursor:pointer;transition:border-color .2s;}
-.btn-back:hover{border-color:var(--gold);}
-
-/* LOGIN */
+.btn-back{font-size:.68rem;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);background:none;border:1px solid var(--border);padding:.7rem 1.5rem;cursor:pointer;}
 #login-screen{align-items:center;justify-content:center;background:radial-gradient(ellipse 60% 60% at 50% 40%,rgba(201,165,88,.05) 0%,transparent 70%),linear-gradient(165deg,#080d1a 0%,#0d1426 60%,#080d1a 100%);padding:2rem;}
 .login-box{width:100%;max-width:440px;border:1px solid var(--border);background:var(--navy2);padding:3rem;position:relative;}
 .login-box::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--gold),transparent);}
@@ -87,8 +77,6 @@ html,body{height:100%;font-family:'Jost',sans-serif;font-weight:300;background:v
 .hipaa-text{font-size:.72rem;color:var(--muted);line-height:1.6;}
 .hipaa-text strong{color:rgba(245,242,236,.7);}
 .login-footer{font-size:.6rem;color:var(--muted);opacity:.4;text-align:center;margin-top:1.5rem;line-height:1.7;}
-
-/* DASHBOARD */
 #dashboard-screen{flex-direction:column;}
 .topbar{display:flex;align-items:center;justify-content:space-between;padding:.9rem 2rem;background:var(--navy2);border-bottom:1px solid var(--border);flex-shrink:0;}
 .tb-logo{font-family:'Cormorant Garamond',serif;font-weight:600;font-size:.9rem;letter-spacing:.22em;text-transform:uppercase;}
@@ -97,12 +85,12 @@ html,body{height:100%;font-family:'Jost',sans-serif;font-weight:300;background:v
 .tb-user{font-size:.72rem;color:var(--muted);display:flex;align-items:center;gap:.5rem;}
 .sdot{width:7px;height:7px;border-radius:50%;background:var(--green);display:inline-block;animation:pulse 2s infinite;}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
-.btn-logout{font-size:.65rem;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);background:none;border:1px solid var(--border);padding:.4rem .9rem;cursor:pointer;transition:border-color .2s,color .2s;}
+.btn-logout{font-size:.65rem;letter-spacing:.15em;text-transform:uppercase;color:var(--muted);background:none;border:1px solid var(--border);padding:.4rem .9rem;cursor:pointer;}
 .btn-logout:hover{border-color:var(--gold);color:var(--gold);}
 .dash-body{display:flex;flex:1;overflow:hidden;}
 .sidebar{width:220px;background:var(--navy2);border-right:1px solid var(--border);flex-shrink:0;padding:1.5rem 0;}
 .sidebar-section{font-size:.58rem;letter-spacing:.2em;text-transform:uppercase;color:var(--muted);padding:.4rem 1.5rem;margin-bottom:.3rem;opacity:.5;}
-.sidebar-item{display:flex;align-items:center;gap:.8rem;padding:.7rem 1.5rem;cursor:pointer;transition:background .2s;font-size:.78rem;color:var(--muted);border-left:2px solid transparent;}
+.sidebar-item{display:flex;align-items:center;gap:.8rem;padding:.7rem 1.5rem;cursor:pointer;font-size:.78rem;color:var(--muted);border-left:2px solid transparent;transition:background .2s;}
 .sidebar-item:hover{background:var(--glow);color:var(--white);}
 .sidebar-item.active{background:rgba(201,165,88,.06);color:var(--gold);border-left-color:var(--gold);}
 .si-icon{font-size:.85rem;width:18px;text-align:center;}
@@ -114,7 +102,7 @@ html,body{height:100%;font-family:'Jost',sans-serif;font-weight:300;background:v
 .panel-title{font-family:'Cormorant Garamond',serif;font-size:1.6rem;font-weight:300;margin-bottom:.3rem;}
 .panel-sub{font-size:.72rem;color:var(--muted);margin-bottom:1.5rem;}
 .stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:1rem;margin-bottom:1.5rem;}
-.stat-card{background:var(--navy2);border:1px solid var(--border);padding:1.2rem;position:relative;overflow:hidden;}
+.stat-card{background:var(--navy2);border:1px solid var(--border);padding:1.2rem;position:relative;}
 .stat-card::after{content:'';position:absolute;top:0;left:0;width:3px;height:100%;}
 .stat-card.s-gold::after{background:var(--gold);}
 .stat-card.s-green::after{background:var(--green);}
@@ -131,58 +119,18 @@ html,body{height:100%;font-family:'Jost',sans-serif;font-weight:300;background:v
 .ac-dot.gold{background:var(--gold);}.ac-dot.green{background:var(--green);}.ac-dot.blue{background:var(--blue);}.ac-dot.muted{background:var(--muted);opacity:.4;}
 .ac-text{flex:1;font-size:.78rem;color:rgba(245,242,236,.8);}
 .ac-time{font-size:.65rem;color:var(--muted);opacity:.6;flex-shrink:0;}
-
-/* INTAKE */
-.intake-card{background:var(--navy2);border:1px solid var(--border);padding:2rem;margin-bottom:1.5rem;}
-.intake-card-title{font-size:.62rem;letter-spacing:.18em;text-transform:uppercase;color:var(--gold);margin-bottom:1.2rem;display:flex;align-items:center;gap:.6rem;}
-.intake-card-title::after{content:'';flex:1;height:1px;background:var(--border);}
-.intake-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;}
-.intake-grid.three{grid-template-columns:1fr 1fr 1fr;}
-.intake-grid.full{grid-template-columns:1fr;}
-.if-group{display:flex;flex-direction:column;}
-.if-group label{font-size:.6rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);margin-bottom:.35rem;}
-.if-group input,.if-group select,.if-group textarea{background:var(--navy);border:1px solid var(--border);color:var(--white);padding:.65rem .9rem;font-family:'Jost',sans-serif;font-size:.82rem;font-weight:300;outline:none;transition:border-color .2s;width:100%;}
-.if-group input:focus,.if-group select:focus,.if-group textarea:focus{border-color:var(--gold);}
-.if-group select option{background:var(--navy2);}
-.if-group textarea{resize:vertical;min-height:90px;line-height:1.6;}
-.upload-zone{border:1px dashed var(--border);padding:1.5rem;text-align:center;cursor:pointer;transition:border-color .2s,background .2s;}
-.upload-zone:hover{border-color:var(--gold);background:var(--glow);}
-.upload-icon{font-size:1.5rem;margin-bottom:.5rem;}
-.upload-text{font-size:.75rem;color:var(--muted);line-height:1.6;}
-.upload-text strong{color:var(--gold);}
-.consent-block{background:rgba(201,165,88,.04);border:1px solid var(--border);padding:1.2rem;}
-.consent-row{display:flex;align-items:flex-start;gap:.8rem;margin-bottom:.7rem;}
-.consent-row:last-child{margin-bottom:0;}
-.consent-row input{margin-top:.2rem;accent-color:var(--gold);cursor:pointer;flex-shrink:0;}
-.consent-row label{font-size:.75rem;color:var(--muted);line-height:1.6;cursor:pointer;}
-.urgency-row{display:flex;gap:.8rem;}
-.urgency-btn{flex:1;padding:.6rem;border:1px solid var(--border);background:none;color:var(--muted);font-family:'Jost',sans-serif;font-size:.72rem;letter-spacing:.1em;text-transform:uppercase;cursor:pointer;transition:all .2s;}
-.urgency-btn.sel-routine{border-color:var(--green);color:var(--green);background:rgba(46,204,113,.06);}
-.urgency-btn.sel-priority{border-color:var(--amber);color:var(--amber);background:rgba(232,160,32,.06);}
-.urgency-btn.sel-urgent{border-color:var(--red);color:var(--red);background:rgba(231,76,60,.06);}
-.submit-bar{display:flex;align-items:center;justify-content:space-between;}
-.submit-note{font-size:.7rem;color:var(--muted);opacity:.7;}
-.btn-submit{padding:.9rem 2.5rem;background:var(--gold);color:var(--navy);font-family:'Jost',sans-serif;font-weight:500;font-size:.78rem;letter-spacing:.2em;text-transform:uppercase;border:none;cursor:pointer;transition:background .2s;}
-.btn-submit:hover{background:var(--gold2);}
-.intake-success{display:none;text-align:center;padding:3rem;}
-.is-icon{font-size:2.5rem;margin-bottom:1rem;}
-.is-title{font-family:'Cormorant Garamond',serif;font-size:1.6rem;font-weight:300;color:var(--white);margin-bottom:.5rem;}
-.is-sub{font-size:.8rem;color:var(--muted);line-height:1.7;margin-bottom:1.5rem;}
-.is-token{display:inline-block;font-size:.85rem;letter-spacing:.15em;color:var(--gold);border:1px solid var(--border);padding:.5rem 1.5rem;}
-.btn-new{margin-top:1.5rem;padding:.7rem 2rem;background:none;color:var(--gold);border:1px solid var(--border);font-family:'Jost',sans-serif;font-size:.72rem;letter-spacing:.15em;text-transform:uppercase;cursor:pointer;}
-
-/* CASES */
+.intake-wrapper{background:#EFEFEC;padding:1.5rem;margin:-2rem;}
 .cases-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:1.5rem;}
 .cases-filter{display:flex;gap:.5rem;}
-.cf-btn{padding:.4rem 1rem;border:1px solid var(--border);background:none;color:var(--muted);font-family:'Jost',sans-serif;font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;transition:all .2s;}
+.cf-btn{padding:.4rem 1rem;border:1px solid var(--border);background:none;color:var(--muted);font-family:'Jost',sans-serif;font-size:.65rem;letter-spacing:.12em;text-transform:uppercase;cursor:pointer;}
 .cf-btn.active,.cf-btn:hover{border-color:var(--gold);color:var(--gold);}
 .case-list{display:flex;flex-direction:column;gap:.8rem;}
-.case-card{background:var(--navy2);border:1px solid var(--border);padding:1.2rem 1.5rem;display:grid;grid-template-columns:auto 1fr auto auto auto;align-items:center;gap:1.2rem;cursor:pointer;transition:border-color .2s,background .2s;}
-.case-card:hover{border-color:rgba(201,165,88,.4);background:rgba(201,165,88,.03);}
+.case-card{background:var(--navy2);border:1px solid var(--border);padding:1.2rem 1.5rem;display:grid;grid-template-columns:auto 1fr auto auto auto;align-items:center;gap:1.2rem;cursor:pointer;}
+.case-card:hover{border-color:rgba(201,165,88,.4);}
 .case-card.complete{border-left:3px solid var(--green);}
 .case-card.processing{border-left:3px solid var(--blue);}
 .case-card.pending{border-left:3px solid var(--muted);}
-.case-token{font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-weight:300;color:var(--gold);letter-spacing:.05em;min-width:80px;}
+.case-token{font-family:'Cormorant Garamond',serif;font-size:1.1rem;font-weight:300;color:var(--gold);min-width:80px;}
 .case-condition{font-size:.82rem;color:var(--white);}
 .case-meta{font-size:.67rem;color:var(--muted);margin-top:.1rem;}
 .case-jello{display:flex;gap:.3rem;}
@@ -192,16 +140,12 @@ html,body{height:100%;font-family:'Jost',sans-serif;font-weight:300;background:v
 .status-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;}
 .status-dot.complete{background:var(--green);}.status-dot.processing{background:var(--blue);}.status-dot.pending{background:var(--muted);}
 .case-chevron{color:var(--muted);font-size:.8rem;}
-.case-card:hover .case-chevron{color:var(--gold);}
-
-/* BRIEF MODAL */
 .modal-overlay{position:fixed;inset:0;background:rgba(8,13,26,.85);z-index:100;display:none;align-items:center;justify-content:center;padding:1.5rem;}
 .modal-overlay.open{display:flex;}
 .brief-modal{background:var(--navy2);border:1px solid var(--border);width:100%;max-width:680px;max-height:85vh;overflow-y:auto;position:relative;}
 .brief-modal::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,transparent,var(--green),transparent);}
-.brief-modal::-webkit-scrollbar{width:4px;}.brief-modal::-webkit-scrollbar-thumb{background:var(--border);}
 .bm-header{padding:1.5rem 2rem;border-bottom:1px solid var(--border);display:flex;align-items:flex-start;justify-content:space-between;gap:1rem;}
-.bm-close{background:none;border:1px solid var(--border);color:var(--muted);font-size:.7rem;letter-spacing:.1em;padding:.3rem .7rem;cursor:pointer;flex-shrink:0;}
+.bm-close{background:none;border:1px solid var(--border);color:var(--muted);font-size:.7rem;padding:.3rem .7rem;cursor:pointer;}
 .bm-close:hover{border-color:var(--gold);color:var(--gold);}
 .bm-token{font-family:'Cormorant Garamond',serif;font-size:1.4rem;font-weight:300;color:var(--gold);}
 .bm-condition{font-size:.8rem;color:var(--muted);margin-top:.2rem;}
@@ -218,21 +162,19 @@ html,body{height:100%;font-family:'Jost',sans-serif;font-weight:300;background:v
 .jl-item{display:flex;align-items:center;gap:.4rem;font-size:.7rem;color:var(--muted);}
 .jl-swatch{width:14px;height:14px;border-radius:50%;}
 .jello-bar{display:flex;gap:.5rem;flex-wrap:wrap;margin-bottom:1rem;}
-.jello-chip{display:flex;align-items:center;gap:.4rem;font-size:.7rem;padding:.3rem .7rem;border:1px solid;}
+.jello-chip{font-size:.7rem;padding:.3rem .7rem;border:1px solid;}
 .jello-chip.red{color:#e74c3c;border-color:rgba(231,76,60,.3);background:rgba(231,76,60,.06);}
 .jello-chip.yellow{color:#f1c40f;border-color:rgba(241,196,15,.3);background:rgba(241,196,15,.06);}
 .jello-chip.green{color:#2ecc71;border-color:rgba(46,204,113,.3);background:rgba(46,204,113,.06);}
 .jello-chip.blue{color:#3498db;border-color:rgba(52,152,219,.3);background:rgba(52,152,219,.06);}
 .jello-chip.violet{color:#9b59b6;border-color:rgba(155,89,182,.3);background:rgba(155,89,182,.06);}
 .insight-list{display:flex;flex-direction:column;gap:.7rem;}
-.insight-item{display:flex;gap:.9rem;align-items:flex-start;padding:.8rem;background:rgba(0,0,0,.2);border-left:2px solid var(--border);}
+.insight-item{display:flex;gap:.9rem;padding:.8rem;background:rgba(0,0,0,.2);border-left:2px solid var(--border);}
 .ii-dot{width:8px;height:8px;border-radius:50%;margin-top:.35rem;flex-shrink:0;}
 .ii-text{font-size:.78rem;color:rgba(245,242,236,.8);line-height:1.6;}
 .ii-src{font-size:.65rem;color:var(--muted);margin-top:.2rem;}
 .samd-notice{font-size:.7rem;color:var(--muted);line-height:1.7;border:1px solid var(--border);padding:1rem;background:rgba(0,0,0,.15);}
 .samd-notice strong{color:rgba(245,242,236,.6);}
-
-/* HIPAA */
 .hipaa-grid{display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.5rem;}
 .hipaa-card{background:var(--navy2);border:1px solid var(--border);padding:1.3rem;}
 .hc-icon{font-size:1.2rem;margin-bottom:.5rem;}
@@ -241,9 +183,8 @@ html,body{height:100%;font-family:'Jost',sans-serif;font-weight:300;background:v
 .compliance-bar{background:var(--navy2);border:1px solid var(--border);padding:1.2rem 1.5rem;display:flex;align-items:center;justify-content:space-between;margin-bottom:.6rem;}
 .cb-label{font-size:.75rem;color:var(--muted);}
 .cb-val{font-size:.7rem;letter-spacing:.1em;text-transform:uppercase;color:var(--green);}
-
-/* ── MRS INTAKE FORM STYLES ── */
-.intake-wrapper{background:#EFEFEC;padding:1.5rem;margin:-2rem;}
+#toast{position:fixed;bottom:2rem;right:2rem;background:var(--navy3);border:1px solid rgba(46,204,113,.4);color:var(--white);padding:1rem 1.5rem;font-size:.8rem;display:flex;gap:.8rem;align-items:center;transform:translateY(100px);opacity:0;transition:all .4s;z-index:999;}
+#toast.show{transform:translateY(0);opacity:1;}
 
 :root {
   --navy: #1B2A4A;
@@ -629,23 +570,18 @@ textarea {
 /* divider */
 .divider { border: none; border-top: 1px solid var(--border); margin: 1.25rem 0; }
 
-/* TOAST */
-#toast{position:fixed;bottom:2rem;right:2rem;background:var(--navy3);border:1px solid rgba(46,204,113,.4);color:var(--white);padding:1rem 1.5rem;font-size:.8rem;display:flex;gap:.8rem;align-items:center;transform:translateY(100px);opacity:0;transition:all .4s;z-index:999;}
-#toast.show{transform:translateY(0);opacity:1;}
 </style>
 </head>
 <body>
 
-<!-- WELCOME -->
 <div id="welcome-screen" class="screen active">
-  <div class="wb"></div>
-  <div class="wg"></div>
+  <div class="wb"></div><div class="wg"></div>
   <div class="wc">
     <div class="wlogo">Foundry One Sciences</div>
     <div class="wtag">...&nbsp; we have not stopped looking</div>
     <div class="wdiv"></div>
     <h1 class="wtitle">Physician<br><em>Portal</em></h1>
-    <p class="wsub">Secure access to the Medical Research Solitaire Engine —<br>clinical decision support built on cross-domain drug hypothesis intelligence.</p>
+    <p class="wsub">Secure access to the Medical Research Solitaire Engine — clinical decision support built on cross-domain drug hypothesis intelligence.</p>
     <div class="wbadges">
       <span class="wbadge">🔒 HIPAA Compliant</span>
       <span class="wbadge">⚕️ Licensed Physicians Only</span>
@@ -656,7 +592,6 @@ textarea {
   <div class="wfooter">Foundry One Sciences LLC &nbsp;·&nbsp; Delaware &nbsp;·&nbsp; SDVOSB &nbsp;·&nbsp; Micro Entity</div>
 </div>
 
-<!-- BAA -->
 <div id="baa-screen" class="screen">
   <div style="display:flex;align-items:center;justify-content:center;min-height:100vh;padding:2rem;background:radial-gradient(ellipse 60% 60% at 50% 40%,rgba(201,165,88,.05) 0%,transparent 70%),linear-gradient(165deg,#080d1a 0%,#0d1426 60%,#080d1a 100%);">
   <div class="baa-box">
@@ -669,25 +604,25 @@ textarea {
     <div class="scroll-prompt" id="scroll-prompt">↓ Scroll to read the full agreement before signing</div>
     <div class="baa-scroll" id="baa-scroll-area">
       <h3>BUSINESS ASSOCIATE AGREEMENT</h3>
-      <p>This Business Associate Agreement (<strong>"BAA"</strong>) is entered into between <strong>Foundry One Sciences LLC</strong>, a Delaware Limited Liability Company (<strong>"Business Associate"</strong>), and the undersigned licensed healthcare provider (<strong>"Covered Entity / Physician"</strong>), collectively referred to as the <strong>"Parties."</strong></p>
+      <p>This Business Associate Agreement (<strong>"BAA"</strong>) is entered into between <strong>Foundry One Sciences LLC</strong>, a Delaware Limited Liability Company (<strong>"Business Associate"</strong>), and the undersigned licensed healthcare provider (<strong>"Covered Entity / Physician"</strong>).</p>
       <h3>1. Definitions</h3>
-      <p><strong>Protected Health Information (PHI)</strong> means any individually identifiable health information transmitted or maintained in any form or medium, as defined under 45 C.F.R. § 160.103. <strong>De-identified Information</strong> means health information that has been processed to remove all 18 HIPAA Safe Harbor identifiers per 45 C.F.R. § 164.514(b).</p>
+      <p><strong>Protected Health Information (PHI)</strong> means any individually identifiable health information as defined under 45 C.F.R. § 160.103. <strong>De-identified Information</strong> means health information processed to remove all 18 HIPAA Safe Harbor identifiers per 45 C.F.R. § 164.514(b).</p>
       <h3>2. Obligations of Business Associate</h3>
-      <p>Foundry One Sciences LLC agrees to: (a) not use or disclose PHI other than as permitted by this BAA or required by law; (b) use appropriate safeguards to prevent unauthorized use or disclosure; (c) report any unauthorized use or disclosure to the Covered Entity within 72 hours; (d) ensure that any subcontractors agree to equivalent restrictions; (e) make internal practices and records available to HHS as required; (f) return or destroy PHI upon termination of this agreement.</p>
+      <p>Foundry One Sciences LLC agrees to: (a) not use or disclose PHI other than as permitted; (b) use appropriate safeguards; (c) report any breach within 72 hours; (d) ensure subcontractors agree to equivalent restrictions; (e) make records available to HHS; (f) return or destroy PHI upon termination.</p>
       <h3>3. Permitted Uses and Disclosures</h3>
-      <p>Business Associate may use and disclose PHI solely to perform research intelligence services on behalf of the Covered Entity. PHI will be de-identified prior to processing by the MRS Engine. De-identified research outputs are not PHI and are not subject to HIPAA restrictions. No PHI will be used for independent purposes unrelated to the services described herein.</p>
+      <p>Business Associate may use PHI solely to perform research intelligence services. PHI will be de-identified prior to MRS Engine processing. No PHI will be used for unrelated purposes.</p>
       <h3>4. Security Obligations</h3>
-      <p>Business Associate shall implement administrative, physical, and technical safeguards that reasonably protect the confidentiality, integrity, and availability of PHI. This includes AES-256 encryption at rest, TLS 1.3 in transit, MFA-enforced portal access, immutable audit logging, and automatic session timeout after 15 minutes of inactivity.</p>
+      <p>AES-256 encryption at rest, TLS 1.3 in transit, MFA-enforced portal access, immutable audit logging, and automatic session timeout after 15 minutes.</p>
       <h3>5. Term and Termination</h3>
-      <p>This BAA is effective upon electronic acceptance and remains in force for the duration of the service relationship. Either party may terminate upon 30 days written notice. Upon termination, Business Associate shall destroy all PHI within 30 days and provide written certification of destruction.</p>
+      <p>Effective upon electronic acceptance. Either party may terminate upon 30 days notice. PHI destroyed within 30 days of termination with written certification.</p>
       <h3>6. Governing Law</h3>
-      <p>This Agreement is governed by HIPAA/HITECH and applicable federal regulations. Any disputes shall be governed by the laws of the State of Delaware.</p>
+      <p>Governed by HIPAA/HITECH and the laws of the State of Delaware.</p>
     </div>
     <div class="baa-foot">
       <div class="baa-checks">
-        <label class="baa-check"><input type="checkbox" id="check1" onchange="checkBAA()"> I have read and understand the full Business Associate Agreement above.</label>
-        <label class="baa-check"><input type="checkbox" id="check2" onchange="checkBAA()"> I am a licensed healthcare provider authorized to enter into this agreement on behalf of my practice.</label>
-        <label class="baa-check"><input type="checkbox" id="check3" onchange="checkBAA()"> I agree to handle patient data in accordance with HIPAA regulations and the terms of this BAA.</label>
+        <label class="baa-check"><input type="checkbox" id="check1" onchange="checkBAA()"> I have read and understand the full Business Associate Agreement.</label>
+        <label class="baa-check"><input type="checkbox" id="check2" onchange="checkBAA()"> I am a licensed healthcare provider authorized to enter this agreement.</label>
+        <label class="baa-check"><input type="checkbox" id="check3" onchange="checkBAA()"> I agree to handle patient data in accordance with HIPAA and this BAA.</label>
       </div>
       <div class="baa-fields">
         <div class="bf-group"><label>Physician Full Name</label><input type="text" id="baa-name" placeholder="Dr. Jane Smith" oninput="checkBAA()"></div>
@@ -704,17 +639,15 @@ textarea {
   </div>
 </div>
 
-<!-- DECLINED -->
 <div id="declined-screen" class="screen" style="align-items:center;justify-content:center;background:linear-gradient(165deg,#080d1a 0%,#0d1426 60%,#080d1a 100%);text-align:center;">
   <div class="dec-box">
     <h2>Access Not Granted</h2>
-    <p>You must accept the Business Associate Agreement to access the Foundry One Sciences Physician Portal. This requirement is mandated by federal law under HIPAA.</p>
-    <p>Questions? Contact: <strong style="color:var(--white)"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="99ffebfcfdfaf6effcebd9fff6ecf7fdebe0f6f7fceafaf0fcf7fafceab7f6ebfe">[email&#160;protected]</a></strong></p>
+    <p>You must accept the Business Associate Agreement to access the portal.</p>
+    <p>Questions? Contact: <strong style="color:var(--white)"><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="3b5d495e5f58544d5e497b5d544e555f494254555e4858525e55585e481554495c">[email&#160;protected]</a></strong></p>
     <button class="btn-back" onclick="showScreen('baa-screen')">← Return to Agreement</button>
   </div>
 </div>
 
-<!-- LOGIN -->
 <div id="login-screen" class="screen">
   <div style="display:flex;align-items:center;justify-content:center;min-height:100vh;padding:2rem;background:radial-gradient(ellipse 60% 60% at 50% 40%,rgba(201,165,88,.05) 0%,transparent 70%),linear-gradient(165deg,#080d1a 0%,#0d1426 60%,#080d1a 100%);">
   <div class="login-box">
@@ -728,20 +661,16 @@ textarea {
     <button class="btn-gold-full" onclick="doLogin()">Access Portal</button>
     <div class="hipaa-notice">
       <div style="font-size:1rem;flex-shrink:0">🔒</div>
-      <div class="hipaa-text"><strong>HIPAA Compliant Environment.</strong> All sessions are encrypted end-to-end. PHI is handled under your active Business Associate Agreement.</div>
+      <div class="hipaa-text"><strong>HIPAA Compliant Environment.</strong> All sessions encrypted end-to-end under your active BAA.</div>
     </div>
-    <div class="login-footer">Foundry One Sciences LLC · Delaware · SDVOSB · Micro Entity<br>Access requests: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="4127332425222e37243301272e342f2533382e2f24322228242f2224326f2e3326">[email&#160;protected]</a></div>
+    <div class="login-footer">Foundry One Sciences LLC · Delaware · SDVOSB · Micro Entity<br>Access requests: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="7d1b0f18191e120b180f3d1b120813190f041213180e1e1418131e180e53120f1a">[email&#160;protected]</a></div>
   </div>
   </div>
 </div>
 
-<!-- DASHBOARD -->
 <div id="dashboard-screen" class="screen">
   <div class="topbar">
-    <div class="tb-brand">
-      <div class="tb-logo">Foundry One Sciences</div>
-      <div class="tb-tag">...&nbsp; we have not stopped looking</div>
-    </div>
+    <div><div class="tb-logo">Foundry One Sciences</div><div class="tb-tag">...&nbsp; we have not stopped looking</div></div>
     <div class="tb-right">
       <div class="tb-user"><span class="sdot"></span>Logged in as <span id="doctor-name">Dr. Smith</span></div>
       <button class="btn-logout" onclick="doLogout()">Logout</button>
@@ -758,7 +687,6 @@ textarea {
     </div>
     <div class="dash-main">
 
-      <!-- OVERVIEW -->
       <div class="dash-panel active" id="panel-overview">
         <div class="panel-title">Overview</div>
         <div class="panel-sub">Welcome back, <span id="doc-name-display">Dr. Smith</span> — your practice dashboard</div>
@@ -770,7 +698,7 @@ textarea {
         </div>
         <div class="activity-card">
           <div class="ac-title">Recent Activity</div>
-          <div class="ac-item"><div class="ac-dot green"></div><div class="ac-text">Brief delivered to physician — Token MRS-0019 · Metabolic / Insulin Resistance</div><div class="ac-time">2h ago</div></div>
+          <div class="ac-item"><div class="ac-dot green"></div><div class="ac-text">Brief delivered — Token MRS-0019 · Metabolic / Insulin Resistance</div><div class="ac-time">2h ago</div></div>
           <div class="ac-item"><div class="ac-dot blue"></div><div class="ac-text">Query submitted — Token MRS-0020 · Cardiovascular comorbidity w/ T2DM</div><div class="ac-time">4h ago</div></div>
           <div class="ac-item"><div class="ac-dot gold"></div><div class="ac-text">New case intake — MRS-0021 · Pending de-identification</div><div class="ac-time">Today 9:14am</div></div>
           <div class="ac-item"><div class="ac-dot green"></div><div class="ac-text">Brief delivered — Token MRS-0018 · Neurological / Cognitive Decline</div><div class="ac-time">Yesterday</div></div>
@@ -778,7 +706,6 @@ textarea {
         </div>
       </div>
 
-      <!-- INTAKE -->
       <div class="dash-panel" id="panel-intake">
         <div class="panel-title">New Patient Query</div>
         <div class="panel-sub">MRS Clinical Profile Intake Form v3.0 — Token-Only Protocol</div>
@@ -790,7 +717,15 @@ textarea {
               <div class="tagline">...&nbsp; we have not stopped looking</div>
               <div class="doc-title">Version 3.0 &nbsp;·&nbsp; Initial Patient Consultation &nbsp;·&nbsp; Token-Only Protocol</div>
             </div>
-            <form id="intakeForm" novalidate>
+            <!-- ALERTS -->
+<div class="alert alert-danger">
+  <strong>CRITICAL — TOKEN-ONLY PROTOCOL:</strong> Do NOT enter patient name, date of birth, address, phone number, insurance number, or any personal identifier anywhere in this form. Use the physician-assigned Patient Token only. MRS never receives or stores patient identity. The physician maintains the sole link between the token and the patient.
+</div>
+<div class="alert alert-info">
+  This is a first introduction. Complete every section as you would a comprehensive patient handoff to a new specialist. The MRS Engine has no prior knowledge of this patient — thoroughness directly determines output quality. Follow-up submissions will be significantly shorter.
+</div>
+
+<form id="intakeForm" novalidate>
 
 <!-- ═══════════════════════════════════════════════════ -->
 <!-- SECTION A -->
@@ -1272,7 +1207,6 @@ textarea {
         </div>
       </div>
 
-      <!-- ACTIVE CASES -->
       <div class="dash-panel" id="panel-cases">
         <div class="cases-header">
           <div><div class="panel-title">Active Cases</div><div class="panel-sub">All queries submitted by this practice</div></div>
@@ -1286,15 +1220,14 @@ textarea {
         <div class="case-list" id="case-list"></div>
       </div>
 
-      <!-- HIPAA -->
       <div class="dash-panel" id="panel-hipaa">
         <div class="panel-title">HIPAA &amp; Compliance</div>
         <div class="panel-sub">Current security posture and architecture overview</div>
         <div class="hipaa-grid">
           <div class="hipaa-card"><div class="hc-icon">🔐</div><div class="hc-title">Encryption</div><div class="hc-text">AES-256 at rest · TLS 1.3 in transit. PHI never stored in plaintext. Intake Vault isolated from MRS Engine layer.</div></div>
-          <div class="hipaa-card"><div class="hc-icon">🪪</div><div class="hc-title">Authentication</div><div class="hc-text">NPI-based login with MFA enforcement. Session timeout: 15 min inactivity. Failed login lockout: 5 attempts.</div></div>
-          <div class="hipaa-card"><div class="hc-icon">⚖️</div><div class="hc-title">De-identification</div><div class="hc-text">Safe Harbor method per 45 C.F.R. § 164.514(b). 18 HIPAA identifiers stripped. Token ID assigned. PHI never enters MRS Engine.</div></div>
-          <div class="hipaa-card"><div class="hc-icon">📋</div><div class="hc-title">Audit Logging</div><div class="hc-text">Immutable event log across all system layers. HIPAA-required retention: 6 years. Breach alert: 72-hour notification policy.</div></div>
+          <div class="hipaa-card"><div class="hc-icon">🪪</div><div class="hc-title">Authentication</div><div class="hc-text">NPI-based login with MFA enforcement. Session timeout: 15 min. Failed login lockout: 5 attempts.</div></div>
+          <div class="hipaa-card"><div class="hc-icon">⚖️</div><div class="hc-title">De-identification</div><div class="hc-text">Safe Harbor per 45 C.F.R. § 164.514(b). 18 identifiers stripped. Token assigned. PHI never enters MRS Engine.</div></div>
+          <div class="hipaa-card"><div class="hc-icon">📋</div><div class="hc-title">Audit Logging</div><div class="hc-text">Immutable event log. HIPAA retention: 6 years. Breach alert: 72-hour notification policy.</div></div>
         </div>
         <div class="activity-card">
           <div class="ac-title">Compliance Status</div>
@@ -1310,26 +1243,26 @@ textarea {
   </div>
 </div>
 
-<!-- BRIEF MODAL -->
 <div class="modal-overlay" id="brief-modal">
   <div class="brief-modal">
     <div class="bm-header">
-      <div>
-        <div class="bm-token" id="modal-token">MRS-0019</div>
-        <div class="bm-condition" id="modal-condition">Metabolic / Insulin Resistance</div>
-      </div>
+      <div><div class="bm-token" id="modal-token">MRS-0019</div><div class="bm-condition" id="modal-condition">Metabolic / Insulin Resistance</div></div>
       <button class="bm-close" onclick="closeModal()">✕ Close</button>
     </div>
     <div class="bm-body">
       <div class="delivered-banner" id="modal-delivered">
         <div class="db-icon">✓</div>
-        <div class="db-text"><strong>Research brief securely delivered to physician email</strong><span id="modal-time">Today · <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="06607463626569706374466069736862747f69686375656f636865637528697461">[email&#160;protected]</a></span></div>
+        <div class="db-text">
+          <strong>Research brief securely delivered to physician email</strong>
+          <span id="modal-time">fredcover@foundryonesciences.org</span>
+          <span style="color:var(--gold);margin-top:.4rem;display:block;border-top:1px solid rgba(201,165,88,.2);padding-top:.4rem;">&#128206; &nbsp; Physician Billing Support Statement attached &mdash; CPT documentation for enhanced E/M and care management billing included with this delivery</span>
+        </div>
       </div>
-      <div id="modal-pending-banner" style="display:none;padding:1rem 1.2rem;background:rgba(52,152,219,.06);border:1px solid rgba(52,152,219,.2);font-size:.78rem;color:var(--blue);margin-bottom:1.5rem;">⟳ &nbsp; MRS Engine is processing this query. Estimated delivery within selected timeframe.</div>
+      <div id="modal-pending-banner" style="display:none;padding:1rem 1.2rem;background:rgba(52,152,219,.06);border:1px solid rgba(52,152,219,.2);font-size:.78rem;color:var(--blue);margin-bottom:1.5rem;">⟳ &nbsp; MRS Engine processing this query.</div>
       <div class="bm-section">
         <div class="bm-sec-title">JELLO Classification</div>
         <div class="jello-legend">
-          <div class="jl-item"><div class="jl-swatch" style="background:#e74c3c"></div>Red — Molecular/Genomic</div>
+          <div class="jl-item"><div class="jl-swatch" style="background:#e74c3c"></div>Red — Molecular</div>
           <div class="jl-item"><div class="jl-swatch" style="background:#f1c40f"></div>Yellow — Cellular</div>
           <div class="jl-item"><div class="jl-swatch" style="background:#2ecc71"></div>Green — Systemic</div>
           <div class="jl-item"><div class="jl-swatch" style="background:#3498db"></div>Blue — Cross-Domain</div>
@@ -1338,16 +1271,16 @@ textarea {
         <div class="jello-bar" id="modal-jello"></div>
       </div>
       <div class="bm-section">
-        <div class="bm-sec-title">Top Insights — Summary Preview</div>
+        <div class="bm-sec-title">Top Insights</div>
         <div class="insight-list">
-          <div class="insight-item"><div class="ii-dot" style="background:#3498db"></div><div><div class="ii-text">Cross-domain signal identified between GLP-1 receptor agonist pathway and peripheral nerve regeneration markers — an under-explored intersection in T2DM neuropathy literature.</div><div class="ii-src">Source: Cardio-Metabolic × Neurological · JELLO Flavor: Endocrine-Neuro</div></div></div>
-          <div class="insight-item"><div class="ii-dot" style="background:#2ecc71"></div><div><div class="ii-text">Systemic pattern: patients on combined berberine + metformin showed statistically significant improvement in NCV scores in three independent cohorts — not yet reflected in standard-of-care guidelines.</div><div class="ii-src">Source: Metabolic Systemic · JELLO Flavor: Phytochemical-Pharmaceutical</div></div></div>
-          <div class="insight-item"><div class="ii-dot" style="background:#f1c40f"></div><div><div class="ii-text">Cellular insulin signaling dysregulation in Schwann cells may represent an upstream mechanism — emerging 2023–2024 literature suggests mitochondrial intervention window.</div><div class="ii-src">Source: Cellular · JELLO Flavor: Mitochondrial-Neurocellular</div></div></div>
+          <div class="insight-item"><div class="ii-dot" style="background:#3498db"></div><div><div class="ii-text">Cross-domain signal: GLP-1 receptor agonist pathway and peripheral nerve regeneration markers — under-explored intersection in T2DM neuropathy literature.</div><div class="ii-src">Cardio-Metabolic × Neurological · JELLO Flavor: Endocrine-Neuro</div></div></div>
+          <div class="insight-item"><div class="ii-dot" style="background:#2ecc71"></div><div><div class="ii-text">Combined berberine + metformin showed significant NCV score improvement in three independent cohorts — not yet in standard-of-care guidelines.</div><div class="ii-src">Metabolic Systemic · JELLO Flavor: Phytochemical-Pharmaceutical</div></div></div>
+          <div class="insight-item"><div class="ii-dot" style="background:#f1c40f"></div><div><div class="ii-text">Cellular insulin signaling dysregulation in Schwann cells — 2023–2024 literature suggests mitochondrial intervention window.</div><div class="ii-src">Cellular · JELLO Flavor: Mitochondrial-Neurocellular</div></div></div>
         </div>
       </div>
       <div class="bm-section">
         <div class="bm-sec-title">SaMD Output Notice</div>
-        <div class="samd-notice"><strong>RESEARCH INTELLIGENCE OUTPUT ONLY.</strong> This brief is produced by the MRS Engine, a Software as a Medical Device (SaMD) clinical decision support tool. It does not constitute medical advice, a diagnosis, or a treatment recommendation. All clinical decisions remain the exclusive responsibility of the licensed physician. De-identified patient data was used in query generation; no PHI appears in this brief.</div>
+        <div class="samd-notice"><strong>RESEARCH INTELLIGENCE OUTPUT ONLY.</strong> This brief does not constitute medical advice, a diagnosis, or a treatment recommendation. All clinical decisions remain the exclusive responsibility of the licensed physician. No PHI appears in this brief.<br><br><strong style="color:var(--gold);">BILLING DOCUMENTATION:</strong> A Physician Billing Support Statement is attached to this delivery. It contains ready-to-use chart note language supporting CPT codes 99214, 99215, 99490, 99487, 99358, and 99359. Retain with the patient record.</div>
       </div>
     </div>
   </div>
@@ -1357,139 +1290,229 @@ textarea {
 
 <script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 const cases=[
-  {token:'MRS-0019',condition:'Metabolic / Insulin Resistance — T2DM w/ Peripheral Neuropathy',date:'Mar 17, 2026 · 9:14am',status:'complete',jello:['green','blue','yellow']},
-  {token:'MRS-0020',condition:'Cardiovascular Comorbidity w/ T2DM',date:'Mar 16, 2026 · 3:22pm',status:'processing',jello:['blue','red']},
-  {token:'MRS-0021',condition:'Neurological / Early Cognitive Decline',date:'Mar 16, 2026 · 11:08am',status:'pending',jello:['violet','yellow']},
-  {token:'MRS-0018',condition:'Autoimmune Thyroid — Hashimoto\'s w/ Fatigue Profile',date:'Mar 14, 2026',status:'complete',jello:['red','green','blue']},
-  {token:'MRS-0017',condition:'Hypertension-Resistant w/ Metabolic Syndrome',date:'Mar 12, 2026',status:'complete',jello:['green','blue']},
+  {token:"MRS-0019",condition:"Metabolic / Insulin Resistance — T2DM w/ Peripheral Neuropathy",date:"Mar 17, 2026 · 9:14am",status:"complete",jello:["green","blue","yellow"]},
+  {token:"MRS-0020",condition:"Cardiovascular Comorbidity w/ T2DM",date:"Mar 16, 2026 · 3:22pm",status:"processing",jello:["blue","red"]},
+  {token:"MRS-0021",condition:"Neurological / Early Cognitive Decline",date:"Mar 16, 2026 · 11:08am",status:"pending",jello:["violet","yellow"]},
+  {token:"MRS-0018",condition:"Autoimmune Thyroid — Hashimoto's w/ Fatigue Profile",date:"Mar 14, 2026",status:"complete",jello:["red","green","blue"]},
+  {token:"MRS-0017",condition:"Hypertension-Resistant w/ Metabolic Syndrome",date:"Mar 12, 2026",status:"complete",jello:["green","blue"]},
 ];
-let filterState='all';
+let filterState="all";
 
 function renderCases(filter){
-  const list=document.getElementById('case-list');
-  const filtered=filter==='all'?cases:cases.filter(c=>c.status===filter);
+  const list=document.getElementById("case-list");
+  const filtered=filter==="all"?cases:cases.filter(c=>c.status===filter);
   if(!filtered.length){list.innerHTML='<div style="text-align:center;padding:4rem;color:var(--muted);font-size:.8rem;">No cases in this category.</div>';return;}
-  const labels={red:'Red · Molecular',yellow:'Yellow · Cellular',green:'Green · Systemic',blue:'Blue · Cross-Domain',violet:'Violet · Translational'};
-  const statusColor={complete:'var(--green)',processing:'var(--blue)',pending:'var(--muted)'};
-  const statusLabel={complete:'Brief Delivered',processing:'Processing',pending:'Pending'};
+  const labels={red:"Red · Molecular",yellow:"Yellow · Cellular",green:"Green · Systemic",blue:"Blue · Cross-Domain",violet:"Violet · Translational"};
+  const sc={complete:"var(--green)",processing:"var(--blue)",pending:"var(--muted)"};
+  const sl={complete:"Brief Delivered",processing:"Processing",pending:"Pending"};
   list.innerHTML=filtered.map(c=>`<div class="case-card ${c.status}" onclick="openCase('${c.token}')">
     <div class="case-token">${c.token}</div>
     <div><div class="case-condition">${c.condition}</div><div class="case-meta">${c.date}</div></div>
-    <div class="case-jello">${c.jello.map(col=>`<div class="jello-dot ${col}"></div>`).join('')}</div>
-    <div class="case-status"><div class="status-dot ${c.status}"></div><span style="color:${statusColor[c.status]}">${statusLabel[c.status]}</span></div>
+    <div class="case-jello">${c.jello.map(col=>`<div class="jello-dot ${col}"></div>`).join("")}</div>
+    <div class="case-status"><div class="status-dot ${c.status}"></div><span style="color:${sc[c.status]}">${sl[c.status]}</span></div>
     <div class="case-chevron">›</div>
-  </div>`).join('');
+  </div>`).join("");
 }
 
 function filterCases(f,el){
   filterState=f;
-  document.querySelectorAll('.cf-btn').forEach(b=>b.classList.remove('active'));
-  el.classList.add('active');
+  document.querySelectorAll(".cf-btn").forEach(b=>b.classList.remove("active"));
+  el.classList.add("active");
   renderCases(f);
 }
 
 function openCase(token){
   const c=cases.find(x=>x.token===token);
   if(!c)return;
-  document.getElementById('modal-token').textContent=c.token;
-  document.getElementById('modal-condition').textContent=c.condition;
-  const labels={red:'Red · Molecular/Genomic',yellow:'Yellow · Cellular',green:'Green · Systemic',blue:'Blue · Cross-Domain',violet:'Violet · Translational'};
-  document.getElementById('modal-jello').innerHTML=c.jello.map(col=>`<div class="jello-chip ${col}">${labels[col]}</div>`).join('');
-  if(c.status==='complete'){
-    document.getElementById('modal-delivered').style.display='flex';
-    document.getElementById('modal-pending-banner').style.display='none';
-    document.getElementById('modal-time').textContent=c.date+' · fredcover@foundryonesciences.org';
+  document.getElementById("modal-token").textContent=c.token;
+  document.getElementById("modal-condition").textContent=c.condition;
+  const labels={red:"Red · Molecular/Genomic",yellow:"Yellow · Cellular",green:"Green · Systemic",blue:"Blue · Cross-Domain",violet:"Violet · Translational"};
+  document.getElementById("modal-jello").innerHTML=c.jello.map(col=>`<div class="jello-chip ${col}">${labels[col]}</div>`).join("");
+  if(c.status==="complete"){
+    document.getElementById("modal-delivered").style.display="flex";
+    document.getElementById("modal-pending-banner").style.display="none";
+    document.getElementById("modal-time").textContent=c.date+" · fredcover@foundryonesciences.org";
   }else{
-    document.getElementById('modal-delivered').style.display='none';
-    document.getElementById('modal-pending-banner').style.display='block';
+    document.getElementById("modal-delivered").style.display="none";
+    document.getElementById("modal-pending-banner").style.display="block";
   }
-  document.getElementById('brief-modal').classList.add('open');
+  document.getElementById("brief-modal").classList.add("open");
 }
 
-function closeModal(){document.getElementById('brief-modal').classList.remove('open');}
+function closeModal(){document.getElementById("brief-modal").classList.remove("open");}
 
 function showScreen(id){
-  document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
-  document.getElementById(id).classList.add('active');
+  document.querySelectorAll(".screen").forEach(s=>s.classList.remove("active"));
+  document.getElementById(id).classList.add("active");
 }
 
 function showPanel(name,el){
-  document.querySelectorAll('.dash-panel').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.sidebar-item').forEach(i=>i.classList.remove('active'));
-  document.getElementById('panel-'+name).classList.add('active');
-  if(el)el.classList.add('active');
-  if(name==='cases')renderCases(filterState);
+  document.querySelectorAll(".dash-panel").forEach(p=>p.classList.remove("active"));
+  document.querySelectorAll(".sidebar-item").forEach(i=>i.classList.remove("active"));
+  document.getElementById("panel-"+name).classList.add("active");
+  if(el)el.classList.add("active");
+  if(name==="cases")renderCases(filterState);
+  if(name==="intake"){
+    var t=document.getElementById("bioBody");
+    if(t&&t.rows.length===0){
+      for(var i=0;i<6;i++)addLabRow("bioBody");
+      for(var i=0;i<5;i++)addComorbRow();
+      for(var i=0;i<5;i++)addTxRow();
+      for(var i=0;i<6;i++)addMedRow();
+      for(var i=0;i<6;i++)addLabRow("labBody");
+    }
+  }
 }
 
-const scrollArea=document.getElementById('baa-scroll-area');
-const scrollPrompt=document.getElementById('scroll-prompt');
-scrollArea.addEventListener('scroll',function(){
-  if(this.scrollTop+this.clientHeight>=this.scrollHeight-30)scrollPrompt.classList.add('hidden');
+const scrollArea=document.getElementById("baa-scroll-area");
+const scrollPrompt=document.getElementById("scroll-prompt");
+scrollArea.addEventListener("scroll",function(){
+  if(this.scrollTop+this.clientHeight>=this.scrollHeight-30)scrollPrompt.classList.add("hidden");
 });
 
 function checkBAA(){
-  const ok=document.getElementById('check1').checked&&document.getElementById('check2').checked&&document.getElementById('check3').checked&&document.getElementById('baa-name').value.trim()&&document.getElementById('baa-npi').value.trim();
-  document.getElementById('accept-btn').classList.toggle('enabled',!!ok);
+  const ok=document.getElementById("check1").checked&&document.getElementById("check2").checked&&document.getElementById("check3").checked&&document.getElementById("baa-name").value.trim()&&document.getElementById("baa-npi").value.trim();
+  document.getElementById("accept-btn").classList.toggle("enabled",!!ok);
 }
 
 function acceptBAA(){
-  const name=document.getElementById('baa-name').value.trim();
-  const npi=document.getElementById('baa-npi').value.trim();
-  const docName=name.startsWith('Dr.')?name:'Dr. '+name.split(' ').pop();
-  document.getElementById('npi-input').value=npi;
-  document.getElementById('doctor-name').textContent=docName;
-  document.getElementById('doc-name-display').textContent=docName;
-  showScreen('login-screen');
-  showToast('BAA accepted and on file. Welcome, '+docName+'.');
+  const name=document.getElementById("baa-name").value.trim();
+  const npi=document.getElementById("baa-npi").value.trim();
+  const docName=name.startsWith("Dr.")?name:"Dr. "+name.split(" ").pop();
+  document.getElementById("npi-input").value=npi;
+  document.getElementById("doctor-name").textContent=docName;
+  document.getElementById("doc-name-display").textContent=docName;
+  showScreen("login-screen");
+  showToast("BAA accepted and on file. Welcome, "+docName+".");
 }
 
-function declineBAA(){showScreen('declined-screen');}
+function declineBAA(){showScreen("declined-screen");}
 
 function doLogin(){
-  const npi=document.getElementById('npi-input').value.trim();
-  const pass=document.getElementById('pass-input').value.trim();
-  if(!npi||!pass){showToast('Please enter your NPI number and access code.');return;}
-  showScreen('dashboard-screen');
-  renderCases('all');
-  showToast('Secure session established. Welcome, '+document.getElementById('doctor-name').textContent+'.');
+  const npi=document.getElementById("npi-input").value.trim();
+  const pass=document.getElementById("pass-input").value.trim();
+  if(!npi||!pass){showToast("Please enter your NPI number and access code.");return;}
+  showScreen("dashboard-screen");
+  renderCases("all");
+  showToast("Secure session established. Welcome, "+document.getElementById("doctor-name").textContent+".");
 }
 
 function doLogout(){
-  showScreen('welcome-screen');
-  document.getElementById('npi-input').value='';
-  document.getElementById('pass-input').value='';
-  ['check1','check2','check3'].forEach(id=>document.getElementById(id).checked=false);
-  ['baa-name','baa-npi','baa-practice','baa-email'].forEach(id=>document.getElementById(id).value='');
-  document.getElementById('accept-btn').classList.remove('enabled');
+  showScreen("welcome-screen");
+  document.getElementById("npi-input").value="";
+  document.getElementById("pass-input").value="";
+  ["check1","check2","check3"].forEach(id=>document.getElementById(id).checked=false);
+  ["baa-name","baa-npi","baa-practice","baa-email"].forEach(id=>document.getElementById(id).value="");
+  document.getElementById("accept-btn").classList.remove("enabled");
   scrollArea.scrollTop=0;
-  scrollPrompt.classList.remove('hidden');
+  scrollPrompt.classList.remove("hidden");
 }
 
-function setUrgency(el,val){
-  document.querySelectorAll('.urgency-btn').forEach(b=>b.className='urgency-btn');
-  el.classList.add('sel-'+val);
+function showToast(msg){
+  const t=document.getElementById("toast");
+  document.getElementById("toast-msg").textContent=msg;
+  t.classList.add("show");
+  setTimeout(()=>t.classList.remove("show"),3500);
 }
 
-function simulateUpload(){
-  const files=['Lab_Results_CBC_Mar2026.pdf','Imaging_MRI_Brain.pdf','Medication_Reconciliation.pdf'];
-  const name=files[Math.floor(Math.random()*files.length)];
-  const list=document.getElementById('file-list');
-  const item=document.createElement('div');
-  item.style.cssText='display:flex;align-items:center;gap:.6rem;font-size:.72rem;color:var(--muted);padding:.35rem .7rem;background:rgba(201,165,88,.04);border:1px solid var(--border);';
-  item.innerHTML=`<span style="color:var(--green)">✓</span>${name}<span style="margin-left:auto;opacity:.5;cursor:pointer" onclick="this.parentElement.remove()">✕</span>`;
-  list.appendChild(item);
-  showToast(name+' uploaded securely.');
+
+function countWords(fieldId, counterId, minWords) {
+  const field = document.getElementById(fieldId);
+  const counter = document.getElementById(counterId);
+  if (!field || !counter) return 0;
+  const text = field.value.trim();
+  const words = text === '' ? 0 : text.split(/\s+/).length;
+  const pct = minWords > 0 ? Math.min(words / minWords, 1) : 0;
+  const ok = minWords === 0 || words >= minWords;
+  const color = ok ? '#27AE60' : (words > 0 ? '#E67E22' : '#AAA');
+  if (minWords > 0) {
+    counter.innerHTML =
+      '<span class="wc-text ' + (ok ? 'wc-ok' : 'wc-warn') + '">' + words + ' / ' + minWords + ' words</span>' +
+      '<div class="wc-bar-bg"><div class="wc-bar-fill" style="width:' + Math.round(pct * 100) + '%;background:' + color + '"></div></div>';
+  } else {
+    counter.innerHTML = '<span class="wc-text wc-neutral">' + words + ' words</span>';
+  }
+  return words;
 }
 
-function submitIntake(){
-  if(!document.getElementById('con1').checked||!document.getElementById('con2').checked){showToast('Please confirm both patient authorization checkboxes.');return;}
-  document.getElementById('intake-form-body').style.display='none';
-  document.getElementById('intake-success').style.display='block';
-  const num=22+cases.length;
-  document.getElementById('new-token').textContent='MRS-0'+num;
-  const badge=document.getElementById('notif-count');
-  badge.textContent=parseInt(badge.textContent)+1;
-  showToast('Query submitted · Token MRS-0'+num+' assigned.');
+function updateGate() {
+  const eWords = countWords('secE', 'wc_secE', 75);
+  const attOk = document.getElementById('attestCheck').checked;
+  const eOk = eWords >= 75;
+  const ge = document.getElementById('gate_e');
+  const ga = document.getElementById('gate_att');
+  ge.className = eOk ? 'g-ok' : 'g-bad';
+  ge.textContent = eOk ? 'Section E complete ✓' : 'Section E needs ' + (75 - eWords) + ' more words';
+  ga.className = attOk ? 'g-ok' : 'g-bad';
+  ga.textContent = attOk ? 'Attestation confirmed ✓' : 'Attestation not confirmed';
+  document.getElementById('submitBtn').disabled = !(eOk && attOk);
 }
 
-functio
+function makeDelBtn(row) {
+  const td = document.createElement('td');
+  const btn = document.createElement('button');
+  btn.type = 'button';
+  btn.className = 'del-btn';
+  btn.textContent = '✕';
+  btn.onclick = function() { row.remove(); };
+  td.appendChild(btn);
+  return td;
+}
+
+function addLabRow(tbodyId) {
+  const tbody = document.getElementById(tbodyId);
+  const tr = document.createElement('tr');
+  tr.innerHTML =
+    '<td><input type="text" placeholder="Test or vital sign name"></td>' +
+    '<td><input type="number" step="any" placeholder="0.00"></td>' +
+    '<td><input type="text" placeholder="unit"></td>' +
+    '<td><input type="text" placeholder="normal range"></td>' +
+    '<td><input type="date"></td>' +
+    '<td><select><option>—</option><option>H</option><option>L</option><option>C</option><option>N</option></select></td>';
+  tr.appendChild(makeDelBtn(tr));
+  tbody.appendChild(tr);
+}
+
+function addComorbRow() {
+  const tbody = document.getElementById('comorbBody');
+  const tr = document.createElement('tr');
+  tr.innerHTML =
+    '<td><input type="text" placeholder="Condition or diagnosis name"></td>' +
+    '<td><input type="text" placeholder="ICD-10"></td>' +
+    '<td><input type="number" min="0" placeholder="months"></td>' +
+    '<td><select><option>—</option><option>Oncology</option><option>Cardiovascular</option><option>Neurological</option><option>Metabolic</option><option>Ophthalmologic</option><option>Infectious</option><option>Immunological</option><option>Other</option></select></td>' +
+    '<td><select><option>—</option><option>Active</option><option>Chronic / Stable</option><option>In Remission</option><option>Historical</option></select></td>';
+  tr.appendChild(makeDelBtn(tr));
+  tbody.appendChild(tr);
+}
+
+function addTxRow() {
+  const tbody = document.getElementById('txBody');
+  const tr = document.createElement('tr');
+  tr.innerHTML =
+    '<td><input type="text" placeholder="Treatment or intervention name"></td>' +
+    '<td><input type="number" min="0" placeholder="months"></td>' +
+    '<td><select><option>—</option><option>Effective</option><option>Partial response</option><option>No response</option><option>Discontinued</option><option>Ongoing</option></select></td>' +
+    '<td><input type="text" placeholder="Reason discontinued or ongoing"></td>' +
+    '<td><input type="text" placeholder="Prescribing specialty"></td>';
+  tr.appendChild(makeDelBtn(tr));
+  tbody.appendChild(tr);
+}
+
+function addMedRow() {
+  const tbody = document.getElementById('medBody');
+  const tr = document.createElement('tr');
+  tr.innerHTML =
+    '<td><input type="text" placeholder="Medication or supplement name"></td>' +
+    '<td><input type="number" step="any" placeholder="0"></td>' +
+    '<td><input type="text" placeholder="mg"></td>' +
+    '<td><select><option>—</option><option>Once daily</option><option>Twice daily</option><option>Three times daily</option><option>Four times daily</option><option>Weekly</option><option>Bi-weekly</option><option>Monthly</option><option>As needed</option><option>Other</option></select></td>' +
+    '<td><input type="number" min="0" placeholder="months"></td>' +
+    '<td><input type="text" placeholder="Specialty"></td>';
+  tr.appendChild(makeDelBtn(tr));
+  tbody.appendChild(tr);
+}
+
+// Pre-populate tables with starter rows
+(function init() {
+  for (var i = 0; i < 6; i++) a
