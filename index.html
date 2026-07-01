@@ -586,28 +586,20 @@ textarea {
     <div class="grid-2">
       <div class="field">
         <label>Patient Token <span class="req">*</span>
-          <span class="note">Physician-assigned alphanumeric code only — no patient name (e.g. 7842 or PT-2026-001)</span>
+          <span class="note">Scan patient QR code or enter token manually &mdash; scanning a returning patient&rsquo;s QR links to their existing case</span>
         </label>
-        <input type="text" placeholder="e.g. PT-2026-001">
+        <input type="text" placeholder="Scan patient QR code or enter token manually">
       </div>
       <div class="field">
         <label>Submission Date <span class="req">*</span></label>
         <input type="date">
       </div>
     </div>
-    <div class="grid-2">
-      <div class="field">
-        <label>Practice ID <span class="req">*</span>
-          <span class="note">Assigned by Foundry One Sciences at onboarding</span>
-        </label>
-        <input type="text" placeholder="Practice ID">
-      </div>
-      <div class="field">
-        <label>Submitting Staff Initials
-          <span class="note">2–4 initials for audit record</span>
-        </label>
-        <input type="text" placeholder="e.g. JKL" maxlength="4">
-      </div>
+    <div class="field">
+      <label>Submitting Staff Initials
+        <span class="note">2–4 initials for audit record</span>
+      </label>
+      <input type="text" placeholder="e.g. JKL" maxlength="4">
     </div>
     <div class="grid-2">
       <div class="field">
@@ -620,26 +612,6 @@ textarea {
         </label>
         <input type="text" id="npiInput" inputmode="numeric" maxlength="10" placeholder="10-digit NPI (e.g. 1234567890)" oninput="checkNpi()">
         <div id="npi-status" style="font-size:12px;margin-top:.3rem;color:#888;"></div>
-      </div>
-    </div>
-    <div class="grid-2">
-      <div class="field">
-        <label>Submission Priority <span class="req">*</span></label>
-        <div class="radio-group">
-          <label><input type="radio" name="priority" value="standard"> Standard (24–48 hr)</label>
-          <label><input type="radio" name="priority" value="urgent"> Urgent (same day)</label>
-          <label><input type="radio" name="priority" value="routine"> Routine (weekly batch)</label>
-        </div>
-      </div>
-      <div class="field">
-        <label>Output Focus Requested</label>
-        <div class="check-group">
-          <label><input type="checkbox"> Drug interactions</label>
-          <label><input type="checkbox"> Emerging treatments</label>
-          <label><input type="checkbox"> Cross-domain scan</label>
-          <label><input type="checkbox"> Caution signal</label>
-          <label><input type="checkbox"> Full analysis</label>
-        </div>
       </div>
     </div>
   </div>
