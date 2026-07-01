@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Foundry One Sciences &mdash; Physician Portal</title>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Jost:wght@300;400;500;600&family=Crimson+Pro:ital,wght@0,300;1,300&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&family=Source+Sans+3:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/amazon-cognito-identity-js/dist/amazon-cognito-identity.min.js"></script>
 <style>
 :root{--navy:#080d1a;--navy2:#0d1426;--navy3:#111c35;--gold:#c9a558;--gold2:#e2c07a;--white:#f5f2ec;--muted:#8a96b0;--border:rgba(201,165,88,0.18);--glow:rgba(201,165,88,0.06);--green:#2ecc71;--red:#e74c3c;--blue:#3498db;--amber:#e8a020;}
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
@@ -656,8 +657,10 @@ textarea {
     <div class="baa-confirmed">&#10003; &nbsp; Business Associate Agreement accepted &amp; on file</div>
     <div class="login-title">Physician Portal</div>
     <div class="login-sub">MRS Engine &middot; Clinical Intelligence Platform</div>
-    <div class="form-group"><label>NPI Number</label><input type="text" id="npi-input" placeholder="Enter your NPI number"></div>
-    <div class="form-group"><label>Access Code</label><input type="password" id="pass-input" placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;"></div>
+    <div class="form-group"><label>Email</label><input type="email" id="login-email" placeholder="physician@example.com" autocomplete="username"></div>
+    <div class="form-group"><label>Password</label><input type="password" id="login-pass" placeholder="&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;&bull;" autocomplete="current-password"></div>
+    <div class="form-group" id="totp-group" style="display:none"><label>Authenticator Code</label><input type="text" id="login-totp" placeholder="6-digit code" inputmode="numeric" maxlength="6" autocomplete="one-time-code"></div>
+    <div id="login-error" style="display:none;color:#e05252;font-size:.75rem;margin-top:.5rem;text-align:center;"></div>
     <button class="btn-gold-full" onclick="doLogin()">Access Portal</button>
     <div class="hipaa-notice">
       <div style="font-size:1rem;flex-shrink:0">&#128274;</div>
@@ -1225,7 +1228,7 @@ textarea {
         <div class="panel-sub">Current security posture and architecture overview</div>
         <div class="hipaa-grid">
           <div class="hipaa-card"><div class="hc-icon">&#128272;</div><div class="hc-title">Encryption</div><div class="hc-text">AES-256 at rest &middot; TLS 1.3 in transit. PHI never stored in plaintext. Intake Vault isolated from MRS Engine layer.</div></div>
-          <div class="hipaa-card"><div class="hc-icon">&#128219;</div><div class="hc-title">Authentication</div><div class="hc-text">NPI-based login with MFA enforcement. Session timeout: 15 min. Failed login lockout: 5 attempts.</div></div>
+          <div class="hipaa-card"><div class="hc-icon">&#128219;</div><div class="hc-title">Authentication</div><div class="hc-text">Email/password login with MFA enforcement. Session timeout: 15 min. Failed login lockout: 5 attempts.</div></div>
           <div class="hipaa-card"><div class="hc-icon">&#9878;&#65039;</div><div class="hc-title">De-identification</div><div class="hc-text">Safe Harbor per 45 C.F.R. &sect; 164.514(b). 18 identifiers stripped. Token assigned. PHI never enters MRS Engine.</div></div>
           <div class="hipaa-card"><div class="hc-icon">&#128203;</div><div class="hc-title">Audit Logging</div><div class="hc-text">Immutable event log. HIPAA retention: 6 years. Breach alert: 72-hour notification policy.</div></div>
         </div>
@@ -1379,7 +1382,6 @@ function acceptBAA(){
   const name=document.getElementById("baa-name").value.trim();
   const npi=document.getElementById("baa-npi").value.trim();
   const docName=name.startsWith("Dr.")?name:"Dr. "+name.split(" ").pop();
-  document.getElementById("npi-input").value=npi;
   document.getElementById("doctor-name").textContent=docName;
   document.getElementById("doc-name-display").textContent=docName;
   showScreen("login-screen");
@@ -1388,24 +1390,81 @@ function acceptBAA(){
 
 function declineBAA(){showScreen("declined-screen");}
 
+const _pool = new AmazonCognitoIdentity.CognitoUserPool({
+  UserPoolId: 'us-east-2_XhMFlsctc',
+  ClientId:   '2u8t80elmg4r5osv43rnj9ib2i',
+});
+let _cognitoUser = null;
+let _idToken     = null;  // stored after login; used by handleSubmit() for Bearer auth
+
+function _loginError(msg){
+  const el=document.getElementById('login-error');
+  el.textContent=msg;
+  el.style.display=msg?'block':'none';
+}
+
 function doLogin(){
-  const npi=document.getElementById("npi-input").value.trim();
-  const pass=document.getElementById("pass-input").value.trim();
-  if(!npi||!pass){showToast("Please enter your NPI number and access code.");return;}
-  showScreen("dashboard-screen");
-  renderCases("all");
-  showToast("Secure session established. Welcome, "+document.getElementById("doctor-name").textContent+".");
+  _loginError('');
+  // If the TOTP input is visible the physician is submitting their MFA code
+  const totpGroup=document.getElementById('totp-group');
+  if(totpGroup.style.display!=='none'){
+    const code=document.getElementById('login-totp').value.trim();
+    if(!code){_loginError('Please enter your 6-digit authenticator code.');return;}
+    _cognitoUser.sendMFACode(code,{
+      onSuccess(session){_onLoginSuccess(session);},
+      onFailure(err){_loginError(err.message||'Invalid code — try again.');}
+    },'SOFTWARE_TOKEN_MFA');
+    return;
+  }
+  const email=document.getElementById('login-email').value.trim();
+  const pass=document.getElementById('login-pass').value;
+  if(!email||!pass){_loginError('Please enter your email and password.');return;}
+  _cognitoUser=new AmazonCognitoIdentity.CognitoUser({Username:email,Pool:_pool});
+  const authDetails=new AmazonCognitoIdentity.AuthenticationDetails({Username:email,Password:pass});
+  _cognitoUser.authenticateUser(authDetails,{
+    onSuccess(session){_onLoginSuccess(session);},
+    onFailure(err){
+      const msg=err.code==='NotAuthorizedException'?'Incorrect email or password.':
+                err.code==='UserNotFoundException'?'No account found for that email.':
+                err.message||'Sign-in failed — please try again.';
+      _loginError(msg);
+    },
+    totpRequired(){
+      document.getElementById('totp-group').style.display='block';
+      document.getElementById('login-totp').focus();
+      showToast('Enter the 6-digit code from your authenticator app.');
+    }
+  });
+}
+
+function _onLoginSuccess(session){
+  _idToken=session.getIdToken().getJwtToken();
+  try{
+    const payload=JSON.parse(atob(_idToken.split('.')[1]));
+    document.getElementById('doctor-name').textContent=payload.email||'Physician';
+  }catch(e){}
+  document.getElementById('totp-group').style.display='none';
+  _loginError('');
+  showScreen('dashboard-screen');
+  renderCases('all');
+  showToast('Secure session established. Welcome.');
 }
 
 function doLogout(){
-  showScreen("welcome-screen");
-  document.getElementById("npi-input").value="";
-  document.getElementById("pass-input").value="";
+  if(_cognitoUser){_cognitoUser.signOut();}
+  _cognitoUser=null;
+  _idToken=null;
+  document.getElementById('login-email').value='';
+  document.getElementById('login-pass').value='';
+  document.getElementById('login-totp').value='';
+  document.getElementById('totp-group').style.display='none';
+  _loginError('');
   ["check1","check2","check3"].forEach(id=>document.getElementById(id).checked=false);
   ["baa-name","baa-npi","baa-practice","baa-email"].forEach(id=>document.getElementById(id).value="");
   document.getElementById("accept-btn").classList.remove("enabled");
   scrollArea.scrollTop=0;
   scrollPrompt.classList.remove("hidden");
+  showScreen("welcome-screen");
 }
 
 function showToast(msg){
