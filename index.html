@@ -588,7 +588,11 @@ textarea {
         <label>Patient Token <span class="req">*</span>
           <span class="note">Scan patient QR code or enter token manually &mdash; scanning a returning patient&rsquo;s QR links to their existing case</span>
         </label>
-        <input type="text" placeholder="Scan patient QR code or enter token manually">
+        <input type="text" id="patientTokenInput"
+          placeholder="Scan patient QR code or enter token manually"
+          onchange="lookupPriorVisit(this.value.trim())"
+          onkeydown="if(event.key==='Enter'){event.preventDefault();lookupPriorVisit(this.value.trim());}">
+        <div id="prior-visit-panel" style="display:none;margin-top:.6rem;"></div>
       </div>
       <div class="field">
         <label>Submission Date <span class="req">*</span></label>
@@ -1067,6 +1071,61 @@ function checkNpi(){
   const valid=/^\d{10}$/.test(v);
   el.style.color=valid?'#27AE60':'#C0392B';
   el.textContent=valid?'\u2713 Valid NPI format':'Must be exactly 10 digits ('+v.length+' entered)';
+}
+
+async function lookupPriorVisit(token){
+  const panel=document.getElementById('prior-visit-panel');
+  // Always clear before any state change — auto-clear on every call.
+  panel.style.display='none';
+  panel.innerHTML='';
+  if(!token)return;
+  if(!_idToken){return;}
+  let res;
+  try{
+    res=await fetch(
+      'https://ily73480dd.execute-api.us-east-2.amazonaws.com/prod/consultation/by-token/'+encodeURIComponent(token),
+      {headers:{Authorization:'Bearer '+_idToken}}
+    );
+  }catch(e){
+    panel.innerHTML='<div style="padding:.7rem 1rem;border-radius:6px;background:rgba(232,160,32,.13);border:1px solid rgba(232,160,32,.35);color:#e8a020;font-size:.85rem;">Prior visit lookup failed &mdash; check your connection and try again.</div>';
+    panel.style.display='block';
+    return;
+  }
+  if(res.status===404){
+    panel.innerHTML='<div style="padding:.6rem 1rem;border-radius:6px;background:rgba(138,150,176,.08);border:1px solid rgba(138,150,176,.2);color:#8a96b0;font-size:.82rem;">No prior visit on record for this token.</div>';
+    panel.style.display='block';
+    return;
+  }
+  if(res.status===401){
+    panel.innerHTML='<div style="padding:.7rem 1rem;border-radius:6px;background:rgba(231,76,60,.13);border:1px solid rgba(231,76,60,.35);color:#e74c3c;font-size:.85rem;">Session expired &mdash; please log out and sign in again.</div>';
+    panel.style.display='block';
+    return;
+  }
+  if(!res.ok){
+    panel.innerHTML='<div style="padding:.7rem 1rem;border-radius:6px;background:rgba(232,160,32,.13);border:1px solid rgba(232,160,32,.35);color:#e8a020;font-size:.85rem;">Prior visit lookup failed (status '+res.status+'). Try again or proceed without prior data.</div>';
+    panel.style.display='block';
+    return;
+  }
+  // 200 — prior visit found.
+  const d=await res.json();
+  const visitDate=d.minted_at?new Date(d.minted_at).toLocaleDateString('en-US',{year:'numeric',month:'long',day:'numeric'}):'Unknown date';
+  const comorbList=Array.isArray(d.comorbidities)&&d.comorbidities.length?d.comorbidities.join(', '):'None recorded';
+  const medList=Array.isArray(d.medications)&&d.medications.length?d.medications.join(', '):'None recorded';
+  const anomaly=d.clinical_anomaly||'None recorded';
+  panel.innerHTML=
+    '<div style="padding:.9rem 1.1rem;border-radius:6px;background:rgba(52,152,219,.1);border:1px solid rgba(52,152,219,.35);font-size:.85rem;line-height:1.6;">'+
+    '<div style="font-weight:600;letter-spacing:.06em;font-size:.78rem;color:#3498db;margin-bottom:.5rem;">PRIOR VISIT &mdash; READ ONLY &nbsp;&middot;&nbsp; '+visitDate+'</div>'+
+    '<div><span style="color:#8a96b0;">Diagnosis:</span> '+_escHtml(d.diagnosis||'')+'</div>'+
+    '<div><span style="color:#8a96b0;">Comorbidities:</span> '+_escHtml(comorbList)+'</div>'+
+    '<div><span style="color:#8a96b0;">Medications:</span> '+_escHtml(medList)+'</div>'+
+    '<div><span style="color:#8a96b0;">Clinical anomaly:</span> '+_escHtml(anomaly)+'</div>'+
+    '</div>';
+  panel.style.display='block';
+  showToast('Last Visit Entered');
+}
+
+function _escHtml(s){
+  return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
 const _pool = new AmazonCognitoIdentity.CognitoUserPool({
