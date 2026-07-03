@@ -209,10 +209,6 @@ body {
 .section-body { padding: 1.75rem 2rem; }
 .section-body > * + * { margin-top: 1.25rem; }
 
-/* anomaly section */
-.anomaly-header { background: var(--red) !important; }
-.anomaly-header .sec-label { color: #FFCDD2 !important; }
-
 /* gate section */
 .gate-header { background: var(--gold) !important; }
 .gate-header .sec-label { color: #4A2E00 !important; }
@@ -279,10 +275,8 @@ textarea {
 
 /* grid layouts */
 .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem; }
-.grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1.25rem; }
-.grid-4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 1rem; }
 @media (max-width: 700px) {
-  .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; }
+  .grid-2 { grid-template-columns: 1fr; }
 }
 
 /* radio / checkbox groups */
@@ -332,101 +326,6 @@ textarea {
   max-width: 200px;
 }
 .wc-bar-fill { height: 100%; border-radius: 5px; transition: width .2s, background .2s; }
-
-/* ── TABLES ── */
-.data-table-wrap { overflow-x: auto; }
-.data-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 13.5px;
-  table-layout: fixed;
-}
-.data-table th {
-  background: var(--navy);
-  color: #fff;
-  font-weight: 600;
-  font-size: 12.5px;
-  padding: .6rem .75rem;
-  text-align: left;
-  white-space: nowrap;
-}
-.data-table td {
-  padding: .2rem .3rem;
-  border-bottom: 1px solid #EBEBEB;
-  vertical-align: middle;
-}
-.data-table tr:nth-child(even) td { background: var(--lgray); }
-.data-table td input,
-.data-table td select {
-  border: none;
-  background: transparent;
-  font-size: 13.5px;
-  padding: .3rem .4rem;
-  width: 100%;
-  border-radius: 4px;
-}
-.data-table td input:focus,
-.data-table td select:focus {
-  background: #EEF3FB;
-  border: 1px solid var(--navy);
-  outline: none;
-  box-shadow: none;
-}
-.del-btn {
-  background: none;
-  border: none;
-  color: #CCC;
-  font-size: 16px;
-  cursor: pointer;
-  padding: .2rem .4rem;
-  border-radius: 4px;
-  transition: color .15s;
-}
-.del-btn:hover { color: var(--red); }
-.add-row-btn {
-  background: none;
-  border: 1px dashed var(--border);
-  color: var(--blue);
-  font-size: 13px;
-  font-family: 'Source Sans 3', sans-serif;
-  cursor: pointer;
-  padding: .4rem .85rem;
-  border-radius: 5px;
-  margin-top: .5rem;
-  transition: background .15s, border-color .15s;
-}
-.add-row-btn:hover { background: var(--blue-lt); border-color: var(--blue); }
-
-/* familial matrix */
-.fam-table { width: 100%; border-collapse: collapse; font-size: 13.5px; table-layout: fixed; }
-.fam-table th {
-  background: var(--navy);
-  color: #fff;
-  font-size: 12.5px;
-  font-weight: 600;
-  padding: .6rem .6rem;
-  text-align: center;
-}
-.fam-table th:first-child { text-align: left; padding-left: .85rem; }
-.fam-table td {
-  padding: .35rem .5rem;
-  border-bottom: 1px solid #EBEBEB;
-  text-align: center;
-  vertical-align: middle;
-}
-.fam-table td:first-child { text-align: left; font-size: 13.5px; padding-left: .85rem; }
-.fam-table tr:nth-child(even) td { background: var(--lgray); }
-.fam-table td input,
-.fam-table td select {
-  font-size: 13px;
-  padding: .3rem .4rem;
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  width: 100%;
-  background: var(--white);
-}
-.fam-table td input:focus,
-.fam-table td select:focus { border-color: var(--navy); outline: none; }
 
 /* ── SUBMIT AREA ── */
 .submit-area {
@@ -600,23 +499,11 @@ textarea {
       </div>
     </div>
     <div class="field">
-      <label>Submitting Staff Initials
-        <span class="note">2–4 initials for audit record</span>
+      <label>Physician NPI <span class="req">*</span>
+        <span class="note">10-digit National Provider Identifier — required for engine routing</span>
       </label>
-      <input type="text" placeholder="e.g. JKL" maxlength="4">
-    </div>
-    <div class="grid-2">
-      <div class="field">
-        <label>Receiving Physician Name <span class="req">*</span></label>
-        <input type="text" placeholder="Licensed physician who will receive the research output">
-      </div>
-      <div class="field">
-        <label>Physician NPI <span class="req">*</span>
-          <span class="note">10-digit National Provider Identifier — required for engine routing</span>
-        </label>
-        <input type="text" id="npiInput" inputmode="numeric" maxlength="10" placeholder="10-digit NPI (e.g. 1234567890)" oninput="checkNpi()">
-        <div id="npi-status" style="font-size:12px;margin-top:.3rem;color:#888;"></div>
-      </div>
+      <input type="text" id="npiInput" inputmode="numeric" maxlength="10" placeholder="10-digit NPI (e.g. 1234567890)" oninput="checkNpi()">
+      <div id="npi-status" style="font-size:12px;margin-top:.3rem;color:#888;"></div>
     </div>
   </div>
 </div>
@@ -626,394 +513,88 @@ textarea {
 <div class="section">
   <div class="section-header">
     <span class="sec-label">Section B</span>
-    <h2>Primary Clinical Presentation</h2>
+    <h2>Clinical Data</h2>
     <span class="sec-note">Completed by the physician</span>
   </div>
   <div class="section-body">
-    <div class="alert alert-blue">Write as you would for a specialist colleague seeing this patient for the first time. Minimum word counts are enforced on narrative fields and shown below each one. The engine reads your clinical language directly — specificity and detail produce better output.</div>
-
     <div class="field">
-      <label>B.1 — Primary Diagnosis <span class="req">*</span>
-        <span class="note">Confirmed or working diagnosis. Include any diagnostic uncertainty. <span class="min-note">Minimum 25 words</span></span>
+      <label>Primary Diagnosis <span class="req">*</span>
+        <span class="note">Confirmed or working diagnosis including any diagnostic uncertainty</span>
       </label>
-      <textarea id="b1" rows="4" placeholder="Enter primary diagnosis and any relevant diagnostic context, including the degree of certainty and any differential considerations..." oninput="countWords('b1','wc_b1',25)"></textarea>
-      <div class="wc-wrap" id="wc_b1"></div>
+      <input type="text" id="diagnosisInput" maxlength="200" placeholder="e.g. Type 2 diabetes with diabetic nephropathy, stage 3 CKD" oninput="countChars('diagnosisInput','wc_diag',0,200)">
+      <div class="wc-wrap" id="wc_diag"></div>
     </div>
-
-    <div class="grid-3">
-      <div class="field">
-        <label>B.2 — ICD-10 Code <span class="req">*</span>
-          <span class="note">e.g. E11.9</span>
-        </label>
-        <input type="text" placeholder="ICD-10 code">
-      </div>
-      <div class="field">
-        <label>B.3 — Duration / Onset <span class="req">*</span>
-          <span class="note">e.g. since March 2022</span>
-        </label>
-        <input type="text" placeholder="How long present?">
-      </div>
-      <div class="field">
-        <label>Duration in Months
-          <span class="note">Numeric — for engine classification</span>
-        </label>
-        <input type="number" min="0" placeholder="e.g. 36">
-      </div>
-    </div>
-
-    <div class="grid-2">
-      <div class="field">
-        <label>B.4 — Condition Status <span class="req">*</span></label>
-        <div class="radio-group">
-          <label><input type="radio" name="b4"> Active / Ongoing</label>
-          <label><input type="radio" name="b4"> In Remission</label>
-          <label><input type="radio" name="b4"> Newly Diagnosed (&lt;6 mo)</label>
-          <label><input type="radio" name="b4"> Chronic / Stable</label>
-          <label><input type="radio" name="b4"> Acute / Unstable</label>
-        </div>
-      </div>
-      <div class="field">
-        <label>B.5 — Primary Disease Domain <span class="req">*</span></label>
-        <div class="radio-group">
-          <label><input type="radio" name="b5"> Oncology</label>
-          <label><input type="radio" name="b5"> Cardiovascular</label>
-          <label><input type="radio" name="b5"> Neurological</label>
-          <label><input type="radio" name="b5"> Metabolic</label>
-          <label><input type="radio" name="b5"> Ophthalmologic</label>
-          <label><input type="radio" name="b5"> Infectious</label>
-          <label><input type="radio" name="b5"> Multi-domain</label>
-        </div>
-      </div>
-    </div>
-
     <div class="field">
-      <label>B.6 — Key Biomarkers and Vital Signs <span class="req">*</span>
-        <span class="note">Numeric values only in the Value column. Do not use text in the Value field. &nbsp; Flag: H = High &nbsp; L = Low &nbsp; C = Critical &nbsp; N = Normal</span>
+      <label>Comorbidities
+        <span class="note">One condition per line — include all, even apparently unrelated</span>
       </label>
-      <div class="data-table-wrap">
-        <table class="data-table" id="bioTable">
-          <colgroup>
-            <col style="width:26%"><col style="width:12%"><col style="width:9%"><col style="width:18%"><col style="width:13%"><col style="width:9%"><col style="width:13%">
-          </colgroup>
-          <thead><tr><th>Biomarker / Vital Sign</th><th>Value</th><th>Unit</th><th>Reference Range</th><th>Date</th><th>Flag</th><th>Delete</th></tr></thead>
-          <tbody id="bioBody"></tbody>
-        </table>
-      </div>
-      <button type="button" class="add-row-btn" onclick="addLabRow('bioBody')">+ Add biomarker row</button>
+      <textarea id="comorbInput" rows="5" placeholder="Hypertension&#10;Hypothyroidism&#10;Sleep apnea"></textarea>
     </div>
-
     <div class="field">
-      <label>B.7 — Secondary Conditions and Comorbidities <span class="req">*</span>
-        <span class="note">List all — include conditions that seem unrelated. The engine decides what is relevant. Include duration for each.</span>
+      <label>Current Medications
+        <span class="note">One medication per line — include supplements and OTC</span>
       </label>
-      <div class="data-table-wrap">
-        <table class="data-table" id="comorbTable">
-          <colgroup>
-            <col style="width:32%"><col style="width:13%"><col style="width:13%"><col style="width:18%"><col style="width:16%"><col style="width:8%">
-          </colgroup>
-          <thead><tr><th>Condition / Diagnosis</th><th>ICD-10</th><th>Duration (months)</th><th>Domain</th><th>Status</th><th>Del</th></tr></thead>
-          <tbody id="comorbBody"></tbody>
-        </table>
-      </div>
-      <button type="button" class="add-row-btn" onclick="addComorbRow()">+ Add condition</button>
-    </div>
-
-    <div class="field">
-      <label>B.8 — Treatment History and Failures <span class="req">*</span>
-        <span class="note">List every treatment tried — failed, discontinued, and partially effective. Treatment failures are the most valuable signal in the engine. Do not summarize — list individually.</span>
-      </label>
-      <div class="data-table-wrap">
-        <table class="data-table" id="txTable">
-          <colgroup>
-            <col style="width:27%"><col style="width:11%"><col style="width:16%"><col style="width:27%"><col style="width:14%"><col style="width:5%">
-          </colgroup>
-          <thead><tr><th>Treatment / Intervention</th><th>Duration (mo)</th><th>Outcome</th><th>Why Discontinued</th><th>Specialty</th><th>Del</th></tr></thead>
-          <tbody id="txBody"></tbody>
-        </table>
-      </div>
-      <button type="button" class="add-row-btn" onclick="addTxRow()">+ Add treatment</button>
-    </div>
-
-    <div class="field">
-      <label>B.9 — Familial Pattern Matrix <span class="req">*</span>
-        <span class="note">Complete every row. Use "Unknown" for adopted patients or unknown history. Do not leave blank — Unknown ≠ None and is clinically significant.</span>
-      </label>
-      <div class="data-table-wrap">
-        <table class="fam-table">
-          <colgroup>
-            <col style="width:22%"><col style="width:11%"><col style="width:11%"><col style="width:12%"><col style="width:14%"><col style="width:13%"><col style="width:17%">
-          </colgroup>
-          <thead>
-            <tr>
-              <th>Condition</th><th>Father</th><th>Mother</th><th>Sibling(s)</th><th>Grandparent(s)</th><th>Age of Onset</th><th>Unknown / N/A</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr>
-              <td>Cancer — specify type</td>
-              <td><input type="text" placeholder="specify type"></td>
-              <td><input type="text" placeholder="specify type"></td>
-              <td><input type="text" placeholder="specify type"></td>
-              <td><input type="text" placeholder="specify type"></td>
-              <td><input type="number" min="0" max="120" placeholder="age"></td>
-              <td><select><option value="">—</option><option>Unknown</option><option>N/A</option></select></td>
-            </tr>
-            <tr>
-              <td>Cardiovascular disease</td>
-              <td><select><option>—</option><option>Yes</option><option>No</option></select></td>
-              <td><select><option>—</option><option>Yes</option><option>No</option></select></td>
-              <td><select><option>—</option><option>Yes</option><option>No</option></select></td>
-              <td><select><option>—</option><option>Yes</option><option>No</option></select></td>
-              <td><input type="number" min="0" max="120" placeholder="age"></td>
-              <td><select><option value="">—</option><option>Unknown</option><option>N/A</option></select></td>
-            </tr>
-            <tr>
-              <td>Neurological disorder</td>
-              <td><select><option>—</option><option>Yes</option><option>No</option></select></td>
-              <td><select><option>—</option><option>Yes</option><option>No</option></select></td>
-              <td><select><option>—</option><option>Yes</option><option>No</option></select></td>
-              <td><select><option>—</option><option>Yes</option><option>No</option></select></td>
-              <td><input type="number" min="0" max="120" placeholder="age"></td>
-              <td><select><option value="">—</option><option>Unknown</option><option>N/A</option></select></td>
-            </tr>
-            <tr>
-              <td>Metabolic / Diabetes</td>
-              <td><select><option>—</option><option>Yes</option><option>No</option></select></td>
-              <td><select><option>—</option><option>Yes</option><option>No</option></select></td>
-              <td><select><option>—</option><option>Yes</option><option>No</option></select></td>
-              <td><select><option>—</option><option>Yes</option><option>No</option></select></td>
-              <td><input type="number" min="0" max="120" placeholder="age"></td>
-              <td><select><option value="">—</option><option>Unknown</option><option>N/A</option></select></td>
-            </tr>
-            <tr>
-              <td>Autoimmune condition</td>
-              <td><select><option>—</option><option>Yes</option><option>No</option></select></td>
-              <td><select><option>—</option><option>Yes</option><option>No</option></select></td>
-              <td><select><option>—</option><option>Yes</option><option>No</option></select></td>
-              <td><select><option>—</option><option>Yes</option><option>No</option></select></td>
-              <td><input type="number" min="0" max="120" placeholder="age"></td>
-              <td><select><option value="">—</option><option>Unknown</option><option>N/A</option></select></td>
-            </tr>
-            <tr>
-              <td>Mental health condition</td>
-              <td><select><option>—</option><option>Yes</option><option>No</option></select></td>
-              <td><select><option>—</option><option>Yes</option><option>No</option></select></td>
-              <td><select><option>—</option><option>Yes</option><option>No</option></select></td>
-              <td><select><option>—</option><option>Yes</option><option>No</option></select></td>
-              <td><input type="number" min="0" max="120" placeholder="age"></td>
-              <td><select><option value="">—</option><option>Unknown</option><option>N/A</option></select></td>
-            </tr>
-            <tr>
-              <td>Rare / genetic disorder</td>
-              <td><select><option>—</option><option>Yes</option><option>No</option></select></td>
-              <td><select><option>—</option><option>Yes</option><option>No</option></select></td>
-              <td><select><option>—</option><option>Yes</option><option>No</option></select></td>
-              <td><select><option>—</option><option>Yes</option><option>No</option></select></td>
-              <td><input type="number" min="0" max="120" placeholder="age"></td>
-              <td><select><option value="">—</option><option>Unknown</option><option>N/A</option></select></td>
-            </tr>
-            <tr>
-              <td>Other — specify</td>
-              <td><input type="text" placeholder="specify"></td>
-              <td><input type="text" placeholder="specify"></td>
-              <td><input type="text" placeholder="specify"></td>
-              <td><input type="text" placeholder="specify"></td>
-              <td><input type="number" min="0" max="120" placeholder="age"></td>
-              <td><select><option value="">—</option><option>Unknown</option><option>N/A</option></select></td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-      <div style="margin-top:.85rem">
-        <label>Genetic Testing</label>
-        <div class="radio-group">
-          <label><input type="radio" name="genetics"> Not performed</label>
-          <label><input type="radio" name="genetics"> Performed — results attached</label>
-          <label><input type="radio" name="genetics"> Pending</label>
-          <label><input type="radio" name="genetics"> Declined by patient</label>
-          <label><input type="radio" name="genetics"> Unknown</label>
-        </div>
-      </div>
+      <textarea id="medsInput" rows="5" placeholder="Metformin 1000mg twice daily&#10;Lisinopril 10mg once daily&#10;Levothyroxine 75mcg once daily"></textarea>
     </div>
   </div>
 </div>
 
 <!-- ═══════════════════════════════════════════════════ -->
-<!-- SECTION B.10 — ANOMALY -->
-<div class="section">
-  <div class="section-header anomaly-header">
-    <span class="sec-label">B.10 — Clinical Anomaly</span>
-    <h2 style="color:#fff">The One Finding That Does Not Fit</h2>
-    <span class="sec-note" style="color:#FFCDD2">Minimum 50 words — primary trigger for caution signal</span>
-  </div>
-  <div class="section-body">
-    <div class="alert-gate">
-      <strong>Highest-value field on this form — minimum 50 words required</strong>
-      Describe the single clinical finding, symptom, lab value, response pattern, or behavioral anomaly that does not fit the standard presentation of the primary diagnosis. The thing that keeps you up at night. The result you circled on the lab report. The symptom that doesn't fit any of the boxes. This is the primary trigger for the PROCEED WITH CAUTION signal. Write <em>None</em> clearly if nothing is anomalous — do not leave this field blank.
-    </div>
-    <div class="field">
-      <label>Clinical Anomaly Description <span class="req">*</span></label>
-      <textarea id="b10" rows="8" placeholder="Describe the anomalous finding in clinical detail. What doesn't fit? What is your instinct pointing at? Be specific..." oninput="countWords('b10','wc_b10',50)"></textarea>
-      <div class="wc-wrap" id="wc_b10"></div>
-    </div>
-    <div class="grid-3">
-      <div class="field">
-        <label>Anomaly Duration
-          <span class="note">How long has this been present?</span>
-        </label>
-        <input type="text" placeholder="e.g. 6 months, since 2024">
-      </div>
-      <div class="field">
-        <label>Duration in Months (numeric)</label>
-        <input type="number" min="0" placeholder="e.g. 6">
-      </div>
-      <div class="field">
-        <label>Anomaly Domain</label>
-        <select>
-          <option value="">Select domain</option>
-          <option>Oncology</option>
-          <option>Cardiovascular</option>
-          <option>Neurological</option>
-          <option>Metabolic</option>
-          <option>Infectious</option>
-          <option>Immunological</option>
-          <option>Unknown / Cross-domain</option>
-        </select>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ═══════════════════════════════════════════════════ -->
-<!-- SECTION C — MEDICATIONS -->
+<!-- SECTION C — ANOMALY -->
 <div class="section">
   <div class="section-header">
     <span class="sec-label">Section C</span>
-    <h2>Current Medications</h2>
-    <span class="sec-note">All prescriptions, OTC medications, and supplements</span>
+    <h2>Clinical Anomaly</h2>
+    <span class="sec-note">Optional — the finding that does not fit</span>
   </div>
   <div class="section-body">
-    <div class="alert alert-blue">Include every medication, supplement, and vitamin — even occasional ones. Drug interaction cross-domain signals frequently emerge from combinations that seem unrelated. Dosage must be numeric.</div>
-    <div class="data-table-wrap">
-      <table class="data-table" id="medTable">
-        <colgroup>
-          <col style="width:26%"><col style="width:10%"><col style="width:8%"><col style="width:13%"><col style="width:11%"><col style="width:20%"><col style="width:12%">
-        </colgroup>
-        <thead><tr><th>Medication / Supplement Name</th><th>Dosage</th><th>Unit</th><th>Frequency</th><th>Duration (mo)</th><th>Prescribing Specialty</th><th>Delete</th></tr></thead>
-        <tbody id="medBody"></tbody>
-      </table>
-    </div>
-    <button type="button" class="add-row-btn" onclick="addMedRow()">+ Add medication</button>
-    <div class="field" style="margin-top:1.25rem">
-      <label>Known Allergies and Contraindications
-        <span class="note">Include reaction type for each entry</span>
+    <div class="field">
+      <label>Clinical Anomaly Description
+        <span class="note">The single finding, symptom, or result that doesn&rsquo;t fit the standard presentation. Write <em>None</em> if nothing is anomalous.</span>
       </label>
-      <textarea id="allergies" rows="4" placeholder="List all known drug allergies, reactions, and documented contraindications. Include the type of reaction for each."></textarea>
+      <textarea id="anomalyInput" rows="5" placeholder="Describe any anomalous finding, or write None..."></textarea>
     </div>
   </div>
 </div>
 
-<!-- ═══════════════════════════════════════════════════ -->
-<!-- SECTION D — LABS -->
-<div class="section">
-  <div class="section-header">
-    <span class="sec-label">Section D</span>
-    <h2>Laboratory Values and Diagnostics</h2>
-    <span class="sec-note">Numeric values only — do not filter for relevance</span>
-  </div>
-  <div class="section-body">
-    <div class="alert alert-blue">Enter all available lab values — do not filter for what seems relevant. Cross-domain biomarker signals are often found in results physicians consider unremarkable. Flag: H = High &nbsp; L = Low &nbsp; C = Critical &nbsp; N = Normal</div>
-    <div class="data-table-wrap">
-      <table class="data-table" id="labTable">
-        <colgroup>
-          <col style="width:25%"><col style="width:12%"><col style="width:8%"><col style="width:17%"><col style="width:12%"><col style="width:8%"><col style="width:18%">
-        </colgroup>
-        <thead><tr><th>Lab Test / Biomarker</th><th>Result (numeric)</th><th>Unit</th><th>Reference Range</th><th>Date</th><th>Flag</th><th>Delete</th></tr></thead>
-        <tbody id="labBody"></tbody>
-      </table>
-    </div>
-    <button type="button" class="add-row-btn" onclick="addLabRow('labBody')">+ Add lab value</button>
-    <div class="field" style="margin-top:1.25rem">
-      <label>Imaging, Pathology, and Specialty Diagnostics
-        <span class="note">Include date, modality, and key findings for each study</span>
-      </label>
-      <textarea id="imaging" rows="5" placeholder="e.g. MRI brain 03/2026 — no acute findings, mild periventricular changes&#10;EKG 02/2026 — normal sinus rhythm, no ST changes&#10;Colonoscopy 01/2026 — 2 small polyps removed, pathology benign"></textarea>
-    </div>
-  </div>
-</div>
+
 
 <!-- ═══════════════════════════════════════════════════ -->
-<!-- SECTION E — GATE FIELD -->
+<!-- SECTION D — GATE FIELD -->
 <div class="section">
   <div class="section-header gate-header">
-    <span class="sec-label" style="color:#4A2E00">Section E — Gate Field</span>
+    <span class="sec-label" style="color:#4A2E00">Section D — Gate Field</span>
     <h2 style="color:#1A1200">Physician Mechanistic Hypothesis</h2>
-    <span class="sec-note" style="color:#6B4E10">75 words minimum — form gates on this field</span>
+    <span class="sec-note" style="color:#6B4E10">25–500 characters — form gates on this field</span>
   </div>
   <div class="section-body">
     <div class="alert-gate">
-      <strong>FORM DOES NOT SUBMIT WITHOUT 75 WORDS MINIMUM IN THIS SECTION</strong>
-      Write as a physician thinking out loud to a trusted colleague. What biological mechanism do you believe underlies this patient's presentation? What connections between their conditions, medications, lab anomalies, and clinical history do you suspect? What would you test if you had unlimited diagnostic resources? What published research have you read that feels relevant but you can't quite place? A generic chart summary does not satisfy this requirement. The engine is looking for your clinical intuition — the reasoning that isn't in the chart.
+      <strong>FORM DOES NOT SUBMIT WITHOUT 25 CHARACTERS MINIMUM IN THIS SECTION</strong>
+      Write as a physician thinking out loud to a trusted colleague. What biological mechanism do you believe underlies this patient's presentation? What connections between their conditions, medications, and clinical history do you suspect? A generic chart summary does not satisfy this requirement. The engine is looking for your clinical intuition.
     </div>
     <div class="field">
       <label>Physician Mechanistic Hypothesis <span class="req">*</span></label>
-      <textarea id="secE" rows="14" placeholder="Write your clinical reasoning, suspected mechanisms, cross-domain intuitions, and differential thinking. First person is encouraged. Be as specific and speculative as you want — this is not a legal document. Consider: why has this patient not responded as expected? What biological system might be driving what you're seeing? What connection between two seemingly unrelated conditions might explain the anomaly?" oninput="countWords('secE','wc_secE',75);updateGate()"></textarea>
+      <textarea id="secE" rows="10" maxlength="500" placeholder="Write your clinical reasoning, suspected mechanisms, cross-domain intuitions, and differential thinking..." oninput="countChars('secE','wc_secE',25,500);updateGate()"></textarea>
       <div class="wc-wrap" id="wc_secE"></div>
-    </div>
-    <div class="grid-2">
-      <div class="field">
-        <label>Hypothesis Confidence Level</label>
-        <div class="radio-group">
-          <label><input type="radio" name="confidence"> Speculative — early intuition</label>
-          <label><input type="radio" name="confidence"> Moderate — pattern recognition</label>
-          <label><input type="radio" name="confidence"> Strong — mechanistic evidence</label>
-          <label><input type="radio" name="confidence"> High — literature-supported</label>
-        </div>
-      </div>
-      <div class="field">
-        <label>Specific Research Areas to Investigate
-          <span class="note">Compounds, pathways, mechanisms, or domains to focus on</span>
-        </label>
-        <textarea rows="5" placeholder="e.g. SGLT-2 inhibitor mechanism in non-diabetic cardiovascular patients&#10;Gut-brain axis inflammatory signaling&#10;Zeaxanthin and CD8 T cell modulation in AMD progression"></textarea>
-      </div>
     </div>
   </div>
 </div>
 
 <!-- ═══════════════════════════════════════════════════ -->
-<!-- SECTION F — ATTESTATION -->
+<!-- SECTION E — ATTESTATION -->
 <div class="section">
   <div class="section-header">
-    <span class="sec-label">Section F</span>
-    <h2>Physician Attestation and Signature</h2>
+    <span class="sec-label">Section E</span>
+    <h2>Physician Attestation</h2>
   </div>
   <div class="section-body">
-    <div class="alert alert-info">By submitting, the physician confirms: (1) Clinical data is accurate to the best of their knowledge as of the date submitted; (2) The research output will be reviewed as research intelligence only and does not replace independent clinical judgment; (3) All clinical decisions arising from the output remain the sole responsibility of the reviewing physician; (4) This submission complies with the token-only protocol — no patient personal identifiers are included; (5) The mechanistic hypothesis in Section E reflects independent physician clinical reasoning.</div>
-    <div class="grid-2" style="margin-top:1.25rem">
-      <div class="field">
-        <label>Physician Full Name <span class="req">*</span></label>
-        <input type="text" placeholder="Full legal name">
-      </div>
-      <div class="field">
-        <label>NPI Number <span class="req">*</span>
-          <span class="note">10-digit National Provider Identifier</span>
+    <div class="alert alert-info">By submitting, the physician confirms: (1) Clinical data is accurate to the best of their knowledge as of the date submitted; (2) The research output will be reviewed as research intelligence only and does not replace independent clinical judgment; (3) All clinical decisions arising from the output remain the sole responsibility of the reviewing physician; (4) This submission complies with the token-only protocol — no patient personal identifiers are included; (5) The mechanistic hypothesis reflects independent physician clinical reasoning.</div>
+    <div class="field" style="margin-top:1.25rem">
+      <div class="check-group">
+        <label>
+          <input type="checkbox" id="attestCheck" onchange="updateGate()">
+          I confirm the above attestation and that no patient personal identifiers are included in this submission
         </label>
-        <input type="text" placeholder="10-digit NPI" maxlength="10">
-      </div>
-    </div>
-    <div class="grid-2">
-      <div class="field">
-        <label>Signature Date <span class="req">*</span></label>
-        <input type="date">
-      </div>
-      <div class="field">
-        <label>Digital Attestation Confirmation <span class="req">*</span></label>
-        <div class="check-group" style="margin-top:.5rem">
-          <label>
-            <input type="checkbox" id="attestCheck" onchange="updateGate()">
-            I confirm the above attestation and that no patient personal identifiers are included in this submission
-          </label>
-        </div>
       </div>
     </div>
   </div>
@@ -1025,7 +606,7 @@ textarea {
     Submit Clinical Profile to MRS Engine
   </button>
   <div class="gate-status">
-    <span id="gate_e" class="g-bad">Section E needs 75 words</span>
+    <span id="gate_e" class="g-bad">Hypothesis needs 25 characters</span>
     <span>·</span>
     <span id="gate_att" class="g-bad">Attestation not confirmed</span>
   </div>
@@ -1211,111 +792,36 @@ function showToast(msg){
 }
 
 
-function countWords(fieldId, counterId, minWords) {
+function countChars(fieldId, counterId, minChars, maxChars) {
   const field = document.getElementById(fieldId);
   const counter = document.getElementById(counterId);
   if (!field || !counter) return 0;
-  const text = field.value.trim();
-  const words = text === '' ? 0 : text.split(/\s+/).length;
-  const pct = minWords > 0 ? Math.min(words / minWords, 1) : 0;
-  const ok = minWords === 0 || words >= minWords;
-  const color = ok ? '#27AE60' : (words > 0 ? '#E67E22' : '#AAA');
-  if (minWords > 0) {
+  const chars = field.value.length;
+  const ok = minChars === 0 || chars >= minChars;
+  const color = ok ? '#27AE60' : (chars > 0 ? '#E67E22' : '#AAA');
+  if (minChars > 0) {
+    const remaining = maxChars - chars;
     counter.innerHTML =
-      '<span class="wc-text ' + (ok ? 'wc-ok' : 'wc-warn') + '">' + words + ' / ' + minWords + ' words</span>' +
-      '<div class="wc-bar-bg"><div class="wc-bar-fill" style="width:' + Math.round(pct * 100) + '%;background:' + color + '"></div></div>';
+      '<span class="wc-text ' + (ok ? 'wc-ok' : 'wc-warn') + '">' + chars + ' / ' + minChars + ' chars min</span>' +
+      (maxChars > 0 ? '<span class="wc-text wc-neutral" style="margin-left:.6rem">' + remaining + ' remaining</span>' : '');
   } else {
-    counter.innerHTML = '<span class="wc-text wc-neutral">' + words + ' words</span>';
+    counter.innerHTML = '<span class="wc-text wc-neutral">' + chars + (maxChars > 0 ? ' / ' + maxChars : '') + ' chars</span>';
   }
-  return words;
+  return chars;
 }
 
 function updateGate() {
-  const eWords = countWords('secE', 'wc_secE', 75);
+  const eChars = countChars('secE', 'wc_secE', 25, 500);
   const attOk = document.getElementById('attestCheck').checked;
-  const eOk = eWords >= 75;
+  const eOk = eChars >= 25;
   const ge = document.getElementById('gate_e');
   const ga = document.getElementById('gate_att');
   ge.className = eOk ? 'g-ok' : 'g-bad';
-  ge.textContent = eOk ? 'Section E complete ✓' : 'Section E needs ' + (75 - eWords) + ' more words';
+  ge.textContent = eOk ? 'Hypothesis complete \u2713' : 'Hypothesis needs ' + (25 - eChars) + ' more characters';
   ga.className = attOk ? 'g-ok' : 'g-bad';
-  ga.textContent = attOk ? 'Attestation confirmed ✓' : 'Attestation not confirmed';
+  ga.textContent = attOk ? 'Attestation confirmed \u2713' : 'Attestation not confirmed';
   document.getElementById('submitBtn').disabled = !(eOk && attOk);
 }
-
-function makeDelBtn(row) {
-  const td = document.createElement('td');
-  const btn = document.createElement('button');
-  btn.type = 'button';
-  btn.className = 'del-btn';
-  btn.textContent = '✕';
-  btn.onclick = function() { row.remove(); };
-  td.appendChild(btn);
-  return td;
-}
-
-function addLabRow(tbodyId) {
-  const tbody = document.getElementById(tbodyId);
-  const tr = document.createElement('tr');
-  tr.innerHTML =
-    '<td><input type="text" placeholder="Test or vital sign name"></td>' +
-    '<td><input type="number" step="any" placeholder="0.00"></td>' +
-    '<td><input type="text" placeholder="unit"></td>' +
-    '<td><input type="text" placeholder="normal range"></td>' +
-    '<td><input type="date"></td>' +
-    '<td><select><option>—</option><option>H</option><option>L</option><option>C</option><option>N</option></select></td>';
-  tr.appendChild(makeDelBtn(tr));
-  tbody.appendChild(tr);
-}
-
-function addComorbRow() {
-  const tbody = document.getElementById('comorbBody');
-  const tr = document.createElement('tr');
-  tr.innerHTML =
-    '<td><input type="text" placeholder="Condition or diagnosis name"></td>' +
-    '<td><input type="text" placeholder="ICD-10"></td>' +
-    '<td><input type="number" min="0" placeholder="months"></td>' +
-    '<td><select><option>—</option><option>Oncology</option><option>Cardiovascular</option><option>Neurological</option><option>Metabolic</option><option>Ophthalmologic</option><option>Infectious</option><option>Immunological</option><option>Other</option></select></td>' +
-    '<td><select><option>—</option><option>Active</option><option>Chronic / Stable</option><option>In Remission</option><option>Historical</option></select></td>';
-  tr.appendChild(makeDelBtn(tr));
-  tbody.appendChild(tr);
-}
-
-function addTxRow() {
-  const tbody = document.getElementById('txBody');
-  const tr = document.createElement('tr');
-  tr.innerHTML =
-    '<td><input type="text" placeholder="Treatment or intervention name"></td>' +
-    '<td><input type="number" min="0" placeholder="months"></td>' +
-    '<td><select><option>—</option><option>Effective</option><option>Partial response</option><option>No response</option><option>Discontinued</option><option>Ongoing</option></select></td>' +
-    '<td><input type="text" placeholder="Reason discontinued or ongoing"></td>' +
-    '<td><input type="text" placeholder="Prescribing specialty"></td>';
-  tr.appendChild(makeDelBtn(tr));
-  tbody.appendChild(tr);
-}
-
-function addMedRow() {
-  const tbody = document.getElementById('medBody');
-  const tr = document.createElement('tr');
-  tr.innerHTML =
-    '<td><input type="text" placeholder="Medication or supplement name"></td>' +
-    '<td><input type="number" step="any" placeholder="0"></td>' +
-    '<td><input type="text" placeholder="mg"></td>' +
-    '<td><select><option>—</option><option>Once daily</option><option>Twice daily</option><option>Three times daily</option><option>Four times daily</option><option>Weekly</option><option>Bi-weekly</option><option>Monthly</option><option>As needed</option><option>Other</option></select></td>' +
-    '<td><input type="number" min="0" placeholder="months"></td>' +
-    '<td><input type="text" placeholder="Specialty"></td>';
-  tr.appendChild(makeDelBtn(tr));
-  tbody.appendChild(tr);
-}
-
-// Pre-populate tables with starter rows
-(function init() {
-  for (var i = 0; i < 6; i++) addLabRow('bioBody');
-  for (var i = 0; i < 5; i++) addComorbRow();
-  for (var i = 0; i < 5; i++) addTxRow();
-  for (var i = 0; i < 6; i++) addMedRow();
-  for (var i = 0; i < 6; i++) addLabRow('labBody');
-})();
 
 function handleSubmit() {
   alert('Gate passed.\n\nIn production this submits the structured clinical profile to the MRS Engine API.\n\nPatient token, all structured data, and physician hypothesis are packaged and transmitted securely to Layer 1 for research processing.');
