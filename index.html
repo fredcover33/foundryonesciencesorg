@@ -620,6 +620,33 @@ textarea {
   </div>
 </div>
 
+<div id="clarify-screen" class="screen">
+  <div class="topbar">
+    <div><div class="tb-logo">Foundry One Sciences</div><div class="tb-tag">&hellip;&nbsp; we have not stopped looking</div></div>
+    <div class="tb-right">
+      <div class="tb-user"><span class="sdot"></span>Logged in as <span id="clarify-doctor-name">Physician</span></div>
+      <button class="btn-logout" onclick="doLogout()">Logout</button>
+    </div>
+  </div>
+  <div style="flex:1;overflow-y:auto;background:#EFEFEC;padding:2rem 1rem;">
+    <div class="page-wrap">
+      <div class="form-header">
+        <div class="eyebrow">Foundry One Sciences LLC &mdash; Medical Research Solitaire Engine</div>
+        <h1>A Few Questions First</h1>
+        <div class="tagline">The engine has a few questions to sharpen the analysis.</div>
+        <div class="doc-title">Answer each before submitting &nbsp;&middot;&nbsp; All answers are required</div>
+      </div>
+      <div id="clarify-questions-container"></div>
+      <div style="margin-top:1.5rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap;">
+        <button type="button" class="submit-btn" id="clarifySubmitBtn" disabled onclick="submitWithClarifications()">
+          Submit Case with Answers
+        </button>
+        <button type="button" class="btn-back" onclick="_backToIntake()">&#8592; Back</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div id="toast"><span style="color:var(--green)">&#10003;</span><span id="toast-msg"></span></div>
 
 <script>
@@ -823,6 +850,40 @@ function updateGate() {
   document.getElementById('submitBtn').disabled = !(eOk && attOk);
 }
 
+let _pendingIntake    = null;
+let _pendingQuestions = [];
+
+async function runPipeline(intake) {
+  const btn = document.getElementById('submitBtn');
+  let res;
+  try {
+    res = await fetch(
+      'https://ily73480dd.execute-api.us-east-2.amazonaws.com/prod/MRS',
+      {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + _idToken },
+        body:    JSON.stringify(intake),
+      }
+    );
+  } catch (e) {
+    alert('Network error — check your connection and try again.');
+    btn.disabled = false;
+    btn.textContent = 'Submit Clinical Profile to MRS Engine';
+    return;
+  }
+  if (res.status === 202) {
+    const data = await res.json();
+    btn.textContent = 'Submitted ✓';
+    showToast('Case accepted. Results will be emailed to you shortly. Case ID: ' + (data.case_uuid || ''));
+  } else {
+    let detail = res.status;
+    try { const d = await res.json(); detail = d.message || d.error || res.status; } catch(_) {}
+    alert('Submission failed (' + detail + '). Please try again or contact support.');
+    btn.disabled = false;
+    btn.textContent = 'Submit Clinical Profile to MRS Engine';
+  }
+}
+
 async function handleSubmit() {
   if (!_idToken) { alert('Please log in first.'); return; }
 
@@ -849,37 +910,101 @@ async function handleSubmit() {
     comorbidities:           comorbRaw.split('\n').map(s=>s.trim()).filter(Boolean),
     medications:             medsRaw.split('\n').map(s=>s.trim()).filter(Boolean),
   };
-  if (anomaly)    intake.clinical_anomaly = anomaly;
-  if (tokenVal)   intake.patient_token    = tokenVal;
+  if (anomaly)  intake.clinical_anomaly = anomaly;
+  if (tokenVal) intake.patient_token    = tokenVal;
 
-  let res;
+  _pendingIntake    = intake;
+  _pendingQuestions = [];
+
+  let questions = [];
   try {
-    res = await fetch(
-      'https://ily73480dd.execute-api.us-east-2.amazonaws.com/prod/MRS',
+    const cr = await fetch(
+      'https://ily73480dd.execute-api.us-east-2.amazonaws.com/prod/consultation/clarify',
       {
         method:  'POST',
         headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + _idToken },
         body:    JSON.stringify(intake),
       }
     );
-  } catch (e) {
-    alert('Network error — check your connection and try again.');
+    if (cr.ok) {
+      const cd = await cr.json();
+      questions = cd.questions || [];
+    }
+  } catch (_) {
+    // clarify failure is non-fatal — proceed to pipeline
+  }
+
+  if (questions.length > 0) {
+    _pendingQuestions = questions;
+    _renderClarifyScreen(questions);
+    showScreen('clarify-screen');
     btn.disabled = false;
     btn.textContent = 'Submit Clinical Profile to MRS Engine';
+  } else {
+    await runPipeline(intake);
+  }
+}
+
+function _renderClarifyScreen(questions) {
+  document.getElementById('clarify-doctor-name').textContent =
+    document.getElementById('doctor-name').textContent;
+
+  const container = document.getElementById('clarify-questions-container');
+  container.innerHTML = '';
+  questions.forEach(function(q, i) {
+    const block = document.createElement('div');
+    block.className = 'form-group';
+    block.style.marginBottom = '1.5rem';
+    block.innerHTML =
+      '<label style="font-size:.75rem;color:var(--navy2);text-transform:none;letter-spacing:0;'
+      + 'line-height:1.5;margin-bottom:.6rem;display:block;">'
+      + (i + 1) + '. ' + _escHtml(q) +
+      '</label>'
+      + '<textarea id="clarify-answer-' + i + '" rows="3" '
+      + 'style="width:100%;background:var(--navy);border:1px solid var(--border);color:var(--white);'
+      + 'padding:.7rem 1rem;font-family:Jost,sans-serif;font-size:.85rem;font-weight:300;'
+      + 'outline:none;resize:vertical;box-sizing:border-box;" '
+      + 'placeholder="Your answer…" oninput="_checkClarifyReady(' + questions.length + ')"></textarea>';
+    container.appendChild(block);
+  });
+  document.getElementById('clarifySubmitBtn').disabled = true;
+}
+
+function _checkClarifyReady(count) {
+  let allFilled = true;
+  for (let i = 0; i < count; i++) {
+    const el = document.getElementById('clarify-answer-' + i);
+    if (!el || !el.value.trim()) { allFilled = false; break; }
+  }
+  document.getElementById('clarifySubmitBtn').disabled = !allFilled;
+}
+
+async function submitWithClarifications() {
+  if (!_pendingIntake || !_pendingQuestions.length) {
+    alert('Session error — please go back and resubmit.');
     return;
   }
 
-  if (res.status === 202) {
-    const data = await res.json();
-    btn.textContent = 'Submitted ✓';
-    showToast('Case accepted. Results will be emailed to you shortly. Case ID: ' + (data.case_uuid || ''));
-  } else {
-    let detail = res.status;
-    try { const d = await res.json(); detail = d.message || d.error || res.status; } catch(_) {}
-    alert('Submission failed (' + detail + '). Please try again or contact support.');
-    btn.disabled = false;
-    btn.textContent = 'Submit Clinical Profile to MRS Engine';
-  }
+  const pairs = _pendingQuestions.map(function(q, i) {
+    const a = document.getElementById('clarify-answer-' + i).value.trim();
+    return 'Q: ' + q + '\nA: ' + a;
+  });
+
+  const intake = Object.assign({}, _pendingIntake, {
+    clarifications: pairs.join('\n\n')
+  });
+
+  const clarifyBtn = document.getElementById('clarifySubmitBtn');
+  clarifyBtn.disabled = true;
+  clarifyBtn.textContent = 'Submitting…';
+
+  await runPipeline(intake);
+}
+
+function _backToIntake() {
+  _pendingIntake    = null;
+  _pendingQuestions = [];
+  showScreen('intake-screen');
 }
 
 </script>
