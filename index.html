@@ -823,8 +823,63 @@ function updateGate() {
   document.getElementById('submitBtn').disabled = !(eOk && attOk);
 }
 
-function handleSubmit() {
-  alert('Gate passed.\n\nIn production this submits the structured clinical profile to the MRS Engine API.\n\nPatient token, all structured data, and physician hypothesis are packaged and transmitted securely to Layer 1 for research processing.');
+async function handleSubmit() {
+  if (!_idToken) { alert('Please log in first.'); return; }
+
+  const btn = document.getElementById('submitBtn');
+  btn.disabled = true;
+  btn.textContent = 'Submitting…';
+
+  const npi       = document.getElementById('npiInput').value.trim();
+  const email     = document.getElementById('login-email').value.trim();
+  const diagnosis = document.getElementById('diagnosisInput').value.trim();
+  const hypothesis= document.getElementById('secE').value.trim();
+  const anomaly   = document.getElementById('anomalyInput').value.trim();
+  const comorbRaw = document.getElementById('comorbInput').value;
+  const medsRaw   = document.getElementById('medsInput').value;
+  const tokenVal  = document.getElementById('patientTokenInput').value.trim();
+
+  const intake = {
+    physician_npi:           npi,
+    physician_email:         email,
+    diagnosis:               diagnosis,
+    mechanistic_hypothesis:  hypothesis,
+    attestation:             true,
+    attestation_version:     'BAA-v1',
+    comorbidities:           comorbRaw.split('\n').map(s=>s.trim()).filter(Boolean),
+    medications:             medsRaw.split('\n').map(s=>s.trim()).filter(Boolean),
+  };
+  if (anomaly)    intake.clinical_anomaly = anomaly;
+  if (tokenVal)   intake.patient_token    = tokenVal;
+
+  let res;
+  try {
+    res = await fetch(
+      'https://ily73480dd.execute-api.us-east-2.amazonaws.com/prod/MRS',
+      {
+        method:  'POST',
+        headers: { 'Content-Type': 'application/json', Authorization: 'Bearer ' + _idToken },
+        body:    JSON.stringify(intake),
+      }
+    );
+  } catch (e) {
+    alert('Network error — check your connection and try again.');
+    btn.disabled = false;
+    btn.textContent = 'Submit Clinical Profile to MRS Engine';
+    return;
+  }
+
+  if (res.status === 202) {
+    const data = await res.json();
+    btn.textContent = 'Submitted ✓';
+    showToast('Case accepted. Results will be emailed to you shortly. Case ID: ' + (data.case_uuid || ''));
+  } else {
+    let detail = res.status;
+    try { const d = await res.json(); detail = d.message || d.error || res.status; } catch(_) {}
+    alert('Submission failed (' + detail + '). Please try again or contact support.');
+    btn.disabled = false;
+    btn.textContent = 'Submit Clinical Profile to MRS Engine';
+  }
 }
 
 </script>
