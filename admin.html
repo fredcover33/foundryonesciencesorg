@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FOS Admin — Practice Dashboard</title>
+<script src="https://cdn.jsdelivr.net/npm/amazon-cognito-identity-js@6/dist/amazon-cognito-identity.min.js"></script>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --navy: #0a1e3f;
+    --navy-mid: #112a56;
+    --navy-light: #1a3a6e;
+    --gold: #c9a227;
+    --gold-light: #e0b840;
+    --white: #ffffff;
+    --off-white: #f4f6fa;
+    --border: #d0d8e8;
+    --text: #1a2a44;
+    --muted: #5a6a84;
+    --danger: #c0392b;
+    --success: #1a7a4a;
+  }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+    background: var(--off-white);
+    color: var(--text);
+    min-height: 100vh;
+  }
+
+  /* ── Header ── */
+  header {
+    background: var(--navy);
+    border-bottom: 3px solid var(--gold);
+    padding: 0 2rem;
+    display: flex;
+    align-items: center;
+    height: 64px;
+    gap: 1.25rem;
+  }
+  .header-logo {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--gold);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 14px;
+    color: var(--navy);
+    letter-spacing: -0.5px;
+    flex-shrink: 0;
+  }
+  .header-text { display: flex; flex-direction: column; gap: 1px; }
+  .header-name {
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--white);
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+  }
+  .header-tag {
+    font-size: 10px;
+    color: var(--gold);
+    letter-spacing: 0.8px;
+    text-transform: uppercase;
+    font-weight: 500;
+  }
+  .header-right {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+  #user-label {
+    font-size: 12px;
+    color: #a0b4cc;
+    display: none;
+  }
+  #sign-out-btn {
+    display: none;
+    font-size: 12px;
+    padding: 5px 14px;
+    background: transparent;
+    border: 1px solid #3a5a8a;
+    color: #a0b4cc;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: border-color 0.15s, color 0.15s;
+  }
+  #sign-out-btn:hover { border-color: var(--gold); color: var(--gold); }
+
+  /* ── Screen container ── */
+  .screen { display: none; }
+  .screen.active { display: block; }
+
+  /* ── Login ── */
+  #login-screen {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: calc(100vh - 67px);
+    padding: 2rem;
+  }
+  #login-screen.active { display: flex; }
+
+  .login-card {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 2.5rem 2.75rem;
+    width: 100%;
+    max-width: 400px;
+    box-shadow: 0 4px 24px rgba(10,30,63,0.10);
+  }
+  .login-card h2 {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 6px;
+  }
+  .login-card .sub {
+    font-size: 13px;
+    color: var(--muted);
+    margin-bottom: 1.75rem;
+  }
+  .form-group { margin-bottom: 1.1rem; }
+  .form-group label {
+    display: block;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--muted);
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    margin-bottom: 5px;
+  }
+  .form-group input {
+    width: 100%;
+    padding: 10px 12px;
+    font-size: 14px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    background: var(--off-white);
+    transition: border-color 0.15s, box-shadow 0.15s;
+    outline: none;
+  }
+  .form-group input:focus {
+    border-color: var(--navy-light);
+    box-shadow: 0 0 0 3px rgba(26,58,110,0.10);
+    background: var(--white);
+  }
+  #login-btn {
+    width: 100%;
+    margin-top: 0.5rem;
+    padding: 11px;
+    background: var(--navy);
+    color: var(--white);
+    font-size: 14px;
+    font-weight: 600;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.15s;
+    letter-spacing: 0.3px;
+  }
+  #login-btn:hover { background: var(--navy-light); }
+  #login-btn:disabled { opacity: 0.55; cursor: not-allowed; }
+  #login-error {
+    margin-top: 1rem;
+    font-size: 13px;
+    color: var(--danger);
+    text-align: center;
+    min-height: 18px;
+  }
+
+  /* ── Dashboard ── */
+  #dashboard-screen { padding: 2rem; }
+  #dashboard-screen.active { display: block; }
+
+  .dash-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+  }
+  .dash-header h1 {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--navy);
+  }
+  .dash-header .meta {
+    font-size: 12px;
+    color: var(--muted);
+  }
+  #refresh-btn {
+    font-size: 12px;
+    padding: 6px 16px;
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 5px;
+    cursor: pointer;
+    color: var(--navy);
+    font-weight: 500;
+    transition: border-color 0.15s;
+  }
+  #refresh-btn:hover { border-color: var(--gold); color: var(--gold); }
+
+  /* ── Table ── */
+  .table-wrap {
+    background: var(--white);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    overflow-x: auto;
+    box-shadow: 0 2px 12px rgba(10,30,63,0.06);
+  }
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+  }
+  thead th {
+    background: var(--navy);
+    color: var(--white);
+    padding: 11px 14px;
+    text-align: left;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.7px;
+    text-transform: uppercase;
+    white-space: nowrap;
+    cursor: pointer;
+    user-select: none;
+    border-right: 1px solid var(--navy-mid);
+    transition: background 0.12s;
+  }
+  thead th:last-child { border-right: none; }
+  thead th:hover { background: var(--navy-light); }
+  thead th.sort-asc::after  { content: " ↑"; color: var(--gold); }
+  thead th.sort-desc::after { content: " ↓"; color: var(--gold); }
+
+  tbody tr { border-bottom: 1px solid var(--border); transition: background 0.1s; }
+  tbody tr:last-child { border-bottom: none; }
+  tbody tr:hover { background: #f0f4fb; }
+  tbody td { padding: 10px 14px; color: var(--text); vertical-align: middle; }
+
+  .badge {
+    display: inline-block;
+    padding: 2px 9px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+    text-transform: capitalize;
+  }
+  .badge-pending  { background: #fff3cd; color: #7a5800; }
+  .badge-trial    { background: #d1ecf1; color: #0c5460; }
+  .badge-active   { background: #d4edda; color: #155724; }
+  .badge-churned  { background: #f8d7da; color: #721c24; }
+  .badge-default  { background: #e9ecef; color: #495057; }
+
+  .days-warn  { color: var(--danger); font-weight: 600; }
+  .days-ok    { color: var(--success); }
+
+  #no-data {
+    text-align: center;
+    padding: 3rem;
+    color: var(--muted);
+    font-size: 14px;
+    display: none;
+  }
+
+  /* ── Loading / error ── */
+  #dash-loading {
+    text-align: center;
+    padding: 3rem;
+    color: var(--muted);
+    font-size: 14px;
+    display: none;
+  }
+  #dash-error {
+    background: #fdf3f2;
+    border: 1px solid #f0bcb8;
+    border-radius: 6px;
+    padding: 1rem 1.25rem;
+    font-size: 13px;
+    color: var(--danger);
+    margin-bottom: 1.25rem;
+    display: none;
+  }
+  #practice-count {
+    margin-top: 0.75rem;
+    font-size: 12px;
+    color: var(--muted);
+    text-align: right;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-logo">FOS</div>
+  <div class="header-text">
+    <div class="header-name">Foundry One Sciences</div>
+    <div class="header-tag">Admin Dashboard</div>
+  </div>
+  <div class="header-right">
+    <span id="user-label"></span>
+    <button id="sign-out-btn" onclick="signOut()">Sign Out</button>
+  </div>
+</header>
+
+<!-- LOGIN -->
+<div id="login-screen" class="screen active">
+  <div class="login-card">
+    <h2>Admin Sign In</h2>
+    <p class="sub">Foundry One Sciences — internal access only</p>
+    <div class="form-group">
+      <label for="email">Email</label>
+      <input type="email" id="email" placeholder="you@foundryonesciences.com" autocomplete="username">
+    </div>
+    <div class="form-group">
+      <label for="password">Password</label>
+      <input type="password" id="password" autocomplete="current-password">
+    </div>
+    <button id="login-btn" onclick="signIn()">Sign In</button>
+    <div id="login-error"></div>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dashboard-screen" class="screen">
+  <div class="dash-header">
+    <div>
+      <h1>Practice Dashboard</h1>
+      <div class="meta" id="last-refreshed"></div>
+    </div>
+    <button id="refresh-btn" onclick="loadDashboard()">Refresh</button>
+  </div>
+  <div id="dash-error"></div>
+  <div id="dash-loading">Loading practices…</div>
+  <div class="table-wrap" id="table-wrap" style="display:none">
+    <table id="practices-table">
+      <thead>
+        <tr>
+          <th onclick="sortBy('name')"         data-col="name">Name</th>
+          <th onclick="sortBy('email')"        data-col="email">Email</th>
+          <th onclick="sortBy('seats')"        data-col="seats">Seats</th>
+          <th onclick="sortBy('status')"       data-col="status">Status</th>
+          <th onclick="sortBy('baa_signed')"   data-col="baa_signed">BAA Signed</th>
+          <th onclick="sortBy('trial_start')"  data-col="trial_start">Trial Start</th>
+          <th onclick="sortBy('days_left')"    data-col="days_left">Days Left</th>
+          <th onclick="sortBy('months_paid')"  data-col="months_paid">Mo. Paid</th>
+          <th onclick="sortBy('conv_months')"  data-col="conv_months">→18mo</th>
+        </tr>
+      </thead>
+      <tbody id="table-body"></tbody>
+    </table>
+    <div id="no-data">No practices found.</div>
+  </div>
+  <div id="practice-count"></div>
+</div>
+
+<script>
+// ── Cognito config ──────────────────────────────────────────────────────────
+const POOL_DATA = {
+  UserPoolId: 'us-east-2_XhMFlsctc',
+  ClientId:   '2u8t80elmg4r5osv43rnj9ib2i',
+};
+const API_URL = 'https://ily73480dd.execute-api.us-east-2.amazonaws.com/prod/admin/dashboard';
+
+let _idToken = null;          // in-memory only, never localStorage
+let _practices = [];
+let _sortCol = 'name';
+let _sortDir = 1;             // 1 = asc, -1 = desc
+
+// ── Screen helper ────────────────────────────────────────────────────────────
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+// ── Auth ─────────────────────────────────────────────────────────────────────
+function signIn() {
+  const email    = document.getElementById('email').value.trim();
+  const password = document.getElementById('password').value;
+  const errEl    = document.getElementById('login-error');
+  const btn      = document.getElementById('login-btn');
+
+  errEl.textContent = '';
+  if (!email || !password) { errEl.textContent = 'Email and password are required.'; return; }
+
+  btn.disabled = true;
+  btn.textContent = 'Signing in…';
+
+  const userPool   = new AmazonCognitoIdentity.CognitoUserPool(POOL_DATA);
+  const authDetail = new AmazonCognitoIdentity.AuthenticationDetails({ Username: email, Password: password });
+  const cognitoUser = new AmazonCognitoIdentity.CognitoUser({ Username: email, Pool: userPool });
+
+  cognitoUser.authenticateUser(authDetail, {
+    onSuccess(session) {
+      _idToken = session.getIdToken().getJwtToken();
+      document.getElementById('user-label').textContent = email;
+      document.getElementById('user-label').style.display = 'block';
+      document.getElementById('sign-out-btn').style.display = 'inline-block';
+      btn.disabled = false;
+      btn.textContent = 'Sign In';
+      showScreen('dashboard-screen');
+      loadDashboard();
+    },
+    onFailure(err) {
+      errEl.textContent = err.message || 'Sign in failed.';
+      btn.disabled = false;
+      btn.textContent = 'Sign In';
+    },
+    newPasswordRequired() {
+      errEl.textContent = 'Password reset required. Contact your administrator.';
+      btn.disabled = false;
+      btn.textContent = 'Sign In';
+    },
+  });
+}
+
+function signOut() {
+  _idToken = null;
+  _practices = [];
+  document.getElementById('user-label').style.display = 'none';
+  document.getElementById('sign-out-btn').style.display = 'none';
+  document.getElementById('email').value = '';
+  document.getElementById('password').value = '';
+  document.getElementById('login-error').textContent = '';
+  showScreen('login-screen');
+}
+
+// ── Date math (mirrors CLI logic) ────────────────────────────────────────────
+function daysLeft(trialStart) {
+  if (!trialStart) return null;
+  const start = new Date(trialStart);
+  if (isNaN(start)) return null;
+  const elapsed = Math.floor((Date.now() - start.getTime()) / 86400000);
+  return 60 - elapsed;
+}
+
+function monthsToConversion(contractSigned) {
+  if (!contractSigned) return null;
+  const signed = new Date(contractSigned);
+  if (isNaN(signed)) return null;
+  const now = new Date();
+  const elapsed = (now.getFullYear() - signed.getFullYear()) * 12 + (now.getMonth() - signed.getMonth());
+  return 18 - elapsed;
+}
+
+// ── Fetch ─────────────────────────────────────────────────────────────────────
+async function loadDashboard() {
+  const loadEl  = document.getElementById('dash-loading');
+  const errEl   = document.getElementById('dash-error');
+  const wrapEl  = document.getElementById('table-wrap');
+  const countEl = document.getElementById('practice-count');
+
+  errEl.style.display   = 'none';
+  wrapEl.style.display  = 'none';
+  loadEl.style.display  = 'block';
+  countEl.textContent   = '';
+
+  try {
+    const res = await fetch(API_URL, {
+      method: 'GET',
+      headers: { 'Authorization': 'Bearer ' + _idToken, 'Content-Type': 'application/json' },
+    });
+    const data = await res.json();
+    if (!res.ok) {
+      throw new Error(data.error || ('HTTP ' + res.status));
+    }
+    _practices = (data.practices || []).map(p => ({
+      ...p,
+      days_left:   daysLeft(p.trial_start),
+      conv_months: monthsToConversion(p.contract_signed),
+    }));
+    loadEl.style.display = 'none';
+    wrapEl.style.display = 'block';
+    renderTable();
+    const now = new Date();
+    document.getElementById('last-refreshed').textContent =
+      'Last refreshed: ' + now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+    countEl.textContent = _practices.length + ' practice' + (_practices.length !== 1 ? 's' : '');
+  } catch (e) {
+    loadEl.style.display = 'none';
+    errEl.textContent    = 'Failed to load dashboard: ' + e.message;
+    errEl.style.display  = 'block';
+  }
+}
+
+// ── Table render + sort ───────────────────────────────────────────────────────
+function sortBy(col) {
+  if (_sortCol === col) {
+    _sortDir *= -1;
+  } else {
+    _sortCol = col;
+    _sortDir = 1;
+  }
+  renderTable();
+}
+
+function renderTable() {
+  // update header classes
+  document.querySelectorAll('#practices-table thead th').forEach(th => {
+    th.classList.remove('sort-asc', 'sort-desc');
+    if (th.dataset.col === _sortCol) {
+      th.classList.add(_sortDir === 1 ? 'sort-asc' : 'sort-desc');
+    }
+  });
+
+  const sorted = [..._practices].sort((a, b) => {
+    let av = a[_sortCol], bv = b[_sortCol];
+    // nulls last
+    if (av === null || av === undefined || av === '') return 1;
+    if (bv === null || bv === undefined || bv === '') return -1;
+    if (typeof av === 'number' && typeof bv === 'number') return (av - bv) * _sortDir;
+    return String(av).toLowerCase().localeCompare(String(bv).toLowerCase()) * _sortDir;
+  });
+
+  const tbody   = document.getElementById('table-body');
+  const noData  = document.getElementById('no-data');
+  tbody.innerHTML = '';
+
+  if (sorted.length === 0) {
+    noData.style.display = 'block';
+    return;
+  }
+  noData.style.display = 'none';
+
+  for (const p of sorted) {
+    const dl = p.days_left;
+    const cm = p.conv_months;
+
+    const dlCell = dl === null
+      ? '—'
+      : `<span class="${dl <= 10 ? 'days-warn' : 'days-ok'}">${dl}</span>`;
+    const cmCell = cm === null ? '—' : (cm < 0 ? `<span class="days-warn">${cm}</span>` : String(cm));
+
+    const statusBadge = (() => {
+      const s = (p.status || '').toLowerCase();
+      const cls = s === 'pending' ? 'badge-pending'
+                : s === 'trial'   ? 'badge-trial'
+                : s === 'active'  ? 'badge-active'
+                : s === 'churned' ? 'badge-churned'
+                : 'badge-default';
+      return `<span class="badge ${cls}">${p.status || '—'}</span>`;
+    })();
+
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><strong>${_esc(p.name || '—')}</strong></td>
+      <td>${_esc(p.email || '—')}</td>
+      <td>${p.seats ?? 0}</td>
+      <td>${statusBadge}</td>
+      <td>${_esc(p.baa_signed || '—')}</td>
+      <td>${_esc(p.trial_start || '—')}</td>
+      <td>${dlCell}</td>
+      <td>${p.months_paid ?? 0}</td>
+      <td>${cmCell}</td>
+    `;
+    tbody.appendChild(tr);
+  }
+}
+
+function _esc(s) {
+  return String(s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;');
+}
+
+// ── Enter key on login ────────────────────────────────────────────────────────
+document.getElementById('password').addEventListener('keydown', e => {
+  if (e.key === 'Enter') signIn();
+});
+document.getElementById('email').addEventListener('keydown', e => {
+  if (e.key === 'Enter') document.getElementById('password').focus();
+});
+</script>
+</body>
+</html>
