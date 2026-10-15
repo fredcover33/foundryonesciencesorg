@@ -581,10 +581,33 @@ textarea {
 </div>
 
 <!-- ═══════════════════════════════════════════════════ -->
-<!-- SECTION E — ATTESTATION -->
+<!-- SECTION E — VISIT TRANSCRIPT -->
 <div class="section">
   <div class="section-header">
     <span class="sec-label">Section E</span>
+    <h2>Visit Transcript or Note</h2>
+    <span class="sec-note">Optional — paste or attach a transcript or your scribe&rsquo;s note</span>
+  </div>
+  <div class="section-body">
+    <div class="field">
+      <label>Visit Transcript or Note
+        <span class="note">Paste or type here, or drop in or attach a PDF, Word (.docx) or text file from your transcription tool. Files are read on your computer; only the text in this box is sent. No length limit. Remove the patient&rsquo;s name and other identifiers first. The token-only protocol applies to this box too.</span>
+      </label>
+      <textarea id="transcriptInput" rows="10" placeholder="Paste the visit transcript or your scribe&rsquo;s note here, or drop a PDF or Word file onto this page..."></textarea>
+      <div style="margin-top:.6rem;display:flex;flex-wrap:wrap;align-items:center;gap:.5rem 1rem">
+        <button type="button" id="transcriptAttach" style="font-family:inherit;font-size:.72rem;letter-spacing:.12em;text-transform:uppercase;color:var(--navy);background:var(--white);border:1px solid var(--navy);padding:.6rem 1.1rem;cursor:pointer">Attach PDF, Word or text file</button>
+        <input type="file" id="transcriptFile" accept=".pdf,.docx,.txt,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain" multiple hidden>
+        <span id="transcriptStatus" role="status" aria-live="polite" style="font-size:.8rem;color:var(--navy)"></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════ -->
+<!-- SECTION F — ATTESTATION -->
+<div class="section">
+  <div class="section-header">
+    <span class="sec-label">Section F</span>
     <h2>Physician Attestation</h2>
   </div>
   <div class="section-body">
@@ -854,6 +877,10 @@ let _pendingIntake    = null;
 let _pendingQuestions = [];
 
 async function runPipeline(intake) {
+  const transcriptBox = document.getElementById("transcriptInput");
+  const transcriptAtSubmit = window.fosTranscriptAtSubmit;
+  const transcript = (typeof transcriptAtSubmit === "string" ? transcriptAtSubmit : (transcriptBox ? transcriptBox.value : "")).trim();
+  if (transcript) intake.notes = "Visit transcript or note added by the physician:" + String.fromCharCode(10) + transcript;
   const btn = document.getElementById('submitBtn');
   let res;
   try {
@@ -883,6 +910,210 @@ async function runPipeline(intake) {
     btn.textContent = 'Submit Clinical Profile to MRS Engine';
   }
 }
+
+(function () {
+  var NL = String.fromCharCode(10);
+  var FOS_BOX_ID = "transcriptInput";
+  var FOS_FILE_ID = "transcriptFile";
+  var FOS_ATTACH_ID = "transcriptAttach";
+  var FOS_STATUS_ID = "transcriptStatus";
+  var PDFJS_SRC = "vendor/pdfjs-6.3.289/pdf.min.js";
+  var PDFJS_WORKER = "vendor/pdfjs-6.3.289/pdf.worker.min.js";
+  var MAMMOTH_SRC = "vendor/mammoth-1.12.3/mammoth.browser.min.js";
+  var box = document.getElementById(FOS_BOX_ID);
+  var picker = document.getElementById(FOS_FILE_ID);
+  var attach = document.getElementById(FOS_ATTACH_ID);
+  var statusLine = document.getElementById(FOS_STATUS_ID);
+  var pdfjsReady = null;
+  var mammothReady = null;
+  var reading = 0;
+  var frozen = false;
+  var generation = 0;
+  if (!box) { return; }
+  function say(msg, isError) {
+    if (!statusLine) { if (isError) { alert(msg); } return; }
+    statusLine.textContent = msg;
+    statusLine.style.color = isError ? "var(--red)" : "var(--navy)";
+  }
+  function absolute(path) { return new URL(path, document.baseURI).href; }
+  function loadPdfjs() {
+    if (!pdfjsReady) {
+      pdfjsReady = import(absolute(PDFJS_SRC)).then(function (lib) {
+        lib.GlobalWorkerOptions.workerSrc = absolute(PDFJS_WORKER);
+        return lib;
+      }, function (err) { pdfjsReady = null; throw err; });
+    }
+    return pdfjsReady;
+  }
+  function loadMammoth() {
+    if (!mammothReady) {
+      mammothReady = new Promise(function (resolve, reject) {
+        var tag = document.createElement("script");
+        tag.src = absolute(MAMMOTH_SRC);
+        tag.onload = function () { resolve(window.mammoth); };
+        tag.onerror = function () { mammothReady = null; reject(new Error("mammoth did not load")); };
+        document.head.appendChild(tag);
+      });
+    }
+    return mammothReady;
+  }
+  function tidy(text) {
+    return text.split(NL).map(function (line) { return line.replace(/ {2,}/g, " ").trim(); }).join(NL).trim();
+  }
+  function pdfText(buf) {
+    return loadPdfjs().then(function (lib) {
+      return lib.getDocument({ data: buf }).promise;
+    }).then(function (pdf) {
+      var pages = [];
+      var chain = Promise.resolve();
+      for (var n = 1; n <= pdf.numPages; n++) {
+        chain = chain.then((function (num) {
+          return function () {
+            return pdf.getPage(num).then(function (page) { return page.getTextContent(); }).then(function (content) {
+              var parts = [];
+              content.items.forEach(function (item) {
+                if (typeof item.str === "string") { parts.push(item.str); parts.push(item.hasEOL ? NL : " "); }
+              });
+              pages.push(tidy(parts.join("")));
+            });
+          };
+        })(n));
+      }
+      return chain.then(function () {
+        var empty = [];
+        pages.forEach(function (p, i) { if (!p.length) { empty.push(i + 1); } });
+        var detail = pdf.numPages + (pdf.numPages === 1 ? " page" : " pages");
+        if (empty.length && empty.length < pages.length) { detail += ", no text on page " + empty.join(", "); }
+        return { text: pages.filter(function (p) { return p.length > 0; }).join(NL + NL), detail: detail };
+      });
+    });
+  }
+  function docxText(buf) {
+    return loadMammoth().then(function (m) { return m.extractRawText({ arrayBuffer: buf }); }).then(function (r) {
+      return { text: tidy(r.value || ""), detail: "Word document" };
+    });
+  }
+  function kindOf(f) {
+    var name = (f.name || "").toLowerCase();
+    if (name.slice(-4) === ".pdf" || f.type === "application/pdf") { return "pdf"; }
+    if (name.slice(-5) === ".docx" || f.type === "application/vnd.openxmlformats-officedocument.wordprocessingml.document") { return "docx"; }
+    if (name.slice(-4) === ".doc") { return "doc"; }
+    if (name.slice(-4) === ".txt" || f.type === "text/plain") { return "txt"; }
+    return "other";
+  }
+  function onIntakeScreen() {
+    var screen = document.getElementById("intake-screen");
+    return !!(screen && screen.classList.contains("active"));
+  }
+  function refuse(msg, loud) {
+    say(msg, true);
+    if (loud) { alert(msg); }
+  }
+  function readOne(f, loud, gen) {
+    if (gen !== generation) { return Promise.resolve(); }
+    var kind = kindOf(f);
+    if (kind === "doc") { refuse("Older Word files (.doc) cannot be read here. Save it as .docx or PDF, or paste the text.", loud); return Promise.resolve(); }
+    if (kind === "other") { refuse(f.name + " is not a PDF, Word (.docx) or text file. Paste the text instead.", loud); return Promise.resolve(); }
+    say("Reading " + f.name + " ...", false);
+    var work = kind === "txt"
+      ? f.text().then(function (t) { return { text: tidy(t), detail: "text file" }; })
+      : f.arrayBuffer().then(function (buf) { return kind === "pdf" ? pdfText(buf) : docxText(buf); });
+    return work.then(function (res) {
+      if (gen !== generation) { return; }
+      if (frozen || !onIntakeScreen()) {
+        say("Not added: " + f.name + " finished reading after the form was closed or submitted. Add it again.", true);
+        alert("A file finished reading after the intake form was closed or submitted, so its text was not added.");
+        return;
+      }
+      if (!res.text) {
+        refuse("No text found in " + f.name + (kind === "pdf" ? ". It may be a scanned image. Paste the text instead." : ". Paste the text instead."), loud);
+        return;
+      }
+      box.value = box.value.trim() ? box.value + NL + NL + res.text : res.text;
+      say("Added " + f.name + " (" + res.detail + "). Check the text and remove the patient name and other identifiers before you submit.", false);
+    }, function () {
+      refuse("Could not read " + f.name + ". Paste the text instead.", loud);
+    });
+  }
+  function readAll(list) {
+    var files = Array.prototype.slice.call(list || []);
+    if (!files.length) { return Promise.resolve(); }
+    var loud = files.length > 1;
+    var gen = generation;
+    reading += 1;
+    function done() { if (gen === generation) { reading -= 1; } }
+    var chain = Promise.resolve();
+    files.forEach(function (f) { chain = chain.then(function () { return readOne(f, loud, gen); }); });
+    return chain.then(done, done);
+  }
+  var LOCKED = "Section E is locked: this case was submitted with the text shown. To change it, press Back on the questions screen if it is showing, or log out, or reload the page.";
+  var READY_LABEL = "Submit Clinical Profile to MRS Engine";
+  function lock() { frozen = true; box.readOnly = true; }
+  function unlock() { frozen = false; box.readOnly = false; }
+  function hasFiles(e) {
+    return !!(e.dataTransfer && e.dataTransfer.types && Array.prototype.indexOf.call(e.dataTransfer.types, "Files") !== -1);
+  }
+  function unmark() { box.style.borderColor = ""; box.style.background = ""; }
+  document.addEventListener("dragover", function (e) {
+    if (!hasFiles(e)) { return; }
+    e.preventDefault();
+    if (onIntakeScreen() && !frozen) { box.style.borderColor = "var(--gold)"; box.style.background = "var(--gold-lt)"; }
+  });
+  document.addEventListener("dragleave", function (e) { if (hasFiles(e)) { unmark(); } });
+  document.addEventListener("click", function (e) {
+    var t = e.target;
+    if (!t || !t.closest) { return; }
+    if (t.closest("#submitBtn")) {
+      if (reading) {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        alert("A file is still being read into Section E. Wait until the line under the box says Added, then submit.");
+        return;
+      }
+      window.fosTranscriptAtSubmit = box.value;
+      lock();
+      return;
+    }
+    var back = t.closest(".btn-back");
+    if (back && back.getAttribute("onclick") === "_backToIntake()") { unlock(); return; }
+    if (t.closest(".btn-logout")) {
+      generation += 1;
+      reading = 0;
+      unlock();
+      box.value = "";
+      say("", false);
+    }
+  }, true);
+  var submitBtn = document.getElementById("submitBtn");
+  if (submitBtn && window.MutationObserver) {
+    new MutationObserver(function () {
+      if (frozen && !submitBtn.disabled && onIntakeScreen() && submitBtn.textContent.trim() === READY_LABEL) { unlock(); }
+    }).observe(submitBtn, { attributes: true, attributeFilter: ["disabled"], childList: true, characterData: true, subtree: true });
+  }
+  function lockedNote() { if (frozen) { say(LOCKED, true); } }
+  box.addEventListener("keydown", lockedNote);
+  box.addEventListener("paste", lockedNote);
+  document.addEventListener("drop", function (e) {
+    if (!hasFiles(e)) { return; }
+    e.preventDefault();
+    unmark();
+    if (!onIntakeScreen()) {
+      alert("Files can be added only on the intake form, in Section E, Visit Transcript or Note.");
+      return;
+    }
+    if (frozen) { alert(LOCKED); return; }
+    readAll(e.dataTransfer.files);
+  });
+  if (attach && picker) {
+    attach.addEventListener("click", function () {
+      if (frozen) { alert(LOCKED); return; }
+      picker.click();
+    });
+    picker.addEventListener("change", function () {
+      readAll(picker.files).then(function () { picker.value = ""; });
+    });
+  }
+})();
 
 async function handleSubmit() {
   if (!_idToken) { alert('Please log in first.'); return; }
