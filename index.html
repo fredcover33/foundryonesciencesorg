@@ -452,6 +452,7 @@ textarea {
     <div><div class="tb-logo">Foundry One Sciences</div><div class="tb-tag">...&nbsp; we have not stopped looking</div></div>
     <div class="tb-right">
       <div class="tb-user"><span class="sdot"></span>Logged in as <span id="doctor-name">Physician</span></div>
+      <button class="btn-logout" onclick="openSettings()">Settings</button>
       <button class="btn-logout" onclick="doLogout()">Logout</button>
     </div>
   </div>
@@ -670,9 +671,162 @@ textarea {
   </div>
 </div>
 
+<div id="settings-screen" class="screen">
+  <div class="topbar">
+    <div><div class="tb-logo">Foundry One Sciences</div><div class="tb-tag">&hellip;&nbsp; we have not stopped looking</div></div>
+    <div class="tb-right">
+      <div class="tb-user"><span class="sdot"></span>Logged in as <span id="settings-doctor-name">Physician</span></div>
+      <button class="btn-logout" onclick="showScreen('intake-screen')">&#8592; Intake</button>
+      <button class="btn-logout" onclick="doLogout()">Logout</button>
+    </div>
+  </div>
+  <div style="flex:1;overflow-y:auto;background:#EFEFEC;padding:2rem 1rem;">
+    <div class="page-wrap">
+      <div class="form-header">
+        <div class="eyebrow">Foundry One Sciences LLC &mdash; Medical Research Solitaire Engine</div>
+        <h1>Practice Settings</h1>
+        <div class="tagline">Where your Chart Notes go when you press Submit to Billing Agency.</div>
+        <div class="doc-title">Billing agency &nbsp;&middot;&nbsp; One address per practice</div>
+      </div>
+      <div class="section">
+        <div class="section-header">
+          <span class="sec-label">Billing agency</span>
+          <h2>Where submitted Chart Notes are sent</h2>
+          <span class="sec-note">Saved to your practice, not to a case</span>
+        </div>
+        <div class="section-body">
+          <div class="alert alert-info">
+            Your agency's inbox must confirm it can receive mail from the engine before anything is sent to it. When you save an address, Amazon Web Services emails that address a confirmation link on the engine's behalf. Until the agency clicks it, the status below reads <strong>Pending</strong> and Submit to Billing Agency stays off. Nothing about a patient is ever in that email.
+          </div>
+          <div id="ba-status" class="alert alert-blue" style="margin-top:1.25rem;">Loading your practice's billing agency&hellip;</div>
+          <div class="grid-2" style="margin-top:1.25rem;">
+            <div class="field">
+              <label for="ba-name">Agency name <span class="note">Optional. How it appears on your Chart Note page.</span></label>
+              <input type="text" id="ba-name" maxlength="200" autocomplete="organization" placeholder="e.g. Acme Medical Billing">
+            </div>
+            <div class="field">
+              <label for="ba-email">Agency email <span class="req">*</span> <span class="note">The inbox that receives your submitted Chart Notes.</span></label>
+              <input type="text" id="ba-email" inputmode="email" autocomplete="email" placeholder="billing@agency.com">
+            </div>
+          </div>
+          <div style="margin-top:1.5rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap;">
+            <button type="button" class="submit-btn" id="ba-save-btn" onclick="saveBillingAgency()">Save and send confirmation</button>
+            <button type="button" class="btn-back" id="ba-resend-btn" onclick="resendBillingAgencyConfirmation()" style="display:none;">Resend confirmation email</button>
+          </div>
+          <p id="ba-error" style="margin-top:1rem;font-size:13.5px;color:var(--red);font-weight:600;display:none;"></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
 <div id="toast"><span style="color:var(--green)">&#10003;</span><span id="toast-msg"></span></div>
 
 <script>
+
+
+// Practice Settings — billing agency (Companion Chapter 1). Two engine routes,
+// GET and POST /consultation/billing-agency, behind the same Bearer token as
+// the intake. The engine stores the address on the practice and asks SES to
+// confirm it; this screen only shows what the engine reports.
+const _BA_URL = 'https://ily73480dd.execute-api.us-east-2.amazonaws.com/prod/consultation/billing-agency';
+
+function openSettings(){
+  if(!_idToken){alert('Please log in first.');return;}
+  document.getElementById('settings-doctor-name').textContent=document.getElementById('doctor-name').textContent;
+  _baSetError('');
+  showScreen('settings-screen');
+  loadBillingAgency();
+}
+
+function _baSetError(msg){
+  const el=document.getElementById('ba-error');
+  el.textContent=msg||'';
+  el.style.display=msg?'block':'none';
+}
+
+function _baExplain(status,body){
+  const s=document.getElementById('ba-status');
+  const resend=document.getElementById('ba-resend-btn');
+  resend.style.display='none';
+  s.className='alert alert-blue';
+  if(status==='none'||!body||!body.agency_email){
+    s.textContent='No billing agency on file yet. Enter the agency\'s email below and save.';
+    return;
+  }
+  const who=_escHtml(body.agency_email)+(body.agency_name?' ('+_escHtml(body.agency_name)+')':'');
+  const when=body.set_at?new Date(body.set_at).toLocaleString('en-US',{dateStyle:'medium',timeStyle:'short'}):'';
+  if(status==='Success'){
+    s.className='alert alert-info';
+    s.innerHTML='<strong>Confirmed.</strong> '+who+' can receive your submitted Chart Notes.'+(when?' Saved '+when+'.':'');
+    return;
+  }
+  if(status==='Pending'){
+    s.innerHTML='<strong>Pending.</strong> A confirmation email went to '+who+'. The agency must click the link in it before Submit to Billing Agency turns on.'+(when?' Saved '+when+'.':'');
+    resend.style.display='';
+    return;
+  }
+  s.className='alert alert-danger';
+  s.innerHTML='<strong>Not confirmed ('+_escHtml(String(status))+').</strong> '+who+' has not confirmed. Check the address and save again, or resend the confirmation.';
+  resend.style.display='';
+}
+
+async function _baFetch(method,payload){
+  const init={method:method,headers:{'Content-Type':'application/json',Authorization:'Bearer '+_idToken}};
+  if(payload!==undefined){init.body=JSON.stringify(payload);}
+  let res;
+  try{res=await fetch(_BA_URL,init);}
+  catch(e){throw new Error('Could not reach the engine. Check your connection and try again.');}
+  let body=null;
+  try{body=await res.json();}catch(e){}
+  if(res.status===401){throw new Error('Session expired. Please log out and sign in again.');}
+  if(res.status===409){throw new Error((body&&body.message)||'This sign-in is not linked to a practice record.');}
+  if(res.status===400){throw new Error((body&&body.message)||'The engine rejected the address.');}
+  if(res.status===502){throw new Error('The engine could not complete this: '+((body&&body.message)||'no detail returned')+'. Nothing is lost; try again, and tell Foundry One Sciences if it repeats.');}
+  if(!res.ok){throw new Error('Unexpected response from the engine (status '+res.status+').');}
+  return body||{};
+}
+
+async function loadBillingAgency(){
+  _baSetError('');
+  const s=document.getElementById('ba-status');
+  s.className='alert alert-blue';
+  s.textContent='Loading your practice\'s billing agency\u2026';
+  try{
+    const body=await _baFetch('GET');
+    document.getElementById('ba-email').value=body.agency_email||'';
+    document.getElementById('ba-name').value=body.agency_name||'';
+    _baExplain(body.verification,body);
+  }catch(e){
+    s.className='alert alert-danger';
+    s.textContent=e.message;
+  }
+}
+
+async function saveBillingAgency(){
+  _baSetError('');
+  const email=document.getElementById('ba-email').value.trim();
+  const name=document.getElementById('ba-name').value.trim();
+  if(!email){_baSetError('Enter the agency\'s email address.');return;}
+  const btn=document.getElementById('ba-save-btn');
+  btn.disabled=true;
+  try{
+    const body=await _baFetch('POST',{agency_email:email,agency_name:name});
+    document.getElementById('ba-email').value=body.agency_email||email;
+    document.getElementById('ba-name').value=body.agency_name||name;
+    _baExplain(body.verification,body);
+    showToast(body.verification==='Success'?'Billing agency saved':'Saved \u2014 confirmation email sent to the agency');
+  }catch(e){
+    _baSetError(e.message);
+  }finally{
+    btn.disabled=false;
+  }
+}
+
+async function resendBillingAgencyConfirmation(){
+  await saveBillingAgency();
+}
 
 
 function showScreen(id){
