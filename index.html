@@ -351,6 +351,20 @@ textarea {
 }
 .submit-btn:hover:not(:disabled) { background: var(--navy-mid); }
 .submit-btn:disabled { opacity: .35; cursor: not-allowed; }
+
+/* ── CHART NOTE PAGE (Companion Chapter 2c) ── */
+.cn-signal { border: 1px solid var(--border); border-radius: 10px; padding: 1.1rem 1.25rem; margin-bottom: 1rem; background: var(--white); }
+.cn-signal .cn-desc { font-size: 15px; font-weight: 600; color: var(--navy); }
+.cn-signal .cn-code { display: inline-block; font-size: 12px; font-weight: 600; letter-spacing: .05em; color: var(--gold-dk); background: var(--gold-lt); border: 1px solid var(--gold); border-radius: 4px; padding: .05rem .45rem; margin: .35rem 0 .5rem; }
+.cn-signal .cn-rationale { font-size: 13.5px; color: var(--gray); margin-bottom: .6rem; }
+.cn-signal .cn-mark { font-size: 12px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--navy); margin-top: .5rem; }
+.cn-signal textarea { min-height: 56px; margin-top: .5rem; }
+.cn-signal.cn-unmarked { border-color: var(--red); }
+.cn-readonly input, .cn-readonly textarea, .cn-readonly button.submit-btn { pointer-events: none; }
+.cn-readonly textarea { background: var(--lgray); }
+.cn-body p { margin-bottom: .9rem; font-size: 15px; line-height: 1.65; }
+.cn-attest { font-size: 14px; line-height: 1.6; padding: .75rem 1rem; border-left: 4px solid var(--gold); background: var(--gold-lt); color: #5A3E00; margin-bottom: .75rem; }
+.cn-mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 13px; }
 .gate-status {
   font-size: 13.5px;
   color: #888;
@@ -452,6 +466,7 @@ textarea {
     <div><div class="tb-logo">Foundry One Sciences</div><div class="tb-tag">...&nbsp; we have not stopped looking</div></div>
     <div class="tb-right">
       <div class="tb-user"><span class="sdot"></span>Logged in as <span id="doctor-name">Physician</span></div>
+      <button class="btn-logout" onclick="openChartNote()">Chart Note</button>
       <button class="btn-logout" onclick="openSettings()">Settings</button>
       <button class="btn-logout" onclick="doLogout()">Logout</button>
     </div>
@@ -721,6 +736,102 @@ textarea {
 </div>
 
 
+<div id="chart-note-screen" class="screen">
+  <div class="topbar">
+    <div><div class="tb-logo">Foundry One Sciences</div><div class="tb-tag">&hellip;&nbsp; we have not stopped looking</div></div>
+    <div class="tb-right">
+      <div class="tb-user"><span class="sdot"></span>Logged in as <span id="cn-doctor-name">Physician</span></div>
+      <button class="btn-logout" onclick="showScreen('intake-screen')">&#8592; Intake</button>
+      <button class="btn-logout" onclick="openSettings()">Settings</button>
+      <button class="btn-logout" onclick="doLogout()">Logout</button>
+    </div>
+  </div>
+  <div style="flex:1;overflow-y:auto;background:#EFEFEC;padding:2rem 1rem;">
+    <div class="page-wrap">
+      <div class="form-header">
+        <div class="eyebrow">Foundry One Sciences LLC &mdash; Medical Research Solitaire Engine</div>
+        <h1>Chart Note</h1>
+        <div class="tagline">Mark each billing signal, attest, sign, and send the completed Chart Note to your billing agency.</div>
+        <div class="doc-title" id="cn-doc-title">Case &nbsp;&middot;&nbsp; not yet opened</div>
+      </div>
+      <div class="section">
+        <div class="section-header">
+          <span class="sec-label">Case</span>
+          <h2>Which Chart Note</h2>
+          <span class="sec-note">The Case ID is in the engine's email, and the link in that email opens it here</span>
+        </div>
+        <div class="section-body">
+          <div class="grid-2">
+            <div class="field">
+              <label for="cn-case-input">Case ID <span class="req">*</span> <span class="note">The UUID from the engine's email.</span></label>
+              <input type="text" id="cn-case-input" class="cn-mono" autocomplete="off" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx">
+            </div>
+            <div class="field" style="display:flex;align-items:flex-end;">
+              <button type="button" class="btn-back" id="cn-open-btn" onclick="openChartNote(document.getElementById('cn-case-input').value)">Open</button>
+            </div>
+          </div>
+          <div id="cn-status" class="alert alert-blue" style="margin-top:1.25rem;">Enter a Case ID and press Open, or follow the link in the engine's email.</div>
+          <p id="cn-error-top" style="margin-top:1rem;font-size:13.5px;color:var(--red);font-weight:600;display:none;"></p>
+        </div>
+      </div>
+      <div id="cn-content" style="display:none;">
+        <div class="section">
+          <div class="section-header">
+            <span class="sec-label">Chart Note</span>
+            <h2>What the Research Surfaced</h2>
+            <span class="sec-note">As delivered to you by email</span>
+          </div>
+          <div class="section-body">
+            <div id="cn-caution" class="alert alert-danger" style="display:none;margin-bottom:1rem;"></div>
+            <div id="cn-body" class="cn-body"></div>
+          </div>
+        </div>
+        <div class="section">
+          <div class="section-header">
+            <span class="sec-label">Billing signals</span>
+            <h2>Your mark on each</h2>
+            <span class="sec-note">Every signal needs a mark before you can sign</span>
+          </div>
+          <div class="section-body">
+            <div class="alert alert-info" style="margin-bottom:1.25rem;">
+              Affirm, decline, or say the signal was not addressed this encounter. Tick the rider where you ordered, arranged or performed the related work during this encounter. A note is optional and goes to the agency beside the signal.
+            </div>
+            <div id="cn-signals"></div>
+          </div>
+        </div>
+        <div class="section">
+          <div class="section-header">
+            <span class="sec-label">Attestation and signature</span>
+            <h2>Sign and send</h2>
+            <span class="sec-note">One send per case</span>
+          </div>
+          <div class="section-body">
+            <div id="cn-attestation"></div>
+            <div class="check-group" style="margin:.75rem 0 1.25rem;">
+              <label><input type="checkbox" id="cn-attested"> I attest to both statements above.</label>
+            </div>
+            <div class="grid-2">
+              <div class="field">
+                <label for="cn-signature">Typed signature <span class="req">*</span> <span class="note">Your name as you sign it, up to 120 characters.</span></label>
+                <input type="text" id="cn-signature" maxlength="120" autocomplete="name" placeholder="e.g. Alex Smith, MD">
+              </div>
+              <div class="field">
+                <label>Sends to <span class="note">Your practice's billing agency, from Settings.</span></label>
+                <div id="cn-agency" class="alert alert-blue" style="padding:.6rem 1rem;">Checking your billing agency&hellip;</div>
+              </div>
+            </div>
+            <div style="margin-top:1.5rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap;">
+              <button type="button" class="submit-btn" id="cn-send-btn" onclick="submitChartNote()" disabled>Sign and send to billing agency</button>
+            </div>
+            <p id="cn-error" style="margin-top:1rem;font-size:13.5px;color:var(--red);font-weight:600;display:none;"></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
 <div id="toast"><span style="color:var(--green)">&#10003;</span><span id="toast-msg"></span></div>
 
 <script>
@@ -826,6 +937,332 @@ async function saveBillingAgency(){
 
 async function resendBillingAgencyConfirmation(){
   await saveBillingAgency();
+}
+
+
+// Chart Note page (Companion Chapter 2c). Two engine routes behind the same
+// Bearer token as the intake: GET /consultation/chart-note/<uuid> (the
+// archived HoneyResult, the attestation statements and any submission on
+// record) and POST /consultation/submit (the marks, the attestation, the
+// typed signature). The engine renders the completed PDF and sends it; this
+// page shows what the engine reports. The case UUID arrives in the engine's
+// email link (?chart-note=<uuid>), read once at load and opened after
+// sign-in, or is typed into the Case ID field.
+const _CN_BASE = 'https://ily73480dd.execute-api.us-east-2.amazonaws.com/prod/consultation';
+const _CN_UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const _CN_DISPOSITIONS = [['affirm','Affirm'],['decline','Decline'],['not_addressed','Not addressed this encounter']];
+// 502 codes after which nothing was sent and no record changed hands (handler.py: complete_failed and
+// send_failed record send_failed; ses_failed, archive_failed, archive_not_configured, enroll_failed and
+// practice_lookup_failed are raised before the first record write). store_failed is not here: it can follow the send.
+const _CN_502_KEEP_MARKS = ['complete_failed','send_failed','ses_failed','archive_failed','archive_not_configured','enroll_failed','practice_lookup_failed'];
+let _pendingChartNote = null;   // the email link's case UUID, until sign-in opens it
+let _pendingChartNoteBad = null; // a ?chart-note= value that is not a UUID: said so after sign-in
+let _cnCase = null;             // the GET body of the Chart Note on screen
+let _cnAgencyOk = false;        // Settings says the agency is confirmed
+let _cnMarksUnreadable = false; // the submission on record carries marks_error (its marks_json did not parse)
+let _cnNoSignals = false;       // the archived HoneyResult carries no billing signals (the engine refuses such a note)
+try{
+  const q=new URLSearchParams(window.location.search).get('chart-note');
+  if(q!==null){
+    if(_CN_UUID.test(q.trim())){_pendingChartNote=q.trim().toLowerCase();}
+    else{_pendingChartNoteBad=q;}
+  }
+}catch(e){}
+
+function _cnReset(){
+  // Sign-out: nothing of one sign-in's case stays on screen for the next.
+  _cnCase=null;_cnAgencyOk=false;_cnMarksUnreadable=false;_cnNoSignals=false;_pendingChartNote=null;_pendingChartNoteBad=null;
+  const content=document.getElementById('cn-content');
+  content.style.display='none';content.classList.remove('cn-readonly');
+  document.getElementById('cn-signals').innerHTML='';
+  document.getElementById('cn-body').innerHTML='';
+  document.getElementById('cn-attestation').innerHTML='';
+  document.getElementById('cn-caution').style.display='none';
+  document.getElementById('cn-case-input').value='';
+  document.getElementById('cn-signature').value='';
+  document.getElementById('cn-signature').disabled=false;
+  document.getElementById('cn-attested').checked=false;
+  document.getElementById('cn-attested').disabled=false;
+  document.getElementById('cn-send-btn').disabled=true;
+  document.getElementById('cn-doc-title').innerHTML='Case &nbsp;&middot;&nbsp; not yet opened';
+  document.getElementById('cn-agency').textContent='';
+  _cnSetError('');
+  _cnStatus('alert-blue','Enter a Case ID and press Open, or follow the link in the engine\'s email.');
+}
+
+function _cnSetError(msg){
+  // Twice: beside the send button, and above the content (which a reload hides).
+  ['cn-error','cn-error-top'].forEach(id=>{
+    const el=document.getElementById(id);
+    el.textContent=msg||'';
+    el.style.display=msg?'block':'none';
+  });
+}
+
+function _cnStatus(cls,html){
+  const s=document.getElementById('cn-status');
+  s.className='alert '+cls;
+  s.innerHTML=html;
+}
+
+async function _cnFetch(path,method,payload){
+  const init={method:method,headers:{'Content-Type':'application/json',Authorization:'Bearer '+_idToken}};
+  if(payload!==undefined){init.body=JSON.stringify(payload);}
+  let res;
+  try{res=await fetch(_CN_BASE+path,init);}
+  catch(e){throw new Error('Could not reach the engine. Check your connection and try again.');}
+  let body=null;
+  try{body=await res.json();}catch(e){}
+  if(res.status===401){throw new Error('Session expired. Please log out and sign in again.');}
+  return {status:res.status,body:body||{}};
+}
+
+function openChartNote(uuid){
+  if(!_idToken){alert('Please log in first.');return;}
+  document.getElementById('cn-doctor-name').textContent=document.getElementById('doctor-name').textContent;
+  _cnSetError('');
+  showScreen('chart-note-screen');
+  const raw=(uuid||'').trim().toLowerCase();
+  if(raw){document.getElementById('cn-case-input').value=raw;}
+  if(!raw){return;}
+  if(!_CN_UUID.test(raw)){
+    _cnStatus('alert-danger','That is not a Case ID. It is the 36-character UUID in the engine\'s email (Case ID: &hellip;).');
+    document.getElementById('cn-content').style.display='none';
+    return;
+  }
+  loadChartNote(raw);
+}
+
+async function loadChartNote(uuid){
+  _cnCase=null;
+  document.getElementById('cn-content').style.display='none';
+  document.getElementById('cn-doc-title').innerHTML='Case '+_escHtml(uuid);
+  _cnStatus('alert-blue','Loading the Chart Note for case '+_escHtml(uuid)+'&hellip;');
+  let r;
+  try{r=await _cnFetch('/chart-note/'+encodeURIComponent(uuid),'GET');}
+  catch(e){_cnStatus('alert-danger',_escHtml(e.message));return;}
+  const b=r.body;
+  if(r.status!==200){
+    // Keyed on the engine's error code; the status code alone names too many things.
+    const byError={
+      case_not_yours:'This case was created by a different sign-in; the engine will not open it here.',
+      case_predates_ownership:'This case was created before cases were tied to sign-ins; the engine will not open it here.',
+      case_not_found:'No case with that ID.',
+      chart_note_not_archived:'This case has no archived Chart Note (it ran before the archive existed). Run the case again.',
+      practice_unresolved:'This sign-in is not linked to a practice record.',
+      archive_not_configured:'The engine has no Chart Note archive wired; tell Foundry One Sciences.',
+      archive_failed:'The engine could not read the archived Chart Note right now. Nothing is lost; try again.',
+      store_failed:'The engine could not read its records right now. Nothing is lost; try again.'
+    };
+    const why=(b&&b.error&&byError[b.error])||{
+      400:'The engine did not accept that Case ID.',
+      403:'The engine refused this sign-in for that case.',
+      404:'No case with that ID.',
+      409:'The engine refused to open the case in its present state.',
+      502:'The engine could not read the case right now. Nothing is lost; try again.'
+    }[r.status]||('Unexpected response from the engine (status '+r.status+').');
+    const detail=b&&(b.error||b.message)?(b.error?b.error+': ':'')+(b.message||''):'';
+    _cnStatus('alert-danger','<strong>Not opened.</strong> '+_escHtml(why)+(detail?' <span class="cn-mono">'+_escHtml(detail)+'</span>':''));
+    return;
+  }
+  _cnCase=b;
+  _cnRender(b);
+  document.getElementById('cn-content').style.display='';
+  _cnLoadAgency();
+}
+
+function _cnRender(b){
+  const minted=b.minted_at?new Date(b.minted_at).toLocaleString('en-US',{dateStyle:'medium',timeStyle:'short'}):'';
+  document.getElementById('cn-doc-title').innerHTML='Case '+_escHtml(b.case_uuid)+(minted?' &nbsp;&middot;&nbsp; Minted '+_escHtml(minted):'')+(b.diagnosis?' &nbsp;&middot;&nbsp; '+_escHtml(b.diagnosis):'');
+  const honey=b.honey||{}, syn=honey.synthesis||{};
+  const caution=document.getElementById('cn-caution');
+  if(honey.caution&&honey.caution.header_text){caution.textContent=honey.caution.header_text;caution.style.display='';}
+  else{caution.style.display='none';}
+  const bodyText=(syn.chart_note&&syn.chart_note.trim())?syn.chart_note:(syn.determination||'');
+  document.getElementById('cn-body').innerHTML=bodyText.split(/\n\s*\n/).filter(x=>x.trim()).map(x=>'<p>'+_escHtml(x).replace(/\n/g,'<br>')+'</p>').join('');
+  const signals=Array.isArray(syn.billing_signals)?syn.billing_signals:[];
+  const sub=b.submission||null;
+  const marksOnRecord={};
+  if(sub&&Array.isArray(sub.marks)){sub.marks.forEach(m=>{marksOnRecord[m.signal]=m;});}
+  _cnMarksUnreadable=!!(sub&&sub.marks_error);
+  _cnNoSignals=signals.length===0;
+  const readonly=!!(sub&&(sub.status==='delivered'||sub.status==='accepted'));
+  let html='';
+  signals.forEach((sig,i)=>{
+    const m=marksOnRecord[i]||null;
+    html+='<div class="cn-signal" id="cn-signal-'+i+'">'
+      +'<div class="cn-desc">'+(i+1)+'. '+_escHtml(sig.description||'')+'</div>'
+      +'<span class="cn-code">'+_escHtml(sig.code_system||'')+' '+_escHtml(sig.code||'')+'</span>'
+      +(sig.rationale?'<div class="cn-rationale">'+_escHtml(sig.rationale)+'</div>':'')
+      +'<div class="cn-mark">Physician\'s mark</div>'
+      +'<div class="radio-group">'
+      +_CN_DISPOSITIONS.map(([v,label])=>'<label><input type="radio" name="cn-disp-'+i+'" value="'+v+'"'+(m&&m.disposition===v?' checked':'')+'> '+label+'</label>').join('')
+      +'</div>'
+      +'<div class="check-group"><label><input type="checkbox" id="cn-rider-'+i+'"'+(m&&m.rider?' checked':'')+'> I ordered, arranged or performed the related work this encounter (rider)</label></div>'
+      +'<textarea id="cn-note-'+i+'" maxlength="500" placeholder="Note to the agency about this signal (optional, up to 500 characters)">'+_escHtml(m&&m.note?m.note:'')+'</textarea>'
+      +'</div>';
+  });
+  document.getElementById('cn-signals').innerHTML=html;
+  const att=b.attestation&&Array.isArray(b.attestation.statements)?b.attestation.statements:[];
+  document.getElementById('cn-attestation').innerHTML=att.map(s=>'<div class="cn-attest">'+_escHtml(s)+'</div>').join('');
+  const content=document.getElementById('cn-content');
+  content.classList.toggle('cn-readonly',readonly);
+  document.getElementById('cn-attested').checked=readonly;
+  document.getElementById('cn-attested').disabled=readonly;
+  const sigEl=document.getElementById('cn-signature');
+  sigEl.value=readonly&&sub.signature?sub.signature:'';
+  sigEl.disabled=readonly;
+  document.querySelectorAll('#cn-signals input, #cn-signals textarea').forEach(el=>{el.disabled=readonly;});
+  _cnExplainSubmission(sub);
+}
+
+function _cnExplainSubmission(sub){
+  const btn=document.getElementById('cn-send-btn');
+  // The marks on record, when the record carries them; said so when it does not.
+  const marksNote=_cnMarksUnreadable
+    ?' <strong>The marks on record could not be read</strong> (marks_error: '+_escHtml(String(sub&&sub.marks_error))+'); the cards below are blank for that reason, not because none were made. Tell Foundry One Sciences.'
+    :'';
+  if(_cnNoSignals){
+    _cnStatus('alert-danger','<strong>This Chart Note carries no billing signals</strong>; there is nothing to mark and the engine would refuse the send. Tell Foundry One Sciences.');
+    btn.disabled=true;
+    return;
+  }
+  if(!sub){
+    _cnStatus('alert-blue','Not yet sent. Mark every billing signal, attest, type your signature, and press <strong>Sign and send</strong>.');
+    btn.disabled=!_cnAgencyOk;
+    return;
+  }
+  const when=sub.delivered_at||sub.signed_at;
+  const whenText=when?new Date(when).toLocaleString('en-US',{dateStyle:'medium',timeStyle:'short'}):'';
+  if(sub.status==='delivered'){
+    _cnStatus('alert-info','<strong>Delivered.</strong> The completed Chart Note went to '+_escHtml(sub.agency_email||'your billing agency')+(whenText?' on '+_escHtml(whenText):'')+', signed /s/ '+_escHtml(sub.signature||'')+'. '+(_cnMarksUnreadable?'Nothing':'The marks below are as you sent them; nothing')+' here can be changed or sent again.'+marksNote);
+    btn.disabled=true;
+    return;
+  }
+  if(sub.status==='accepted'){
+    _cnStatus('alert-danger','<strong>In flight.</strong> A send of this Chart Note is recorded as accepted'+(whenText?' at '+_escHtml(whenText):'')+' and has not finished recording. Reload this page in a minute; if it still says this, tell Foundry One Sciences — it is not resent automatically.');
+    btn.disabled=true;
+    return;
+  }
+  if(sub.status==='send_failed'){
+    _cnStatus('alert-danger','<strong>The last send failed</strong>'+(whenText?' ('+_escHtml(whenText)+')':'')+': <span class="cn-mono">'+_escHtml(sub.error||'no detail')+'</span>. Nothing reached the agency. '+(_cnMarksUnreadable?'Mark every signal again, then send.':'Your marks are filled in below as you made them; check them and send again.')+marksNote);
+    btn.disabled=!_cnAgencyOk;
+    return;
+  }
+  _cnStatus('alert-danger','<strong>Unexpected submission state:</strong> <span class="cn-mono">'+_escHtml(String(sub.status))+'</span>. Tell Foundry One Sciences before sending again.');
+  btn.disabled=true;
+}
+
+async function _cnLoadAgency(){
+  const el=document.getElementById('cn-agency');
+  const forCase=_cnCase?_cnCase.case_uuid:null;
+  _cnAgencyOk=false;
+  el.className='alert alert-blue';
+  el.style.padding='.6rem 1rem';
+  el.textContent='Checking your billing agency…';
+  let body;
+  try{body=await _baFetch('GET');}
+  catch(e){
+    if(!_cnCase||_cnCase.case_uuid!==forCase){return;}  // a different case (or none) is on screen now
+    el.className='alert alert-danger';el.textContent=e.message;_cnExplainSubmission(_cnCase.submission);return;
+  }
+  if(!_cnCase||_cnCase.case_uuid!==forCase){return;}  // a different case (or none) is on screen now
+  if(!body.agency_email){
+    el.className='alert alert-danger';
+    el.innerHTML='No billing agency on file. Set one in <strong>Settings</strong> first.';
+  }else if(body.verification==='Success'){
+    _cnAgencyOk=true;
+    el.className='alert alert-info';
+    el.innerHTML='<strong>'+_escHtml(body.agency_email)+'</strong>'+(body.agency_name?' ('+_escHtml(body.agency_name)+')':'')+' &mdash; confirmed.';
+  }else{
+    el.className='alert alert-danger';
+    el.innerHTML='<strong>'+_escHtml(body.agency_email)+'</strong> has not confirmed it can receive mail from the engine (status '+_escHtml(String(body.verification||'unknown'))+'). Resend the confirmation from <strong>Settings</strong>; sending waits until it is confirmed.';
+  }
+  _cnExplainSubmission(_cnCase?_cnCase.submission:null);
+}
+
+function _cnCollectMarks(){
+  const signals=(_cnCase&&_cnCase.honey&&_cnCase.honey.synthesis&&_cnCase.honey.synthesis.billing_signals)||[];
+  const marks=[];
+  let firstUnmarked=null;
+  signals.forEach((sig,i)=>{
+    const card=document.getElementById('cn-signal-'+i);
+    const picked=document.querySelector('input[name="cn-disp-'+i+'"]:checked');
+    card.classList.toggle('cn-unmarked',!picked);
+    if(!picked){if(firstUnmarked===null){firstUnmarked=i;}return;}
+    marks.push({signal:i,disposition:picked.value,rider:document.getElementById('cn-rider-'+i).checked,note:document.getElementById('cn-note-'+i).value.trim()});
+  });
+  if(firstUnmarked!==null){
+    document.getElementById('cn-signal-'+firstUnmarked).scrollIntoView({behavior:'smooth',block:'center'});
+    throw new Error('Billing signal '+(firstUnmarked+1)+' has no mark. Every signal needs Affirm, Decline, or Not addressed before you can sign.');
+  }
+  return marks;
+}
+
+async function submitChartNote(){
+  _cnSetError('');
+  if(!_cnCase){_cnSetError('Open a Chart Note first.');return;}
+  const onRecord=_cnCase.submission&&_cnCase.submission.status;
+  if(onRecord==='delivered'){_cnSetError('This Chart Note was already delivered to your billing agency; it cannot be sent again.');return;}
+  if(onRecord==='accepted'){_cnSetError('A send of this Chart Note is in flight; reload the page before anything else.');return;}
+  if(_cnNoSignals){_cnSetError('This Chart Note carries no billing signals; nothing can be sent.');return;}
+  let marks;
+  try{marks=_cnCollectMarks();}catch(e){_cnSetError(e.message);return;}
+  if(!document.getElementById('cn-attested').checked){_cnSetError('Tick the attestation box: both statements must be attested to before signing.');return;}
+  const signature=document.getElementById('cn-signature').value.trim();
+  if(!signature){_cnSetError('Type your signature.');return;}
+  const btn=document.getElementById('cn-send-btn');
+  btn.disabled=true;
+  const label=btn.textContent;
+  btn.textContent='Sending…';
+  let r;
+  try{r=await _cnFetch('/submit','POST',{case_uuid:_cnCase.case_uuid,marks:marks,attested:true,signature:signature});}
+  catch(e){_cnSetError(e.message);btn.disabled=false;btn.textContent=label;return;}
+  btn.textContent=label;
+  const b=r.body;
+  if(r.status===200){
+    _cnCase.submission={status:b.status,agency_email:b.agency_email,signature:signature,signed_at:b.signed_at,delivered_at:b.signed_at,ses_message_id:b.ses_message_id,signed_pdf_key:b.signed_pdf_key,marks:marks};
+    _cnRender(_cnCase);
+    showToast('Chart Note sent to '+(b.agency_email||'your billing agency'));
+    return;
+  }
+  if(r.status===409&&b.error==='already_submitted'){
+    _cnSetError('This Chart Note was already delivered to your billing agency. Reloading it.');
+    loadChartNote(_cnCase.case_uuid);
+    return;
+  }
+  if(r.status===409&&(b.error==='agency_not_set'||b.error==='agency_unconfirmed')){
+    _cnSetError((b.message||'The billing agency is not ready.')+' Then come back and send.');
+    _cnLoadAgency();
+    return;
+  }
+  if(r.status===409&&b.error==='submission_in_flight'){
+    _cnSetError((b.message||'A send of this Chart Note is in flight.')+' Reloading it.');
+    loadChartNote(_cnCase.case_uuid);
+    return;
+  }
+  if(r.status===409){
+    _cnSetError(b.message||('The engine refused the send ('+(b.error||'409')+').'));
+    btn.disabled=false;
+    return;
+  }
+  if(r.status===400){_cnSetError(b.message||'The engine rejected the submission.');btn.disabled=false;return;}
+  if(r.status===502&&_CN_502_KEEP_MARKS.indexOf(b.error)>=0){
+    // Nothing reached the agency: complete_failed and send_failed are recorded send_failed by the engine;
+    // the others are raised before any record exists. The marks stay on the page for another try.
+    _cnSetError('The engine could not complete the send ('+b.error+'): '+(b.message||'no detail returned')+' Your marks are kept here; try again.');
+    btn.disabled=false;
+    return;
+  }
+  if(r.status===502){
+    // store_failed can come after the send (the delivered record or the review-link row did not write);
+    // an unknown code is treated the same: the engine's words, then the case reloaded so its recorded state shows.
+    _cnSetError('The engine answered 502 ('+(b.error||'no code')+'): '+(b.message||'no detail returned')+' Reloading the case to show its recorded state.');
+    loadChartNote(_cnCase.case_uuid);
+    return;
+  }
+  _cnSetError((b.message?b.message+' ':'')+'(engine status '+r.status+(b.error?', '+b.error:'')+')');
+  btn.disabled=false;
 }
 
 
@@ -970,12 +1407,15 @@ function _onLoginSuccess(session){
   _loginError('');
   showScreen('intake-screen');
   showToast('Secure session established. Welcome.');
+  if(_pendingChartNote){const u=_pendingChartNote;_pendingChartNote=null;openChartNote(u);}
+  else if(_pendingChartNoteBad!==null){_pendingChartNoteBad=null;openChartNote('');_cnStatus('alert-danger','The link you followed did not carry a Case ID the page can use. Paste the Case ID from the email the engine sent (Case ID: &hellip;) and press Open.');}
 }
 
 function doLogout(){
   if(_cognitoUser){_cognitoUser.signOut();}
   _cognitoUser=null;
   _idToken=null;
+  _cnReset();
   document.getElementById('login-email').value='';
   document.getElementById('login-pass').value='';
   document.getElementById('login-totp').value='';
