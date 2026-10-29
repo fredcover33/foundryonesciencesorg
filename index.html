@@ -364,6 +364,13 @@ textarea {
 .cn-body p { margin-bottom: .9rem; font-size: 15px; line-height: 1.65; }
 .cn-attest { font-size: 14px; line-height: 1.6; padding: .75rem 1rem; border-left: 4px solid var(--gold); background: var(--gold-lt); color: #5A3E00; margin-bottom: .75rem; }
 .cn-mono { font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 13px; }
+.cn-signal.cn-locked { background: var(--lgray); }
+.cn-signal .cn-locked-note { font-size: 12.5px; font-style: italic; color: #888; margin-top: .35rem; }
+.cn-tally { font-size: 13px; color: #8899BB; margin-top: .75rem; letter-spacing: .02em; }
+#cn-marking > .section:first-of-type, #cn-grouped > .section:first-of-type { border-top: none; }
+.cn-sig { font-size: 14px; line-height: 1.7; }
+.cn-sig .cn-sig-name { font-family: 'Libre Baskerville', serif; font-size: 18px; color: var(--navy); margin-bottom: .25rem; }
+.cn-footer { text-align: center; font-size: 12px; color: #888; padding: 1.5rem 0; letter-spacing: .04em; }
 .gate-status {
   font-size: 13.5px;
   color: #888;
@@ -752,6 +759,7 @@ textarea {
         <h1>Chart Note</h1>
         <div class="tagline">Mark each billing signal, attest, sign, and send the completed Chart Note to your billing agency.</div>
         <div class="doc-title" id="cn-doc-title">Case &nbsp;&middot;&nbsp; not yet opened</div>
+        <div class="cn-tally" id="cn-tally" style="display:none;"></div>
       </div>
       <div class="section">
         <div class="section-header">
@@ -785,6 +793,7 @@ textarea {
             <div id="cn-body" class="cn-body"></div>
           </div>
         </div>
+        <div id="cn-marking">
         <div class="section">
           <div class="section-header">
             <span class="sec-label">Billing signals</span>
@@ -798,6 +807,8 @@ textarea {
             <div id="cn-signals"></div>
           </div>
         </div>
+        </div>
+        <div id="cn-grouped" style="display:none;"></div>
         <div class="section">
           <div class="section-header">
             <span class="sec-label">Attestation and signature</span>
@@ -826,6 +837,51 @@ textarea {
           </div>
         </div>
       </div>
+    </div>
+  </div>
+</div>
+
+
+<div id="submission-screen" class="screen">
+  <div class="topbar">
+    <div><div class="tb-logo">Foundry One Sciences</div><div class="tb-tag">Billing Agency Submission</div></div>
+  </div>
+  <div style="flex:1;overflow-y:auto;background:#EFEFEC;padding:2rem 1rem;">
+    <div class="page-wrap">
+      <div class="form-header">
+        <div class="eyebrow">Foundry One Sciences LLC &mdash; Medical Research Solitaire Engine</div>
+        <h1>Billing Agency Submission</h1>
+        <div class="tagline">The Chart Note as the physician marked, attested and signed it.</div>
+        <div class="doc-title" id="sub-doc-title">Case &nbsp;&middot;&nbsp; loading</div>
+        <div class="cn-tally" id="sub-tally" style="display:none;"></div>
+      </div>
+      <div id="sub-status" class="alert alert-blue">Loading the submission&hellip;</div>
+      <div id="sub-content" class="cn-readonly" style="display:none;">
+        <div id="sub-grouped"></div>
+        <div class="section">
+          <div class="section-header">
+            <span class="sec-label">Chart Note</span>
+            <h2>What the Research Surfaced</h2>
+            <span class="sec-note">As delivered to the physician</span>
+          </div>
+          <div class="section-body">
+            <div id="sub-caution" class="alert alert-danger" style="display:none;margin-bottom:1rem;"></div>
+            <div id="sub-body" class="cn-body"></div>
+          </div>
+        </div>
+        <div class="section">
+          <div class="section-header">
+            <span class="sec-label">Attestation and signature</span>
+            <h2>Attested and signed by the physician</h2>
+            <span class="sec-note">As on the signed PDF</span>
+          </div>
+          <div class="section-body">
+            <div id="sub-attestation"></div>
+            <div id="sub-signature" class="cn-sig"></div>
+          </div>
+        </div>
+      </div>
+      <div class="cn-footer">Foundry One Sciences LLC &mdash; MRS Engine. We never stop looking.</div>
     </div>
   </div>
 </div>
@@ -974,6 +1030,11 @@ function _cnReset(){
   const content=document.getElementById('cn-content');
   content.style.display='none';content.classList.remove('cn-readonly');
   document.getElementById('cn-signals').innerHTML='';
+  document.getElementById('cn-grouped').innerHTML='';
+  document.getElementById('cn-grouped').style.display='none';
+  document.getElementById('cn-marking').style.display='';
+  document.getElementById('cn-tally').textContent='';
+  document.getElementById('cn-tally').style.display='none';
   document.getElementById('cn-body').innerHTML='';
   document.getElementById('cn-attestation').innerHTML='';
   document.getElementById('cn-caution').style.display='none';
@@ -1086,21 +1147,22 @@ function _cnRender(b){
   _cnMarksUnreadable=!!(sub&&sub.marks_error);
   _cnNoSignals=signals.length===0;
   const readonly=!!(sub&&(sub.status==='delivered'||sub.status==='accepted'));
-  let html='';
-  signals.forEach((sig,i)=>{
-    const m=marksOnRecord[i]||null;
-    html+='<div class="cn-signal" id="cn-signal-'+i+'">'
-      +'<div class="cn-desc">'+(i+1)+'. '+_escHtml(sig.description||'')+'</div>'
-      +(sig.rationale?'<div class="cn-rationale">'+_escHtml(sig.rationale)+'</div>':'')
-      +'<div class="cn-mark">Physician\'s mark</div>'
-      +'<div class="radio-group">'
-      +_CN_DISPOSITIONS.map(([v,label])=>'<label><input type="radio" name="cn-disp-'+i+'" value="'+v+'"'+(m&&m.disposition===v?' checked':'')+'> '+label+'</label>').join('')
-      +'</div>'
-      +'<div class="check-group"><label><input type="checkbox" id="cn-rider-'+i+'"'+(m&&m.rider?' checked':'')+'> I ordered, arranged or performed the related work this encounter (rider)</label></div>'
-      +'<textarea id="cn-note-'+i+'" maxlength="500" placeholder="Note to the agency about this signal (optional, up to 500 characters)">'+_escHtml(m&&m.note?m.note:'')+'</textarea>'
-      +'</div>';
-  });
-  document.getElementById('cn-signals').innerHTML=html;
+  // Delivered: the cards re-sorted into the four sections, with the tally under the case title (Chapter 3, ruling B).
+  // Any other state keeps the 1-to-N order. A delivered record whose marks cannot be read has nothing to group by.
+  const grouped=readonly&&sub.status==='delivered'&&Array.isArray(sub.marks)&&!sub.marks_error;
+  const groupedEl=document.getElementById('cn-grouped'), tallyEl=document.getElementById('cn-tally');
+  if(grouped){
+    document.getElementById('cn-signals').innerHTML='';
+    groupedEl.innerHTML=_cnSectionsHtml('cn',signals,marksOnRecord,true);
+    tallyEl.textContent=_cnTallyText(signals,marksOnRecord);
+  }else{
+    groupedEl.innerHTML='';
+    document.getElementById('cn-signals').innerHTML=signals.map((sig,i)=>_cnCardHtml('cn',sig,i,marksOnRecord[i]||null,readonly)).join('');
+    tallyEl.textContent='';
+  }
+  document.getElementById('cn-marking').style.display=grouped?'none':'';
+  groupedEl.style.display=grouped?'':'none';
+  tallyEl.style.display=grouped?'':'none';
   const att=b.attestation&&Array.isArray(b.attestation.statements)?b.attestation.statements:[];
   document.getElementById('cn-attestation').innerHTML=att.map(s=>'<div class="cn-attest">'+_escHtml(s)+'</div>').join('');
   const content=document.getElementById('cn-content');
@@ -1110,7 +1172,8 @@ function _cnRender(b){
   const sigEl=document.getElementById('cn-signature');
   sigEl.value=readonly&&sub.signature?sub.signature:'';
   sigEl.disabled=readonly;
-  document.querySelectorAll('#cn-signals input, #cn-signals textarea').forEach(el=>{el.disabled=readonly;});
+  // Every input follows the state; a locked (FINDING) input stays disabled whatever the state.
+  document.querySelectorAll('#cn-content .cn-signal input, #cn-content .cn-signal textarea').forEach(el=>{el.disabled=readonly||el.hasAttribute('data-locked');});
   _cnExplainSubmission(sub);
 }
 
@@ -1261,6 +1324,192 @@ async function submitChartNote(){
   }
   _cnSetError((b.message?b.message+' ':'')+'(engine status '+r.status+(b.error?', '+b.error:'')+')');
   btn.disabled=false;
+}
+
+
+// Chapter 3 — FINDING cards, the delivered view's sections, and the billing
+// agency's page. HONEY writes RECORD: / OPTION: / FINDING: as the first word
+// of every billing signal's description; a FINDING is research context, not
+// the physician's to decide: its card is pre-marked "Not addressed this
+// encounter" and locked, and it goes to the agency in its own section.
+const _CN_FINDING = /^\s*FINDING:/;
+const _CN_GROUPS = [
+  ['ordered','Affirmed — ordered, arranged or performed this encounter'],
+  ['record','Affirmed — in the record'],
+  ['not_sent','Not sent — declined or not addressed'],
+  ['research','Research context'],
+  ['unmarked','No readable mark on record']   // only when a non-FINDING signal has no readable mark: a defect, said loudly
+];
+
+function _cnIsFinding(sig){
+  return _CN_FINDING.test(String((sig&&sig.description)||''));
+}
+
+function _cnWhen(iso){
+  const d=new Date(iso);
+  return isNaN(d.getTime())?String(iso):d.toLocaleString('en-US',{dateStyle:'medium',timeStyle:'short'});
+}
+
+function _cnMarksByIndex(marks){
+  const o={};
+  if(Array.isArray(marks)){marks.forEach(m=>{if(m){o[m.signal]=m;}});}
+  return o;
+}
+
+function _cnGroupOf(sig,m){
+  if(_cnIsFinding(sig)){return 'research';}
+  const d=m?m.disposition:null;
+  if(d==='affirm'){return m.rider?'ordered':'record';}
+  if(d==='decline'||d==='not_addressed'){return 'not_sent';}
+  return 'unmarked';
+}
+
+function _cnCardHtml(prefix,sig,i,m,readonly){
+  // One card, for the physician's page (prefix cn) and the agency's (prefix sub). A FINDING card is locked:
+  // its radios and rider are disabled (data-locked keeps them so through the state loop); the note stays open.
+  // While markable it carries not_addressed; read-only it shows the mark on record as sent.
+  const locked=_cnIsFinding(sig);
+  const disp=(locked&&!readonly)?'not_addressed':(m?m.disposition:null);
+  const rider=(locked&&!readonly)?false:!!(m&&m.rider);
+  const lockAttr=locked?' disabled data-locked="1"':'';
+  return '<div class="cn-signal'+(locked?' cn-locked':'')+'" id="'+prefix+'-signal-'+i+'">'
+    +'<div class="cn-desc">'+(i+1)+'. '+_escHtml(sig.description||'')+'</div>'
+    +(sig.rationale?'<div class="cn-rationale">'+_escHtml(sig.rationale)+'</div>':'')
+    +'<div class="cn-mark">Physician\'s mark</div>'
+    +'<div class="radio-group">'
+    +_CN_DISPOSITIONS.map(([v,label])=>'<label><input type="radio" name="'+prefix+'-disp-'+i+'" value="'+v+'"'+(disp===v?' checked':'')+lockAttr+'> '+label+'</label>').join('')
+    +'</div>'
+    +(locked?'<div class="cn-locked-note">Research finding — not for the physician to decide; sent to the agency as research context.</div>':'')
+    +'<div class="check-group"><label><input type="checkbox" id="'+prefix+'-rider-'+i+'"'+(rider?' checked':'')+lockAttr+'> I ordered, arranged or performed the related work this encounter (rider)</label></div>'
+    +'<textarea id="'+prefix+'-note-'+i+'" maxlength="500" placeholder="'+(readonly?'No note':'Note to the agency about this signal (optional, up to 500 characters)')+'">'+_escHtml(m&&m.note?m.note:'')+'</textarea>'
+    +'</div>';
+}
+
+function _cnSectionsHtml(prefix,signals,marks,readonly){
+  // The four sections of ruling B, in order, each omitted when empty; the cards keep their printed numbers.
+  const groups={};
+  _CN_GROUPS.forEach(([k])=>{groups[k]=[];});
+  signals.forEach((sig,i)=>{
+    const m=marks[i]||null;
+    groups[_cnGroupOf(sig,m)].push(_cnCardHtml(prefix,sig,i,m,readonly));
+  });
+  return _CN_GROUPS.filter(([k])=>groups[k].length>0).map(([k,title])=>
+    '<div class="section"><div class="section-header"><span class="sec-label">'+groups[k].length+(groups[k].length===1?' signal':' signals')+'</span><h2>'+_escHtml(title)+'</h2></div>'
+    +'<div class="section-body">'+groups[k].join('')+'</div></div>').join('');
+}
+
+function _cnTallyText(signals,marks){
+  let n=0,m=0,k=0,r=0,u=0;
+  signals.forEach((sig,i)=>{
+    const g=_cnGroupOf(sig,marks[i]||null);
+    if(g==='ordered'){n++;m++;}
+    else if(g==='record'){n++;}
+    else if(g==='not_sent'){k++;}
+    else if(g==='research'){r++;}
+    else{u++;}
+  });
+  let t=n+' affirmed · '+m+' ordered or performed this encounter · '+k+' not sent · '+r+(r===1?' research finding':' research findings');
+  if(u>0){t+=' · '+u+' with no readable mark on record';}
+  return t;
+}
+
+// The billing agency's page (Chapter 3, ruling C). One engine route, no sign-in:
+// GET /submission/<token>, the token from the agency's email link
+// (?submission=<token>), read once at load. Its own state; nothing of the
+// physician's sign-in is read or written here.
+const _SUB_BASE = 'https://ily73480dd.execute-api.us-east-2.amazonaws.com/prod/submission';
+const _SUB_TOKEN = /^[A-Za-z0-9_-]{32}$/;
+let _subToken = null;   // the link's token, once it has passed the shape test
+let _subBody = null;    // the GET body on screen
+
+function _subStatus(cls,html){
+  const s=document.getElementById('sub-status');
+  s.className='alert '+cls;
+  s.innerHTML=html;
+}
+
+async function _subLoad(token){
+  _subToken=token;_subBody=null;
+  document.getElementById('sub-content').style.display='none';
+  document.getElementById('sub-tally').style.display='none';
+  document.getElementById('sub-doc-title').innerHTML='Case &nbsp;&middot;&nbsp; loading';
+  _subStatus('alert-blue','Loading the submission&hellip;');
+  let res;
+  try{res=await fetch(_SUB_BASE+'/'+encodeURIComponent(token),{method:'GET'});}
+  catch(e){_subStatus('alert-danger','<strong>Not opened.</strong> Could not reach the engine. Check your connection and reload this page.');return;}
+  let b=null;
+  try{b=await res.json();}catch(e){}
+  b=b||{};
+  if(res.status!==200){
+    // Keyed on the engine's error code; the status code alone names too many things.
+    const byError={
+      bad_token:'The engine did not accept the token in this link.',
+      submission_not_found:'No submission is filed under this link.',
+      case_not_found:'The case this link points to is not on record.',
+      submission_not_delivered:'This submission has not been delivered; there is nothing to show yet.',
+      chart_note_not_archived:'The case this link points to has no archived Chart Note.',
+      store_failed:'The engine could not read its records right now. Nothing is lost; try again in a minute.',
+      token_row_malformed:'The record behind this link names no practice or no case; it will not repair itself. Tell Foundry One Sciences.',
+      archive_failed:'The engine could not read the archived Chart Note right now. Nothing is lost; try again in a minute.',
+      archive_not_configured:'The engine has no Chart Note archive wired; tell Foundry One Sciences.'
+    };
+    const why=(b.error&&byError[b.error])||{
+      400:'The engine did not accept this link.',
+      404:'Nothing is filed under this link.',
+      409:'The engine refused to show this submission in its present state.',
+      502:'The engine could not read the submission right now. Nothing is lost; try again in a minute.'
+    }[res.status]||('Unexpected response from the engine (status '+res.status+').');
+    const detail=(b.error||b.message)?(b.error?b.error+': ':'')+(b.message||''):'';
+    _subStatus('alert-danger','<strong>Not opened.</strong> '+_escHtml(why)+(detail?' <span class="cn-mono">'+_escHtml(detail)+'</span>':''));
+    return;
+  }
+  _subBody=b;
+  _subRender(b);
+}
+
+function _subRender(b){
+  const minted=b.minted_at?_cnWhen(b.minted_at):'';
+  document.getElementById('sub-doc-title').innerHTML='Case '+_escHtml(b.case_uuid)+(minted?' &nbsp;&middot;&nbsp; Minted '+_escHtml(minted):'')+(b.diagnosis?' &nbsp;&middot;&nbsp; '+_escHtml(b.diagnosis):'');
+  const honey=b.honey||{}, syn=honey.synthesis||{};
+  const signals=Array.isArray(syn.billing_signals)?syn.billing_signals:[];
+  const sub=b.submission||{};
+  const marks=_cnMarksByIndex(sub.marks);
+  // The status strip: delivered when, opened when; anything else said as the engine returned it.
+  const marksNote=sub.marks_error?' <strong>The marks on record could not be read</strong> (marks_error: <span class="cn-mono">'+_escHtml(String(sub.marks_error))+'</span>); the cards are blank for that reason, not because none were made.':'';
+  let opened;
+  if(b.opened_at){opened='Opened '+_escHtml(_cnWhen(b.opened_at));}
+  else if(b.opened_at_error){opened='Opened — not recorded: <span class="cn-mono">'+_escHtml(String(b.opened_at_error))+'</span>';}
+  else{opened='Opened — not recorded (the engine returned neither opened_at nor opened_at_error)';}
+  if(sub.status==='delivered'){
+    _subStatus('alert-info','Delivered to '+_escHtml(sub.agency_email||'(no agency email on record)')+(sub.delivered_at?' on '+_escHtml(_cnWhen(sub.delivered_at)):' (no delivery time on record)')+' &middot; '+opened+marksNote);
+  }else{
+    _subStatus('alert-danger','<strong>Not delivered.</strong> The engine returned this submission with status <span class="cn-mono">'+_escHtml(String(sub.status))+'</span>; what follows is the record as it stands. &middot; '+opened+marksNote);
+  }
+  document.getElementById('sub-tally').textContent=_cnTallyText(signals,marks);
+  document.getElementById('sub-tally').style.display='';
+  document.getElementById('sub-grouped').innerHTML=_cnSectionsHtml('sub',signals,marks,true);
+  const caution=document.getElementById('sub-caution');
+  if(honey.caution&&honey.caution.header_text){caution.textContent=honey.caution.header_text;caution.style.display='';}
+  else{caution.style.display='none';}
+  const bodyText=(syn.chart_note&&syn.chart_note.trim())?syn.chart_note:(syn.determination||'');
+  document.getElementById('sub-body').innerHTML=bodyText.split(/\n\s*\n/).filter(x=>x.trim()).map(x=>'<p>'+_escHtml(x).replace(/\n/g,'<br>')+'</p>').join('');
+  const att=b.attestation&&Array.isArray(b.attestation.statements)?b.attestation.statements:[];
+  document.getElementById('sub-attestation').innerHTML=att.map(s=>'<div class="cn-attest">'+_escHtml(s)+'</div>').join('');
+  document.getElementById('sub-signature').innerHTML=
+    '<div class="cn-sig-name">/s/ '+_escHtml(sub.signature||'(no signature on record)')+'</div>'
+    +'<div>Signed '+_escHtml(sub.signed_at?_cnWhen(sub.signed_at):'(no signing time on record)')+' (UTC on the PDF)</div>'
+    +'<div>Physician of record: '+_escHtml(b.physician_email||'(not on record)')+' — questions go there.</div>';
+  document.querySelectorAll('#sub-content input, #sub-content textarea').forEach(el=>{el.disabled=true;});
+  document.getElementById('sub-content').style.display='';
+}
+
+// At load: an agency link (?submission=<token>) opens its page at once, before and without any sign-in.
+let _subQuery=null;
+try{_subQuery=new URLSearchParams(window.location.search).get('submission');}catch(e){_subQuery=null;}
+if(_subQuery!==null){
+  showScreen('submission-screen');
+  if(_SUB_TOKEN.test(_subQuery.trim())){_subLoad(_subQuery.trim());}
+  else{_subStatus('alert-danger','This link does not carry a submission token the page can use.');}
 }
 
 
