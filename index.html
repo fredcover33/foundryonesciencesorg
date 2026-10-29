@@ -355,7 +355,6 @@ textarea {
 /* ── CHART NOTE PAGE (Companion Chapter 2c) ── */
 .cn-signal { border: 1px solid var(--border); border-radius: 10px; padding: 1.1rem 1.25rem; margin-bottom: 1rem; background: var(--white); }
 .cn-signal .cn-desc { font-size: 15px; font-weight: 600; color: var(--navy); }
-.cn-signal .cn-code { display: inline-block; font-size: 12px; font-weight: 600; letter-spacing: .05em; color: var(--gold-dk); background: var(--gold-lt); border: 1px solid var(--gold); border-radius: 4px; padding: .05rem .45rem; margin: .35rem 0 .5rem; }
 .cn-signal .cn-rationale { font-size: 13.5px; color: var(--gray); margin-bottom: .6rem; }
 .cn-signal .cn-mark { font-size: 12px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--navy); margin-top: .5rem; }
 .cn-signal textarea { min-height: 56px; margin-top: .5rem; }
@@ -1092,7 +1091,6 @@ function _cnRender(b){
     const m=marksOnRecord[i]||null;
     html+='<div class="cn-signal" id="cn-signal-'+i+'">'
       +'<div class="cn-desc">'+(i+1)+'. '+_escHtml(sig.description||'')+'</div>'
-      +'<span class="cn-code">'+_escHtml(sig.code_system||'')+' '+_escHtml(sig.code||'')+'</span>'
       +(sig.rationale?'<div class="cn-rationale">'+_escHtml(sig.rationale)+'</div>':'')
       +'<div class="cn-mark">Physician\'s mark</div>'
       +'<div class="radio-group">'
