@@ -473,6 +473,7 @@ textarea {
     <div class="tb-right">
       <div class="tb-user"><span class="sdot"></span>Logged in as <span id="doctor-name">Physician</span></div>
       <button class="btn-logout" onclick="openChartNote()">Chart Note</button>
+      <button class="btn-logout" onclick="openSolo()">Companion Solo</button>
       <button class="btn-logout" onclick="openSettings()">Settings</button>
       <button class="btn-logout" onclick="doLogout()">Logout</button>
     </div>
@@ -842,6 +843,171 @@ textarea {
 </div>
 
 
+<!-- Companion Solo (Chapter S4). One screen, two states: the note form (solo-form) and the
+     review (solo-content). The frame, classes and mechanics are the Chart Note page's. -->
+<div id="solo-screen" class="screen">
+  <div class="topbar">
+    <div><div class="tb-logo">Foundry One Sciences</div><div class="tb-tag">&hellip;&nbsp; we have not stopped looking</div></div>
+    <div class="tb-right">
+      <div class="tb-user"><span class="sdot"></span>Logged in as <span id="solo-doctor-name">Physician</span></div>
+      <button class="btn-logout" onclick="showScreen('intake-screen')">&#8592; Intake</button>
+      <button class="btn-logout" onclick="openSettings()">Settings</button>
+      <button class="btn-logout" onclick="doLogout()">Logout</button>
+    </div>
+  </div>
+  <div style="flex:1;overflow-y:auto;background:#EFEFEC;padding:2rem 1rem;">
+    <div class="page-wrap">
+      <div class="form-header">
+        <div class="eyebrow">Foundry One Sciences LLC &mdash; Medical Research Solitaire Engine</div>
+        <h1>Companion Solo</h1>
+        <div class="tagline">Paste your note. The Companion reads it against the rulebook and shows you, line by line, what your note already documents. It makes no determinations &mdash; you do.</div>
+        <div class="doc-title" id="solo-doc-title">Case &nbsp;&middot;&nbsp; not yet reviewed</div>
+        <div class="cn-tally" id="solo-tally" style="display:none;"></div>
+      </div>
+      <div class="section">
+        <div class="section-header">
+          <span class="sec-label">Case</span>
+          <h2>Open a past review</h2>
+          <span class="sec-note">The Case ID is in the engine's email, and the link in that email opens it here</span>
+        </div>
+        <div class="section-body">
+          <div class="grid-2">
+            <div class="field">
+              <label for="solo-case-input">Case ID <span class="note">The UUID from the engine's email.</span></label>
+              <input type="text" id="solo-case-input" class="cn-mono" autocomplete="off" placeholder="xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx">
+            </div>
+            <div class="field" style="display:flex;align-items:flex-end;gap:1rem;flex-wrap:wrap;">
+              <button type="button" class="btn-back" id="solo-open-btn" onclick="openSolo(document.getElementById('solo-case-input').value)">Open</button>
+              <button type="button" class="btn-back" id="solo-new-btn" onclick="_soloShowForm()" style="display:none;">Review another note</button>
+            </div>
+          </div>
+          <div id="solo-status" class="alert alert-blue" style="margin-top:1.25rem;">Paste your note below and press <strong>Review my note</strong>, or open a past review by its Case ID.</div>
+          <p id="solo-error-top" style="margin-top:1rem;font-size:13.5px;color:var(--red);font-weight:600;display:none;"></p>
+        </div>
+      </div>
+      <div id="solo-form">
+        <div class="section">
+          <div class="section-header">
+            <span class="sec-label">Your note</span>
+            <h2>The note the Companion reads</h2>
+            <span class="sec-note">Remove the patient's name and other identifiers first</span>
+          </div>
+          <div class="section-body">
+            <div class="alert alert-danger">
+              <strong>No patient identifiers.</strong> Do not paste the patient's name, date of birth, address, phone number or insurance number. The Companion reads the clinical wording only.
+            </div>
+            <div class="grid-2">
+              <div class="field">
+                <label for="solo-npi">Your NPI <span class="req">*</span> <span class="note">Ten digits. Filled from the intake form when you have typed it there.</span></label>
+                <input type="text" id="solo-npi" inputmode="numeric" maxlength="10" placeholder="10-digit NPI">
+              </div>
+              <div class="field">
+                <label>Your email <span class="note">The address you signed in with. The Companion emails the review there.</span></label>
+                <div id="solo-email" class="alert alert-blue cn-mono" style="padding:.6rem 1rem;"></div>
+              </div>
+            </div>
+            <div class="field">
+              <label for="solo-notes">Your note <span class="req">*</span> <span class="note">Paste the note as you wrote it. Paragraphs are read one at a time.</span></label>
+              <textarea id="solo-notes" rows="14" placeholder="Paste your note here..."></textarea>
+            </div>
+            <details id="solo-more">
+              <summary style="cursor:pointer;font-weight:600;color:var(--navy);font-size:13.5px;">More about this visit (optional)</summary>
+              <div style="margin-top:1rem;">
+                <div class="grid-2">
+                  <div class="field">
+                    <label for="solo-diagnosis">Diagnosis <span class="note">Up to 200 characters.</span></label>
+                    <input type="text" id="solo-diagnosis" maxlength="200" placeholder="The diagnosis, in your words">
+                  </div>
+                  <div class="field">
+                    <label for="solo-dos">Date of service <span class="note">Picks the rulebook year. Blank means the current one.</span></label>
+                    <input type="date" id="solo-dos">
+                  </div>
+                </div>
+                <div class="grid-2">
+                  <div class="field">
+                    <label for="solo-comorb">Comorbidities <span class="note">One per line.</span></label>
+                    <textarea id="solo-comorb" rows="4" placeholder="One condition per line"></textarea>
+                  </div>
+                  <div class="field">
+                    <label for="solo-meds">Medications <span class="note">One per line.</span></label>
+                    <textarea id="solo-meds" rows="4" placeholder="One medication per line"></textarea>
+                  </div>
+                </div>
+                <div class="field">
+                  <label for="solo-clar">Clarifications <span class="note">Anything you want read alongside the note.</span></label>
+                  <textarea id="solo-clar" rows="3" placeholder="Optional"></textarea>
+                </div>
+              </div>
+            </details>
+            <div style="margin-top:1.5rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap;">
+              <button type="button" class="submit-btn" id="solo-review-btn" onclick="submitSolo()">Review my note</button>
+            </div>
+            <p id="solo-form-error" style="margin-top:1rem;font-size:13.5px;color:var(--red);font-weight:600;display:none;"></p>
+          </div>
+        </div>
+      </div>
+      <div id="solo-content" style="display:none;">
+        <div id="solo-email-line" class="alert alert-blue" style="display:none;"></div>
+        <div id="solo-marking">
+        <div class="section">
+          <div class="section-header">
+            <span class="sec-label">Items</span>
+            <h2>What your note already documents</h2>
+            <span class="sec-note">Every item needs a mark before you can sign</span>
+          </div>
+          <div class="section-body">
+            <div class="alert alert-info" style="margin-bottom:1.25rem;">
+              Each item quotes the wording in your note that matched a rule and names what the rule may pertain to. Affirm, decline, or say the item was not addressed this encounter. Tick the rider where you ordered, arranged or performed the related work during this encounter. A note is optional and goes to the billing agency beside the item.
+            </div>
+            <div id="solo-items"></div>
+          </div>
+        </div>
+        </div>
+        <div id="solo-grouped" style="display:none;"></div>
+        <div id="solo-unclassified"></div>
+        <div class="section">
+          <div class="section-header">
+            <span class="sec-label">Your note, as read</span>
+            <h2>The paragraphs the Companion read</h2>
+            <span class="sec-note">Each paragraph carries the reference the items point to</span>
+          </div>
+          <div class="section-body">
+            <div id="solo-sections" class="cn-body"></div>
+          </div>
+        </div>
+        <div class="section">
+          <div class="section-header">
+            <span class="sec-label">Attestation and signature</span>
+            <h2>Sign and send</h2>
+            <span class="sec-note">One send per case</span>
+          </div>
+          <div class="section-body">
+            <div id="solo-attestation"></div>
+            <div class="check-group" style="margin:.75rem 0 1.25rem;">
+              <label><input type="checkbox" id="solo-attested"> I attest to both statements above.</label>
+            </div>
+            <div class="grid-2">
+              <div class="field">
+                <label for="solo-signature">Typed signature <span class="req">*</span> <span class="note">Your name as you sign it, up to 120 characters.</span></label>
+                <input type="text" id="solo-signature" maxlength="120" autocomplete="name" placeholder="e.g. Alex Smith, MD">
+              </div>
+              <div class="field">
+                <label>Sends to <span class="note">Your practice's billing agency, from Settings.</span></label>
+                <div id="solo-agency" class="alert alert-blue" style="padding:.6rem 1rem;">Checking your billing agency&hellip;</div>
+              </div>
+            </div>
+            <div style="margin-top:1.5rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap;">
+              <button type="button" class="submit-btn" id="solo-send-btn" onclick="submitSoloReview()" disabled>Submit to Billing Agency</button>
+            </div>
+            <p id="solo-error" style="margin-top:1rem;font-size:13.5px;color:var(--red);font-weight:600;display:none;"></p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
 <div id="submission-screen" class="screen">
   <div class="topbar">
     <div><div class="tb-logo">Foundry One Sciences</div><div class="tb-tag">Billing Agency Submission</div></div>
@@ -850,12 +1016,39 @@ textarea {
     <div class="page-wrap">
       <div class="form-header">
         <div class="eyebrow">Foundry One Sciences LLC &mdash; Medical Research Solitaire Engine</div>
-        <h1>Billing Agency Submission</h1>
-        <div class="tagline">The Chart Note as the physician marked, attested and signed it.</div>
+        <h1 id="sub-heading">Billing Agency Submission</h1>
+        <div class="tagline" id="sub-tagline">The Chart Note as the physician marked, attested and signed it.</div>
         <div class="doc-title" id="sub-doc-title">Case &nbsp;&middot;&nbsp; loading</div>
         <div class="cn-tally" id="sub-tally" style="display:none;"></div>
       </div>
       <div id="sub-status" class="alert alert-blue">Loading the submission&hellip;</div>
+      <!-- Companion Solo (Chapter S4): a body with product === "solo" renders here; the honey
+           container below (sub-content) is untouched for every other body. -->
+      <div id="sub-solo-content" class="cn-readonly" style="display:none;">
+        <div id="sub-solo-grouped"></div>
+        <div id="sub-solo-unclassified"></div>
+        <div class="section">
+          <div class="section-header">
+            <span class="sec-label">Your note, as read</span>
+            <h2>The paragraphs the Companion read</h2>
+            <span class="sec-note">Each paragraph carries the reference the items point to</span>
+          </div>
+          <div class="section-body">
+            <div id="sub-solo-sections" class="cn-body"></div>
+          </div>
+        </div>
+        <div class="section">
+          <div class="section-header">
+            <span class="sec-label">Attestation and signature</span>
+            <h2>Attested and signed by the physician</h2>
+            <span class="sec-note">As on the signed PDF</span>
+          </div>
+          <div class="section-body">
+            <div id="sub-solo-attestation"></div>
+            <div id="sub-solo-signature" class="cn-sig"></div>
+          </div>
+        </div>
+      </div>
       <div id="sub-content" class="cn-readonly" style="display:none;">
         <div id="sub-grouped"></div>
         <div class="section">
@@ -1431,6 +1624,7 @@ function _subStatus(cls,html){
 async function _subLoad(token){
   _subToken=token;_subBody=null;
   document.getElementById('sub-content').style.display='none';
+  document.getElementById('sub-solo-content').style.display='none';
   document.getElementById('sub-tally').style.display='none';
   document.getElementById('sub-doc-title').innerHTML='Case &nbsp;&middot;&nbsp; loading';
   _subStatus('alert-blue','Loading the submission&hellip;');
@@ -1448,6 +1642,7 @@ async function _subLoad(token){
       case_not_found:'The case this link points to is not on record.',
       submission_not_delivered:'This submission has not been delivered; there is nothing to show yet.',
       chart_note_not_archived:'The case this link points to has no archived Chart Note.',
+      solo_not_archived:'The case this link points to has no archived Companion Solo review.',
       store_failed:'The engine could not read its records right now. Nothing is lost; try again in a minute.',
       token_row_malformed:'The record behind this link names no practice or no case; it will not repair itself. Tell Foundry One Sciences.',
       archive_failed:'The engine could not read the archived Chart Note right now. Nothing is lost; try again in a minute.',
@@ -1468,6 +1663,8 @@ async function _subLoad(token){
 }
 
 function _subRender(b){
+  // Companion Solo (Chapter S4): a Solo submission's body says product === "solo" and carries solo, not honey.
+  if(b.product==='solo'){_subRenderSolo(b);return;}
   const minted=b.minted_at?_cnWhen(b.minted_at):'';
   document.getElementById('sub-doc-title').innerHTML='Case '+_escHtml(b.case_uuid)+(minted?' &nbsp;&middot;&nbsp; Minted '+_escHtml(minted):'')+(b.diagnosis?' &nbsp;&middot;&nbsp; '+_escHtml(b.diagnosis):'');
   const honey=b.honey||{}, syn=honey.synthesis||{};
@@ -1510,6 +1707,681 @@ if(_subQuery!==null){
   showScreen('submission-screen');
   if(_SUB_TOKEN.test(_subQuery.trim())){_subLoad(_subQuery.trim());}
   else{_subStatus('alert-danger','This link does not carry a submission token the page can use.');}
+}
+
+
+// Companion Solo (Chapter S4). Three engine routes behind the same Bearer token
+// as the intake, under _CN_BASE (solo_routes.py:15-17):
+//   POST /consultation/solo          — the note and the fields around it (models.SoloIntake)
+//   GET  /consultation/solo/<uuid>   — the archived review and any submission on record
+//   POST /consultation/solo/submit   — {case_uuid, marks, attested, signature}
+// The page shows what the engine reports and re-sorts nothing: the items arrive
+// in the engine's printed order (solo_routes._items) and keep it. The case UUID
+// arrives in the engine's email link (?solo=<uuid>), read once at load and opened
+// after sign-in exactly as ?chart-note= is, or is typed into the Case ID field.
+const _SOLO_SECTION_NAMES = {A:'notes',B:'clarifications',C:'diagnosis',D:'clinical anomaly',E:'comorbidities',F:'medications',G:'mechanistic hypothesis'};
+// The four-sections-by-mark layout minus research context: Solo items are built from RuleHit fields
+// (solo_routes._items) and carry no description, so HONEY's FINDING: prefix never appears and no
+// item is research context. The research section is left out rather than rendered empty.
+const _SOLO_GROUPS = _CN_GROUPS.filter(([k])=>k!=='research');
+// 502 codes from POST /consultation/solo/submit after which nothing was sent: complete_failed and
+// send_failed record send_failed (solo_routes.py:647,670); ses_failed (handler._agency_confirmed),
+// archive_failed, archive_not_configured (_archive_or_502), enroll_failed and practice_lookup_failed
+// (_resolve_practice) are raised before the first record write. The Chart Note's set plus the two
+// S5 codes: rulebook_failed (solo_routes.py:538, before the first record write) and
+// completed_page_mismatch (solo_routes.py:615, the row is written send_failed).
+const _SOLO_502_KEEP_MARKS = _CN_502_KEEP_MARKS.concat(['rulebook_failed','completed_page_mismatch']);
+let _pendingSolo = null;      // the email link's case UUID, until sign-in opens it
+let _pendingSoloBad = null;   // a ?solo= value that is not a UUID: said so after sign-in
+let _soloCase = null;         // the POST or GET body of the review on screen
+let _soloAgencyOk = false;    // Settings says the agency is confirmed
+let _soloMarksUnreadable = false; // the submission on record carries marks_error
+let _soloNoItems = false;     // the review surfaced no items
+let _soloSentTo = null;       // the physician_email the page sent with the note (for the email line)
+let _soloReReviewed = false;  // the review on screen came from "Review this note again" (after a 409 rulebook_changed)
+try{
+  const q=new URLSearchParams(window.location.search).get('solo');
+  if(q!==null){
+    if(_CN_UUID.test(q.trim())){_pendingSolo=q.trim().toLowerCase();}
+    else{_pendingSoloBad=q;}
+  }
+}catch(e){}
+
+function _soloStatus(cls,html){
+  const s=document.getElementById('solo-status');
+  s.className='alert '+cls;
+  s.innerHTML=html;
+}
+
+function _soloSetError(msg){
+  // Twice: beside the send button, and above the content.
+  ['solo-error','solo-error-top'].forEach(id=>{
+    const el=document.getElementById(id);
+    el.textContent=msg||'';
+    el.style.display=msg?'block':'none';
+  });
+}
+
+function _soloSetErrorHtml(html){
+  // The same two slots as _soloSetError, for a message built with escaped markup (a code in cn-mono, a button).
+  ['solo-error','solo-error-top'].forEach(id=>{
+    const el=document.getElementById(id);
+    el.innerHTML=html||'';
+    el.style.display=html?'block':'none';
+  });
+}
+
+function _soloSetFormError(html){
+  const el=document.getElementById('solo-form-error');
+  el.innerHTML=html||'';
+  el.style.display=html?'block':'none';
+}
+
+function _soloShowForm(){
+  // Back to the note form; nothing of the review stays on screen.
+  _soloCase=null;_soloSentTo=null;_soloMarksUnreadable=false;_soloNoItems=false;_soloReReviewed=false;
+  const content=document.getElementById('solo-content');
+  content.style.display='none';content.classList.remove('cn-readonly');
+  document.getElementById('solo-form').style.display='';
+  document.getElementById('solo-new-btn').style.display='none';
+  document.getElementById('solo-items').innerHTML='';
+  document.getElementById('solo-grouped').innerHTML='';
+  document.getElementById('solo-grouped').style.display='none';
+  document.getElementById('solo-marking').style.display='';
+  document.getElementById('solo-unclassified').innerHTML='';
+  document.getElementById('solo-sections').innerHTML='';
+  document.getElementById('solo-attestation').innerHTML='';
+  document.getElementById('solo-email-line').style.display='none';
+  document.getElementById('solo-tally').textContent='';
+  document.getElementById('solo-tally').style.display='none';
+  document.getElementById('solo-signature').value='';
+  document.getElementById('solo-signature').disabled=false;
+  document.getElementById('solo-attested').checked=false;
+  document.getElementById('solo-attested').disabled=false;
+  document.getElementById('solo-send-btn').disabled=true;
+  document.getElementById('solo-doc-title').innerHTML='Case &nbsp;&middot;&nbsp; not yet reviewed';
+  document.getElementById('solo-agency').textContent='';
+  _soloSetError('');
+  _soloSetFormError('');
+  _soloStatus('alert-blue','Paste your note below and press <strong>Review my note</strong>, or open a past review by its Case ID.');
+}
+
+function _soloReset(){
+  // Sign-out: nothing of one sign-in's note or review stays on screen for the next.
+  _soloShowForm();
+  _pendingSolo=null;_pendingSoloBad=null;_soloAgencyOk=false;
+  document.getElementById('solo-case-input').value='';
+  ['solo-npi','solo-notes','solo-diagnosis','solo-dos','solo-comorb','solo-meds','solo-clar'].forEach(id=>{document.getElementById(id).value='';});
+  document.getElementById('solo-email').textContent='';
+}
+
+function openSolo(uuid){
+  if(!_idToken){alert('Please log in first.');return;}
+  document.getElementById('solo-doctor-name').textContent=document.getElementById('doctor-name').textContent;
+  // The NPI and email come from where the intake form takes them (handleSubmit: #npiInput and
+  // #login-email). The NPI is copied into the Solo field once, when that field is still blank, so
+  // the Solo page stands on its own when the intake form was never filled in.
+  const npiEl=document.getElementById('solo-npi');
+  if(!npiEl.value.trim()){npiEl.value=document.getElementById('npiInput').value.trim();}
+  document.getElementById('solo-email').textContent=document.getElementById('login-email').value.trim()||'(no sign-in email on this page)';
+  _soloSetError('');
+  showScreen('solo-screen');
+  const raw=(uuid||'').trim().toLowerCase();
+  if(raw){document.getElementById('solo-case-input').value=raw;}
+  if(!raw){return;}
+  if(!_CN_UUID.test(raw)){
+    _soloStatus('alert-danger','That is not a Case ID. It is the 36-character UUID in the engine\'s email (Case ID: &hellip;).');
+    document.getElementById('solo-content').style.display='none';
+    return;
+  }
+  loadSolo(raw);
+}
+
+function _soloNotOpened(r){
+  // Keyed on the engine's error code; the status code alone names too many things.
+  const b=r.body||{};
+  const byError={
+    case_not_yours:'This case was created by a different sign-in; the engine will not open it here.',
+    case_not_found:'No Solo case with that ID.',
+    solo_not_archived:'This case has no archived Solo review. Run the note again.',
+    practice_unresolved:'This sign-in is not linked to a practice record.',
+    archive_not_configured:'The engine has no Chart Note archive wired; tell Foundry One Sciences.',
+    archive_failed:'The engine could not read the archived review right now. Nothing is lost; try again.',
+    store_failed:'The engine could not read its records right now. Nothing is lost; try again.',
+    enroll_failed:'The engine could not enroll this sign-in\'s practice right now. Nothing is lost; try again.',
+    practice_lookup_failed:'The engine could not read the practice record right now. Nothing is lost; try again.',
+    bad_request:'The engine did not accept that Case ID.'
+  };
+  const why=(b.error&&byError[b.error])||{
+    400:'The engine did not accept that Case ID.',
+    403:'The engine refused this sign-in for that case.',
+    404:'No case with that ID.',
+    409:'The engine refused to open the case in its present state.',
+    502:'The engine could not read the case right now. Nothing is lost; try again.'
+  }[r.status]||('Unexpected response from the engine (status '+r.status+').');
+  const detail=(b.error||b.message)?(b.error?b.error+': ':'')+(b.message||''):'';
+  return '<strong>Not opened.</strong> '+_escHtml(why)+(detail?' <span class="cn-mono">'+_escHtml(detail)+'</span>':'');
+}
+
+async function loadSolo(uuid){
+  _soloCase=null;_soloSentTo=null;_soloReReviewed=false;
+  document.getElementById('solo-content').style.display='none';
+  document.getElementById('solo-doc-title').innerHTML='Case '+_escHtml(uuid);
+  _soloStatus('alert-blue','Loading the Solo review for case '+_escHtml(uuid)+'&hellip;');
+  let r;
+  try{r=await _cnFetch('/solo/'+encodeURIComponent(uuid),'GET');}
+  catch(e){_soloStatus('alert-danger',_escHtml(e.message));return;}
+  if(r.status!==200){_soloStatus('alert-danger',_soloNotOpened(r));return;}
+  _soloCase=r.body;
+  document.getElementById('solo-form').style.display='none';
+  document.getElementById('solo-new-btn').style.display='';
+  _soloRender(r.body);
+  document.getElementById('solo-content').style.display='';
+  _soloLoadAgency();
+}
+
+async function submitSolo(){
+  // POST /consultation/solo. Body keys are SoloIntake's (models.py:1049-1061): physician_npi,
+  // physician_email, notes required; diagnosis, comorbidities, medications, clarifications,
+  // date_of_service sent only when filled.
+  _soloSetFormError('');
+  if(!_idToken){alert('Please log in first.');return;}
+  const npi=document.getElementById('solo-npi').value.trim();
+  const email=document.getElementById('login-email').value.trim();
+  const notes=document.getElementById('solo-notes').value;
+  if(!notes.trim()){_soloSetFormError('Paste your note first. The box is empty.');return;}
+  if(!/^\d{10}$/.test(npi)){_soloSetFormError('Your NPI must be exactly 10 digits.');return;}
+  if(!email){_soloSetFormError('No sign-in email is on this page. Log out and sign in again.');return;}
+  const body={physician_npi:npi,physician_email:email,notes:notes};
+  const diagnosis=document.getElementById('solo-diagnosis').value.trim();
+  if(diagnosis){body.diagnosis=diagnosis;}
+  const comorb=document.getElementById('solo-comorb').value.split('\n').map(s=>s.trim()).filter(Boolean);
+  if(comorb.length){body.comorbidities=comorb;}
+  const meds=document.getElementById('solo-meds').value.split('\n').map(s=>s.trim()).filter(Boolean);
+  if(meds.length){body.medications=meds;}
+  const dos=document.getElementById('solo-dos').value.trim();
+  if(dos){body.date_of_service=dos;}
+  const clar=document.getElementById('solo-clar').value.trim();
+  if(clar){body.clarifications=clar;}
+  const btn=document.getElementById('solo-review-btn');
+  btn.disabled=true;
+  const label=btn.textContent;
+  btn.textContent='Reading your note…';
+  _soloReReviewed=false;  // the form is on screen, so no case is (_soloShowForm nulled it)
+  await _soloPost(body,email,_soloSetFormError);
+  btn.disabled=false;btn.textContent=label;
+}
+
+function _soloValidationLines(errs){
+  // The engine's validation_errors list (handler._scrub_validation_error): field and message per entry.
+  return errs.map(e=>'<div><span class="cn-mono">'+_escHtml(e.field||'?')+'</span> &mdash; '+_escHtml(e.message||'')+'</div>').join('');
+}
+
+async function _soloPost(body,email,report){
+  // POST /consultation/solo for the note form (submitSolo) and for "Review this note again" (_soloReviewAgain).
+  // A 200 replaces the case on screen and answers true; every refusal goes to report(html) and answers false.
+  let r;
+  try{r=await _cnFetch('/solo','POST',body);}
+  catch(e){report(_escHtml(e.message));return false;}
+  const b=r.body||{};
+  if(r.status===200){
+    _soloSentTo=email;
+    // A case minted this moment has no submission on record (GET would return submission: null).
+    b.submission=null;
+    _soloCase=b;
+    _soloSetError('');  // a refusal left on screen (and its "Review this note again") belongs to the case this one replaces
+    document.getElementById('solo-form').style.display='none';
+    document.getElementById('solo-new-btn').style.display='';
+    _soloRender(b);
+    document.getElementById('solo-content').style.display='';
+    document.getElementById('solo-case-input').value=b.case_uuid||'';
+    _soloLoadAgency();
+    showToast('Your note has been reviewed');
+    return true;
+  }
+  if(r.status===400&&Array.isArray(b.validation_errors)){
+    report(_escHtml(b.message||'The engine rejected the note.')+_soloValidationLines(b.validation_errors));
+    return false;
+  }
+  if(r.status===400&&b.error==='rulebook_unseeded'){
+    report('The engine holds no rulebook for that date of service. '+_escHtml(b.message||''));
+    return false;
+  }
+  if(r.status===400){report(_escHtml(b.message||'The engine rejected the note.'));return false;}
+  if(r.status===403){report('The engine refused this sign-in: '+_escHtml(b.error||b.message||'403')+'.');return false;}
+  if(r.status===409){report(_escHtml(b.message||'This sign-in is not linked to a practice record.')+' <span class="cn-mono">'+_escHtml(b.error||'409')+'</span>');return false;}
+  if(r.status===502){
+    // The engine's words, verbatim, with its code; archive_failed also names the case that was recorded
+    // (solo_routes.py:327-334); case_not_mintable also carries validation_errors (solo_routes.py:282-285).
+    report('The engine could not complete the review (<span class="cn-mono">'+_escHtml(b.error||'no code')+'</span>): '+_escHtml(b.message||'no detail returned')+(b.case_uuid?' Case <span class="cn-mono">'+_escHtml(b.case_uuid)+'</span>.':'')+(Array.isArray(b.validation_errors)?_soloValidationLines(b.validation_errors):''));
+    return false;
+  }
+  report(_escHtml((b.message?b.message+' ':'')+'(engine status '+r.status+(b.error?', '+b.error:'')+')'));
+  return false;
+}
+
+function _soloIntakeFromSections(sections){
+  // SoloIntake's text fields (models.py:1049-1058) rebuilt from the review's sections, which hold the note as the
+  // engine split it (anchor.build_section_map:174-180 — A notes, B clarifications, C diagnosis, D clinical_anomaly,
+  // E comorbidities, F medications, G mechanistic_hypothesis; anchor._split_text_field:82-131 strips bullets and
+  // joins mixed prose). Paragraphs joined with one blank line split to the same paragraphs again, so the re-review
+  // reads the same paragraphs the marked review did. date_of_service has no section and is not rebuilt.
+  sections=sections||{};
+  const texts=L=>(Array.isArray(sections[L])?sections[L]:[]).map(p=>String(p.text||'')).filter(Boolean);
+  const body={notes:texts('A').join('\n\n')};
+  const clar=texts('B').join('\n\n');if(clar){body.clarifications=clar;}
+  const dx=texts('C').join('\n\n');if(dx){body.diagnosis=dx;}
+  const anomaly=texts('D').join('\n\n');if(anomaly){body.clinical_anomaly=anomaly;}
+  const comorb=texts('E');if(comorb.length){body.comorbidities=comorb;}
+  const meds=texts('F');if(meds.length){body.medications=meds;}
+  const hyp=texts('G').join('\n\n');if(hyp){body.mechanistic_hypothesis=hyp;}
+  return body;
+}
+
+function _soloOfferReviewAgain(){
+  // Appends the one resolving action to both error slots, after whatever message is already there.
+  ['solo-error','solo-error-top'].forEach(id=>{
+    const el=document.getElementById(id);
+    const btn=document.createElement('button');
+    btn.type='button';btn.className='btn-back solo-review-again';btn.style.marginLeft='.75rem';
+    btn.textContent='Review this note again';
+    btn.onclick=_soloReviewAgain;
+    el.appendChild(document.createTextNode(' '));
+    el.appendChild(btn);
+    el.style.display='block';
+  });
+}
+
+async function _soloReviewAgain(){
+  // The one action a 409 rulebook_changed leaves: POST the same note again, from the sections on screen.
+  if(!_soloCase||!_soloCase.sections){_soloSetError('No note is on screen to review again.');return;}
+  const npi=document.getElementById('solo-npi').value.trim();
+  const email=document.getElementById('login-email').value.trim();
+  if(!/^\d{10}$/.test(npi)){_soloSetError('Your 10-digit NPI is not on this page. Press Review another note, fill in your NPI, and paste the note again.');return;}
+  if(!email){_soloSetError('No sign-in email is on this page. Log out and sign in again.');return;}
+  const body={physician_npi:npi,physician_email:email,..._soloIntakeFromSections(_soloCase.sections)};
+  const sendBtn=document.getElementById('solo-send-btn');
+  const sendWasOff=sendBtn.disabled;
+  sendBtn.disabled=true;
+  document.querySelectorAll('.solo-review-again').forEach(el=>{el.disabled=true;el.textContent='Reading your note…';});
+  const prev=_soloReReviewed;
+  _soloReReviewed=true;  // read by _soloExplainSubmission when the 200 renders; put back below if the POST is refused
+  const reviewed=await _soloPost(body,email,_soloSetErrorHtml);
+  if(!reviewed){
+    // The refusal is on screen with the action offered again; the marks are untouched.
+    _soloReReviewed=prev;
+    sendBtn.disabled=sendWasOff;
+    _soloOfferReviewAgain();
+  }
+}
+
+function _soloFlagText(flag){
+  // RuleHit.wording_flag (models.py:990-991): side_unstated or time_range. Anything else is shown as sent, never hidden.
+  if(!flag){return '';}
+  if(flag==='side_unstated'){return 'Side not stated in the note';}
+  if(flag==='time_range'){return 'Time stated as a range or approximation';}
+  return 'Wording flag: '+String(flag);
+}
+
+function _soloCardHtml(prefix,item,i,m,readonly){
+  // One card, the Chart Note card's markup (cn-signal, the _CN_DISPOSITIONS radios, the rider, the note) and
+  // id scheme (<prefix>-signal-i, <prefix>-disp-i, <prefix>-rider-i, <prefix>-note-i), for the physician's
+  // page (prefix solo) and the agency's (prefix sub). No FINDING pre-marking and no locked card: Solo items
+  // have no description for a FINDING: prefix to live in, so every card opens unmarked.
+  const disp=m?m.disposition:null;
+  const rider=!!(m&&m.rider);
+  const flag=_soloFlagText(item.wording_flag);
+  return '<div class="cn-signal" id="'+prefix+'-signal-'+i+'">'
+    +'<div class="cn-desc">'+(i+1)+'. <span class="cn-mono">'+_escHtml(item.source_ref||'')+'</span> &nbsp;&ldquo;'+_escHtml(item.matched_span||'')+'&rdquo;</div>'
+    +'<div class="cn-rationale">'+(item.guideline_source?'Source: '+_escHtml(item.guideline_source)+' &nbsp;&middot;&nbsp; ':'')+'May pertain to: '+_escHtml(item.pertain_to||'')+'</div>'
+    +(flag?'<div class="cn-rationale"><em>'+_escHtml(flag)+'</em></div>':'')
+    +'<div class="cn-mark">Physician\'s mark</div>'
+    +'<div class="radio-group">'
+    +_CN_DISPOSITIONS.map(([v,label])=>'<label><input type="radio" name="'+prefix+'-disp-'+i+'" value="'+v+'"'+(disp===v?' checked':'')+'> '+label+'</label>').join('')
+    +'</div>'
+    +'<div class="check-group"><label><input type="checkbox" id="'+prefix+'-rider-'+i+'"'+(rider?' checked':'')+'> I ordered, arranged or performed the related work this encounter (rider)</label></div>'
+    +'<textarea id="'+prefix+'-note-'+i+'" maxlength="500" placeholder="'+(readonly?'No note':'Note to the billing agency about this item (optional, up to 500 characters)')+'">'+_escHtml(m&&m.note?m.note:'')+'</textarea>'
+    +'</div>';
+}
+
+function _soloItemsHtml(prefix,items,marks,readonly){
+  // The markable view: items under their category, categories in order of first appearance, items in the
+  // engine's order with their printed numbers. Nothing is re-sorted.
+  const order=[],by={};
+  items.forEach((it,i)=>{
+    const c=String(it.category||'(no category)');
+    if(!(c in by)){by[c]=[];order.push(c);}
+    by[c].push(_soloCardHtml(prefix,it,i,marks[i]||null,readonly));
+  });
+  return order.map(c=>'<div class="cn-mark" style="margin:1rem 0 .6rem;">'+_escHtml(c)+'</div>'+by[c].join('')).join('');
+}
+
+function _soloGroupedHtml(prefix,items,marks,readonly){
+  // The delivered view: the sections by mark (Chapter 3, ruling B) without research context, each omitted when
+  // empty; the cards keep their printed numbers. _cnGroupOf reads no description on a Solo item, so it answers
+  // ordered, record, not_sent or unmarked and never research.
+  const groups={};
+  _SOLO_GROUPS.forEach(([k])=>{groups[k]=[];});
+  items.forEach((it,i)=>{
+    const m=marks[i]||null;
+    const g=_cnGroupOf(it,m);
+    (groups[g]||groups.unmarked).push(_soloCardHtml(prefix,it,i,m,readonly));
+  });
+  return _SOLO_GROUPS.filter(([k])=>groups[k].length>0).map(([k,title])=>
+    '<div class="section"><div class="section-header"><span class="sec-label">'+groups[k].length+(groups[k].length===1?' item':' items')+'</span><h2>'+_escHtml(title)+'</h2></div>'
+    +'<div class="section-body">'+groups[k].join('')+'</div></div>').join('');
+}
+
+function _soloMarksTally(items,marks){
+  let n=0,m=0,k=0,u=0;
+  items.forEach((it,i)=>{
+    const g=_cnGroupOf(it,marks[i]||null);
+    if(g==='ordered'){n++;m++;}
+    else if(g==='record'){n++;}
+    else if(g==='not_sent'){k++;}
+    else{u++;}
+  });
+  let t=n+' affirmed · '+m+' ordered or performed this encounter · '+k+' not sent';
+  if(u>0){t+=' · '+u+' with no readable mark on record';}
+  return t;
+}
+
+function _soloHeaderTally(payload){
+  // The engine's tally verbatim, then the rulebook line.
+  const rb=payload.rulebook||{};
+  return _escHtml(payload.tally||'(no tally returned)')
+    +' &nbsp;&middot;&nbsp; Rulebook '+_escHtml(rb.fy||'(no fy returned)')+' &middot; <span class="cn-mono">'+_escHtml(rb.sha12||'(no sha12 returned)')+'</span>'
+    +(rb.floor_applied?' &nbsp;&middot;&nbsp; FY floor applied':'');
+}
+
+function _soloUnclassifiedHtml(payload){
+  const refs=Array.isArray(payload.unclassified_refs)?payload.unclassified_refs:[];
+  const withheld=Number(payload.withheld)||0;
+  let h='';
+  if(refs.length>0){
+    h+='<div class="section"><div class="section-header"><span class="sec-label">Unclassified</span><h2>Paragraphs that matched no rule</h2></div>'
+      +'<div class="section-body"><p class="cn-mono">'+refs.map(r=>_escHtml(r)).join(' &nbsp; ')+'</p><p>These paragraphs matched no rule. Nothing is said about them.</p></div></div>';
+  }
+  if(withheld>0){
+    h+='<div class="alert alert-info">'+withheld+(withheld===1?' item':' items')+' withheld &mdash; citation could not be verified against the rulebook</div>';
+  }
+  return h;
+}
+
+function _soloNoteHtml(sections){
+  // The Cited Note Copy: each section letter A–G with paragraphs, its name, each paragraph as ref + text.
+  sections=sections||{};
+  return ['A','B','C','D','E','F','G'].filter(L=>Array.isArray(sections[L])&&sections[L].length>0).map(L=>
+    '<div class="cn-mark">'+L+' &middot; '+_escHtml(_SOLO_SECTION_NAMES[L])+'</div>'
+    +sections[L].map(p=>'<p><span class="cn-mono">'+_escHtml(p.ref||'')+'</span> '+_escHtml(p.text||'').replace(/\n/g,'<br>')+'</p>').join('')
+  ).join('');
+}
+
+function _soloRender(b){
+  const minted=b.minted_at?_cnWhen(b.minted_at):'';
+  document.getElementById('solo-doc-title').innerHTML='Case '+_escHtml(b.case_uuid)+(minted?' &nbsp;&middot;&nbsp; Minted '+_escHtml(minted):'');
+  const items=Array.isArray(b.items)?b.items:[];
+  const sub=b.submission||null;
+  const marksOnRecord=_cnMarksByIndex(sub&&sub.marks);
+  _soloMarksUnreadable=!!(sub&&sub.marks_error);
+  _soloNoItems=items.length===0;
+  const readonly=!!(sub&&(sub.status==='delivered'||sub.status==='accepted'));
+  // Delivered: the cards re-sorted into the sections by mark, with the tally under the case title.
+  // Any other state keeps the engine's order. A delivered record whose marks cannot be read has nothing to group by.
+  const grouped=readonly&&sub.status==='delivered'&&Array.isArray(sub.marks)&&!sub.marks_error;
+  const groupedEl=document.getElementById('solo-grouped'), tallyEl=document.getElementById('solo-tally');
+  let tally=_soloHeaderTally(b);
+  if(grouped){
+    document.getElementById('solo-items').innerHTML='';
+    groupedEl.innerHTML=_soloGroupedHtml('solo',items,marksOnRecord,true);
+    tally+='<br>'+_escHtml(_soloMarksTally(items,marksOnRecord));
+  }else{
+    groupedEl.innerHTML='';
+    document.getElementById('solo-items').innerHTML=_soloItemsHtml('solo',items,marksOnRecord,readonly);
+  }
+  tallyEl.innerHTML=tally;
+  tallyEl.style.display='';
+  document.getElementById('solo-marking').style.display=grouped?'none':'';
+  groupedEl.style.display=grouped?'':'none';
+  document.getElementById('solo-unclassified').innerHTML=_soloUnclassifiedHtml(b);
+  document.getElementById('solo-sections').innerHTML=_soloNoteHtml(b.sections);
+  const att=b.attestation&&Array.isArray(b.attestation.statements)?b.attestation.statements:[];
+  document.getElementById('solo-attestation').innerHTML=att.map(s=>'<div class="cn-attest">'+_escHtml(s)+'</div>').join('');
+  // The email line, from the POST body's email object (solo_routes.py:342,347); a GET body has none.
+  const line=document.getElementById('solo-email-line');
+  if(b.email&&b.email.sent===true){
+    line.className='alert alert-info';
+    line.textContent='The engine emailed you this page at '+(_soloSentTo||'your sign-in address')+'.';
+    line.style.display='';
+  }else if(b.email&&b.email.sent===false){
+    line.className='alert alert-danger';
+    line.textContent='The email could not be sent ('+String(b.email.error||'no detail')+'); this page is the record.';
+    line.style.display='';
+  }else{
+    line.style.display='none';
+  }
+  const content=document.getElementById('solo-content');
+  content.classList.toggle('cn-readonly',readonly);
+  document.getElementById('solo-attested').checked=readonly;
+  document.getElementById('solo-attested').disabled=readonly;
+  const sigEl=document.getElementById('solo-signature');
+  sigEl.value=readonly&&sub.signature?sub.signature:'';
+  sigEl.disabled=readonly;
+  document.querySelectorAll('#solo-content .cn-signal input, #solo-content .cn-signal textarea').forEach(el=>{el.disabled=readonly;});
+  _soloExplainSubmission(sub);
+}
+
+function _soloExplainSubmission(sub){
+  const btn=document.getElementById('solo-send-btn');
+  const marksNote=_soloMarksUnreadable
+    ?' <strong>The marks on record could not be read</strong> (marks_error: '+_escHtml(String(sub&&sub.marks_error))+'); the cards below are blank for that reason, not because none were made. Tell Foundry One Sciences.'
+    :'';
+  // No items: the engine accepts a submit with an empty marks list for a review with no items
+  // (handler._validate_marks: len(raw) == signal_count == 0), so the send stays available and the page says what it sends.
+  const none=_soloNoItems?' <strong>No items surfaced</strong> from this note; a send would carry the attestation and your signature with no marks.':'';
+  // After "Review this note again": the note came from the archived sections, which carry no date of service
+  // (anchor.build_section_map:174-180; SoloIntake.date_of_service feeds select_fy only, models.py:1044-1045).
+  const again=_soloReReviewed?' <strong>Reviewed again</strong> from the archived copy of your note; a date of service is not carried over, so this review uses the rulebook\'s current year.':'';
+  if(!sub){
+    _soloStatus('alert-blue','Not yet sent. Mark every item, attest, type your signature, and press <strong>Submit to Billing Agency</strong>.'+none+again);
+    btn.disabled=!_soloAgencyOk;
+    return;
+  }
+  const when=sub.delivered_at||sub.signed_at;
+  const whenText=when?_cnWhen(when):'';
+  if(sub.status==='delivered'){
+    _soloStatus('alert-info','<strong>Delivered.</strong> The signed Solo review went to '+_escHtml(sub.agency_email||'your billing agency')+(whenText?' on '+_escHtml(whenText):'')+', signed /s/ '+_escHtml(sub.signature||'')+'. '+(_soloMarksUnreadable?'Nothing':'The marks below are as you sent them; nothing')+' here can be changed or sent again.'+marksNote);
+    btn.disabled=true;
+    return;
+  }
+  if(sub.status==='accepted'){
+    _soloStatus('alert-danger','<strong>In flight.</strong> A send of this review is recorded as accepted'+(whenText?' at '+_escHtml(whenText):'')+' and has not finished recording. Reload this page in a minute; if it still says this, tell Foundry One Sciences — it is not resent automatically.');
+    btn.disabled=true;
+    return;
+  }
+  if(sub.status==='send_failed'){
+    _soloStatus('alert-danger','<strong>The last send failed</strong>'+(whenText?' ('+_escHtml(whenText)+')':'')+': <span class="cn-mono">'+_escHtml(sub.error||'no detail')+'</span>. Nothing reached the billing agency. '+(_soloMarksUnreadable?'Mark every item again, then send.':'Your marks are filled in below as you made them; check them and send again.')+marksNote+none);
+    btn.disabled=!_soloAgencyOk;
+    return;
+  }
+  _soloStatus('alert-danger','<strong>Unexpected submission state:</strong> <span class="cn-mono">'+_escHtml(String(sub.status))+'</span>. Tell Foundry One Sciences before sending again.');
+  btn.disabled=true;
+}
+
+async function _soloLoadAgency(){
+  const el=document.getElementById('solo-agency');
+  const forCase=_soloCase?_soloCase.case_uuid:null;
+  _soloAgencyOk=false;
+  el.className='alert alert-blue';
+  el.style.padding='.6rem 1rem';
+  el.textContent='Checking your billing agency…';
+  let body;
+  try{body=await _baFetch('GET');}
+  catch(e){
+    if(!_soloCase||_soloCase.case_uuid!==forCase){return;}  // a different case (or none) is on screen now
+    el.className='alert alert-danger';el.textContent=e.message;_soloExplainSubmission(_soloCase.submission);return;
+  }
+  if(!_soloCase||_soloCase.case_uuid!==forCase){return;}  // a different case (or none) is on screen now
+  if(!body.agency_email){
+    el.className='alert alert-danger';
+    el.innerHTML='No billing agency on file. Set one in <strong>Settings</strong> first.';
+  }else if(body.verification==='Success'){
+    _soloAgencyOk=true;
+    el.className='alert alert-info';
+    el.innerHTML='<strong>'+_escHtml(body.agency_email)+'</strong>'+(body.agency_name?' ('+_escHtml(body.agency_name)+')':'')+' &mdash; confirmed.';
+  }else{
+    el.className='alert alert-danger';
+    el.innerHTML='<strong>'+_escHtml(body.agency_email)+'</strong> has not confirmed it can receive mail from the engine (status '+_escHtml(String(body.verification||'unknown'))+'). Resend the confirmation from <strong>Settings</strong>; sending waits until it is confirmed.';
+  }
+  _soloExplainSubmission(_soloCase?_soloCase.submission:null);
+}
+
+function _soloCollectMarks(){
+  // One mark per item in index order: {signal, disposition, rider, note} (handler._validate_marks).
+  const items=(_soloCase&&Array.isArray(_soloCase.items))?_soloCase.items:[];
+  const marks=[];
+  let firstUnmarked=null;
+  items.forEach((it,i)=>{
+    const card=document.getElementById('solo-signal-'+i);
+    const picked=document.querySelector('input[name="solo-disp-'+i+'"]:checked');
+    card.classList.toggle('cn-unmarked',!picked);
+    if(!picked){if(firstUnmarked===null){firstUnmarked=i;}return;}
+    marks.push({signal:i,disposition:picked.value,rider:document.getElementById('solo-rider-'+i).checked,note:document.getElementById('solo-note-'+i).value.trim()});
+  });
+  if(firstUnmarked!==null){
+    document.getElementById('solo-signal-'+firstUnmarked).scrollIntoView({behavior:'smooth',block:'center'});
+    throw new Error('Item '+(firstUnmarked+1)+' has no mark. Every item needs Affirm, Decline, or Not addressed before you can sign.');
+  }
+  return marks;
+}
+
+async function submitSoloReview(){
+  // POST /consultation/solo/submit: {case_uuid, marks, attested, signature} (solo_routes.py:499-528).
+  _soloSetError('');
+  if(!_soloCase){_soloSetError('Review a note first.');return;}
+  const onRecord=_soloCase.submission&&_soloCase.submission.status;
+  if(onRecord==='delivered'){_soloSetError('This review was already delivered to your billing agency; it cannot be sent again.');return;}
+  if(onRecord==='accepted'){_soloSetError('A send of this review is in flight; reload the page before anything else.');return;}
+  let marks;
+  try{marks=_soloCollectMarks();}catch(e){_soloSetError(e.message);return;}
+  if(!document.getElementById('solo-attested').checked){_soloSetError('Tick the attestation box: both statements must be attested to before signing.');return;}
+  const signature=document.getElementById('solo-signature').value.trim();
+  if(!signature){_soloSetError('Type your signature.');return;}
+  const btn=document.getElementById('solo-send-btn');
+  btn.disabled=true;
+  const label=btn.textContent;
+  btn.textContent='Sending…';
+  let r;
+  try{r=await _cnFetch('/solo/submit','POST',{case_uuid:_soloCase.case_uuid,marks:marks,attested:true,signature:signature});}
+  catch(e){_soloSetError(e.message);btn.disabled=false;btn.textContent=label;return;}
+  btn.textContent=label;
+  const b=r.body||{};
+  if(r.status===200){
+    // The 200 body (solo_routes.py:718-729): case_uuid, status, agency_email, signed_at, ses_message_id, signed_pdf_key, product.
+    _soloCase.submission={status:b.status,agency_email:b.agency_email,signature:signature,signed_at:b.signed_at,delivered_at:b.signed_at,ses_message_id:b.ses_message_id,signed_pdf_key:b.signed_pdf_key,marks:marks};
+    _soloRender(_soloCase);
+    showToast('Solo review sent to '+(b.agency_email||'your billing agency'));
+    return;
+  }
+  // The 409 codes the route returns: practice_unresolved (_resolve_practice), agency_not_set and
+  // agency_unconfirmed (_agency_confirmed), solo_not_archived (_not_archived), already_submitted and
+  // submission_in_flight (_submission_blocked), rulebook_changed (solo_routes.py:539-552).
+  if(r.status===409&&b.error==='already_submitted'){
+    _soloSetError('This review was already delivered to your billing agency. Reloading it.');
+    loadSolo(_soloCase.case_uuid);
+    return;
+  }
+  if(r.status===409&&(b.error==='agency_not_set'||b.error==='agency_unconfirmed')){
+    _soloSetError((b.message||'The billing agency is not ready.')+' Then come back and send.');
+    _soloLoadAgency();
+    return;
+  }
+  if(r.status===409&&b.error==='submission_in_flight'){
+    _soloSetError((b.message||'A send of this review is in flight.')+' Reloading it.');
+    loadSolo(_soloCase.case_uuid);
+    return;
+  }
+  if(r.status===409&&b.error==='solo_not_archived'){
+    _soloSetError(b.message||'This case has no archived Solo review. Run the note again.');
+    return;
+  }
+  if(r.status===409&&b.error==='rulebook_changed'){
+    // solo_routes.py:539-552: the rulebook now loaded is not the one the archived review was made against;
+    // returned before any record write, so nothing was sent and no row landed. The engine's message verbatim
+    // (it names both sha12s: rulebook_sha_archived, rulebook_sha_now); the marks stay as made; the one action
+    // that resolves it is a new review of the same note.
+    _soloSetError(b.message||'The rulebook has changed since this note was reviewed. Review the note again before submitting.');
+    _soloOfferReviewAgain();
+    btn.disabled=false;
+    return;
+  }
+  if(r.status===409){
+    _soloSetError(b.message||('The engine refused the send ('+(b.error||'409')+').'));
+    btn.disabled=false;
+    return;
+  }
+  if(r.status===400){_soloSetError(b.message||'The engine rejected the submission.');btn.disabled=false;return;}
+  if(r.status===403||r.status===404){_soloSetError(b.message||('The engine refused the send ('+(b.error||r.status)+').'));return;}
+  if(r.status===502&&b.error==='completed_page_mismatch'){
+    // solo_routes.py:608-631: the sensor dropped `dropped` of the archived hits against the archived rulebook, so
+    // the marks could not be placed; nothing was sent and the row is written send_failed (615). The engine's
+    // message verbatim; the marks stay as made. Sending again runs the same check on the same inputs (604-605:
+    // "nothing the physician does fixes it").
+    _soloSetErrorHtml('<span class="cn-mono">completed_page_mismatch</span>'+(b.dropped!==undefined?' ('+_escHtml(String(b.dropped))+' dropped)':'')+': '+_escHtml(b.message||'The completed page withheld archived items; the marks could not be placed. Nothing was sent.')+' Your marks are kept here. Sending again does not resolve this; tell Foundry One Sciences.');
+    btn.disabled=false;
+    return;
+  }
+  if(r.status===502&&_SOLO_502_KEEP_MARKS.indexOf(b.error)>=0){
+    // Nothing reached the agency; the marks stay on the page for another try.
+    _soloSetError('The engine could not complete the send ('+b.error+'): '+(b.message||'no detail returned')+' Your marks are kept here; try again.');
+    btn.disabled=false;
+    return;
+  }
+  if(r.status===502){
+    // store_failed can come after the send (solo_routes.py:693-696,714-717): the engine's words, then the case reloaded so its recorded state shows.
+    _soloSetError('The engine answered 502 ('+(b.error||'no code')+'): '+(b.message||'no detail returned')+' Reloading the case to show its recorded state.');
+    loadSolo(_soloCase.case_uuid);
+    return;
+  }
+  _soloSetError((b.message?b.message+' ':'')+'(engine status '+r.status+(b.error?', '+b.error:'')+')');
+  btn.disabled=false;
+}
+
+function _subRenderSolo(b){
+  // The billing agency's page for a Solo submission (GET /submission/<token> with product === "solo",
+  // solo_routes.handle_solo_submission_get: case_uuid, minted_at, diagnosis, physician_email, solo,
+  // attestation, submission, opened_at[, opened_at_error], product).
+  document.getElementById('sub-heading').textContent='Companion Solo Submission';
+  document.getElementById('sub-tagline').textContent='The Companion Solo review as the physician marked, attested and signed it.';
+  const minted=b.minted_at?_cnWhen(b.minted_at):'';
+  document.getElementById('sub-doc-title').innerHTML='Case '+_escHtml(b.case_uuid)+(minted?' &nbsp;&middot;&nbsp; Minted '+_escHtml(minted):'')+(b.diagnosis?' &nbsp;&middot;&nbsp; '+_escHtml(b.diagnosis):'');
+  const solo=b.solo||{};
+  const items=Array.isArray(solo.items)?solo.items:[];
+  const sub=b.submission||{};
+  const marks=_cnMarksByIndex(sub.marks);
+  const marksNote=sub.marks_error?' <strong>The marks on record could not be read</strong> (marks_error: <span class="cn-mono">'+_escHtml(String(sub.marks_error))+'</span>); the cards are blank for that reason, not because none were made.':'';
+  let opened;
+  if(b.opened_at){opened='Opened '+_escHtml(_cnWhen(b.opened_at));}
+  else if(b.opened_at_error){opened='Opened — not recorded: <span class="cn-mono">'+_escHtml(String(b.opened_at_error))+'</span>';}
+  else{opened='Opened — not recorded (the engine returned neither opened_at nor opened_at_error)';}
+  if(sub.status==='delivered'){
+    _subStatus('alert-info','Delivered to '+_escHtml(sub.agency_email||'(no agency email on record)')+(sub.delivered_at?' on '+_escHtml(_cnWhen(sub.delivered_at)):' (no delivery time on record)')+' &middot; '+opened+marksNote);
+  }else{
+    _subStatus('alert-danger','<strong>Not delivered.</strong> The engine returned this submission with status <span class="cn-mono">'+_escHtml(String(sub.status))+'</span>; what follows is the record as it stands. &middot; '+opened+marksNote);
+  }
+  document.getElementById('sub-tally').innerHTML=_soloHeaderTally(solo)+'<br>'+_escHtml(_soloMarksTally(items,marks));
+  document.getElementById('sub-tally').style.display='';
+  document.getElementById('sub-solo-grouped').innerHTML=_soloGroupedHtml('sub',items,marks,true);
+  document.getElementById('sub-solo-unclassified').innerHTML=_soloUnclassifiedHtml(solo);
+  document.getElementById('sub-solo-sections').innerHTML=_soloNoteHtml(solo.sections);
+  const att=b.attestation&&Array.isArray(b.attestation.statements)?b.attestation.statements:[];
+  document.getElementById('sub-solo-attestation').innerHTML=att.map(s=>'<div class="cn-attest">'+_escHtml(s)+'</div>').join('');
+  document.getElementById('sub-solo-signature').innerHTML=
+    '<div class="cn-sig-name">/s/ '+_escHtml(sub.signature||'(no signature on record)')+'</div>'
+    +'<div>Signed '+_escHtml(sub.signed_at?_cnWhen(sub.signed_at):'(no signing time on record)')+' (UTC on the PDF)</div>'
+    +'<div>Physician of record: '+_escHtml(b.physician_email||'(not on record)')+' — questions go there.</div>';
+  document.querySelectorAll('#sub-solo-content input, #sub-solo-content textarea').forEach(el=>{el.disabled=true;});
+  document.getElementById('sub-solo-content').style.display='';
 }
 
 
@@ -1656,6 +2528,9 @@ function _onLoginSuccess(session){
   showToast('Secure session established. Welcome.');
   if(_pendingChartNote){const u=_pendingChartNote;_pendingChartNote=null;openChartNote(u);}
   else if(_pendingChartNoteBad!==null){_pendingChartNoteBad=null;openChartNote('');_cnStatus('alert-danger','The link you followed did not carry a Case ID the page can use. Paste the Case ID from the email the engine sent (Case ID: &hellip;) and press Open.');}
+  // Companion Solo (Chapter S4): the ?solo=<uuid> link, opened the same way. A page carrying both links opens the Chart Note's.
+  else if(_pendingSolo){const u=_pendingSolo;_pendingSolo=null;openSolo(u);}
+  else if(_pendingSoloBad!==null){_pendingSoloBad=null;openSolo('');_soloStatus('alert-danger','The link you followed did not carry a Case ID the page can use. Paste the Case ID from the email the engine sent (Case ID: &hellip;) and press Open.');}
 }
 
 function doLogout(){
@@ -1663,6 +2538,7 @@ function doLogout(){
   _cognitoUser=null;
   _idToken=null;
   _cnReset();
+  _soloReset();
   document.getElementById('login-email').value='';
   document.getElementById('login-pass').value='';
   document.getElementById('login-totp').value='';
