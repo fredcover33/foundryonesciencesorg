@@ -371,6 +371,29 @@ textarea {
 .cn-sig { font-size: 14px; line-height: 1.7; }
 .cn-sig .cn-sig-name { font-family: 'Libre Baskerville', serif; font-size: 18px; color: var(--navy); margin-bottom: .25rem; }
 .cn-footer { text-align: center; font-size: 12px; color: #888; padding: 1.5rem 0; letter-spacing: .04em; }
+/* ── COMPANION CHAPTER 4 — the return path: the timeline, the agency's answer form, the physician's reminder ── */
+.cn-timeline { margin-top: .9rem; border-top: 1px solid rgba(0,0,0,.08); padding-top: .6rem; font-weight: 400; }
+#sub-timeline .cn-timeline { margin-top: 0; }   /* flush under the strip: no top margin to collapse through the padding-less wrapper */
+.cn-tl-row { display: grid; grid-template-columns: 10.5rem 1fr; gap: .25rem 1rem; padding: .3rem 0; font-size: 13.5px; align-items: baseline; }
+@media (max-width: 700px) { .cn-tl-row { grid-template-columns: 1fr; gap: 0; } }
+.cn-tl-label { font-weight: 600; color: var(--navy); }
+.cn-tl-label::before { content: ''; display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: .55rem; background: var(--gold); vertical-align: middle; }
+.cn-tl-notyet .cn-tl-label { color: #888; font-weight: 400; }
+.cn-tl-notyet .cn-tl-label::before { background: transparent; border: 1.5px solid #BBB; width: 6px; height: 6px; }
+.cn-tl-notyet .cn-tl-when { color: #888; font-style: italic; }
+.cn-tl-note { white-space: pre-wrap; font-size: 13.5px; margin-top: .3rem; padding: .5rem .75rem; background: var(--white); border-left: 3px solid var(--gold); color: var(--gray); font-weight: 400; }
+.cn-tl-note.cn-tl-bad { border-left-color: var(--red); color: var(--red); }
+.cn-tl-history { margin-top: .6rem; padding-top: .5rem; border-top: 1px dashed rgba(0,0,0,.12); font-size: 12.5px; color: #666; }
+.cn-tl-history div { padding: .1rem 0; }
+.cn-why { font-size: 13px; color: #888; }
+.cn-action-msg { margin-top: 1rem; font-size: 13.5px; font-weight: 600; color: var(--red); }
+.cn-action-msg.cn-ok { color: #5A3E00; }
+#cn-remind-btn:disabled, #sub-filed-btn:disabled, #sub-filed-yes:disabled { opacity: .35; cursor: not-allowed; }  /* the three Chapter 4 .btn-back buttons the page disables; no other .btn-back changes */
+.cn-revision { border: 1px solid var(--gold); background: var(--gold-lt); border-radius: 10px; padding: 1rem 1.25rem; color: #5A3E00; font-size: 14px; }
+.cn-signal.cn-named { border-color: var(--gold); box-shadow: 0 0 0 3px var(--gold-lt); }
+.cn-signal .cn-named-note { font-size: 12.5px; font-style: italic; color: var(--gold-dk); margin-top: .35rem; }
+.sub-sig-pick label { white-space: normal; align-items: flex-start; }
+.sub-sig-pick input[type="checkbox"] { margin-top: 3px; flex: none; }
 .gate-status {
   font-size: 13.5px;
   color: #888;
@@ -779,6 +802,14 @@ textarea {
             </div>
           </div>
           <div id="cn-status" class="alert alert-blue" style="margin-top:1.25rem;">Enter a Case ID and press Open, or follow the link in the engine's email.</div>
+          <!-- Companion Chapter 4: the physician's reminder to the agency (POST /consultation/chart-note/<uuid>/remind).
+               Shown whenever a submission exists; enabled only while the agency holds the note and no reminder went
+               in the last 24 hours — otherwise disabled, with the reason beside it (_cnRemindBlock). -->
+          <div id="cn-remind" style="display:none;margin-top:1rem;align-items:center;gap:1rem;flex-wrap:wrap;">
+            <button type="button" class="btn-back" id="cn-remind-btn" onclick="remindAgency()" disabled>Remind my agency</button>
+            <span id="cn-remind-why" class="cn-why"></span>
+          </div>
+          <p id="cn-remind-msg" class="cn-action-msg" style="display:none;"></p>
           <p id="cn-error-top" style="margin-top:1rem;font-size:13.5px;color:var(--red);font-weight:600;display:none;"></p>
         </div>
       </div>
@@ -805,6 +836,8 @@ textarea {
             <div class="alert alert-info" style="margin-bottom:1.25rem;">
               Affirm, decline, or say the signal was not addressed this encounter. Tick the rider where you ordered, arranged or performed the related work during this encounter. A note is optional and goes to the agency beside the signal.
             </div>
+            <!-- Companion Chapter 4: in revision_requested the agency's request is pinned here, above the cards (_cnRender). -->
+            <div id="cn-revision" class="cn-revision" style="display:none;"></div>
             <div id="cn-signals"></div>
           </div>
         </div>
@@ -1022,6 +1055,8 @@ textarea {
         <div class="cn-tally" id="sub-tally" style="display:none;"></div>
       </div>
       <div id="sub-status" class="alert alert-blue">Loading the submission&hellip;</div>
+      <!-- Companion Chapter 4: the same timeline the physician's page shows (_cnTimelineHtml), under the strip. -->
+      <div id="sub-timeline" style="display:none;"></div>
       <!-- Companion Solo (Chapter S4): a body with product === "solo" renders here; the honey
            container below (sub-content) is untouched for every other body. -->
       <div id="sub-solo-content" class="cn-readonly" style="display:none;">
@@ -1071,6 +1106,44 @@ textarea {
           <div class="section-body">
             <div id="sub-attestation"></div>
             <div id="sub-signature" class="cn-sig"></div>
+          </div>
+        </div>
+      </div>
+      <!-- Companion Chapter 4: the agency's answer — POST /submission/<token> with action revision or filed, the
+           token as the credential (no sign-in). Outside sub-content so the read-only rule on the cards does not
+           reach it; shown by _subRender for a Chart Note body, never for a Companion Solo one (_subActions). -->
+      <div id="sub-actions" style="display:none;">
+        <div class="section">
+          <div class="section-header">
+            <span class="sec-label">Your answer</span>
+            <h2>Return to the physician</h2>
+            <span class="sec-note">Request a revision, or mark the claim filed</span>
+          </div>
+          <div class="section-body">
+            <div id="sub-link-notice" class="alert alert-danger" style="display:none;"></div>
+            <div class="field">
+              <label for="sub-name">Your name <span class="req">*</span> <span class="note">Typed, up to 120 characters. It is recorded with your answer, printed on the physician's page and in the physician's email.</span></label>
+              <input type="text" id="sub-name" maxlength="120" autocomplete="name" placeholder="e.g. Pat Jones, Acme Billing">
+            </div>
+            <div class="field">
+              <label for="sub-rev-note">Request a revision <span class="note">What needs to change, up to 2000 characters; line breaks are kept. Tick the billing signals it concerns — the numbers match the cards above.</span></label>
+              <textarea id="sub-rev-note" maxlength="2000" placeholder="e.g. Signal 2 needs the encounter date."></textarea>
+            </div>
+            <div id="sub-rev-signals" class="check-group sub-sig-pick"></div>
+            <div style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap;">
+              <button type="button" class="submit-btn" id="sub-rev-btn" onclick="subRequestRevision()" disabled>Request a revision</button>
+              <span id="sub-rev-why" class="cn-why"></span>
+            </div>
+            <div style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap;">
+              <button type="button" class="btn-back" id="sub-filed-btn" onclick="subAskFiled()" disabled>Mark claim filed</button>
+              <span id="sub-filed-why" class="cn-why"></span>
+            </div>
+            <div id="sub-filed-confirm" class="alert alert-info" style="display:none;align-items:center;gap:1rem;flex-wrap:wrap;">
+              <span id="sub-filed-confirm-text"></span>
+              <button type="button" class="btn-back" id="sub-filed-yes" onclick="subConfirmFiled()">Yes, mark it filed</button>
+              <button type="button" class="btn-back" id="sub-filed-no" onclick="subCancelFiled()">No</button>
+            </div>
+            <p id="sub-action-msg" class="cn-action-msg" style="display:none;"></p>
           </div>
         </div>
       </div>
@@ -1209,6 +1282,8 @@ let _cnCase = null;             // the GET body of the Chart Note on screen
 let _cnAgencyOk = false;        // Settings says the agency is confirmed
 let _cnMarksUnreadable = false; // the submission on record carries marks_error (its marks_json did not parse)
 let _cnNoSignals = false;       // the archived HoneyResult carries no billing signals (the engine refuses such a note)
+const _CN_SEND_LABEL = 'Sign and send to billing agency';
+const _CN_RESEND_LABEL = 'Resubmit to Billing Agency';   // Companion Chapter 4: the button in revision_requested
 try{
   const q=new URLSearchParams(window.location.search).get('chart-note');
   if(q!==null){
@@ -1237,8 +1312,13 @@ function _cnReset(){
   document.getElementById('cn-attested').checked=false;
   document.getElementById('cn-attested').disabled=false;
   document.getElementById('cn-send-btn').disabled=true;
+  document.getElementById('cn-send-btn').textContent=_CN_SEND_LABEL;
   document.getElementById('cn-doc-title').innerHTML='Case &nbsp;&middot;&nbsp; not yet opened';
   document.getElementById('cn-agency').textContent='';
+  document.getElementById('cn-revision').innerHTML='';
+  document.getElementById('cn-revision').style.display='none';
+  _cnRemindBlock(null);
+  _cnRemindMsg('');
   _cnSetError('');
   _cnStatus('alert-blue','Enter a Case ID and press Open, or follow the link in the engine\'s email.');
 }
@@ -1281,6 +1361,7 @@ function openChartNote(uuid){
   if(!_CN_UUID.test(raw)){
     _cnStatus('alert-danger','That is not a Case ID. It is the 36-character UUID in the engine\'s email (Case ID: &hellip;).');
     document.getElementById('cn-content').style.display='none';
+    _cnRemindBlock(null);
     return;
   }
   loadChartNote(raw);
@@ -1289,6 +1370,7 @@ function openChartNote(uuid){
 async function loadChartNote(uuid){
   _cnCase=null;
   document.getElementById('cn-content').style.display='none';
+  _cnRemindBlock(null);   // the block follows the record; nothing of the last case stays while this one loads
   document.getElementById('cn-doc-title').innerHTML='Case '+_escHtml(uuid);
   _cnStatus('alert-blue','Loading the Chart Note for case '+_escHtml(uuid)+'&hellip;');
   let r;
@@ -1339,10 +1421,20 @@ function _cnRender(b){
   if(sub&&Array.isArray(sub.marks)){sub.marks.forEach(m=>{marksOnRecord[m.signal]=m;});}
   _cnMarksUnreadable=!!(sub&&sub.marks_error);
   _cnNoSignals=signals.length===0;
-  const readonly=!!(sub&&(sub.status==='delivered'||sub.status==='accepted'));
-  // Delivered: the cards re-sorted into the four sections, with the tally under the case title (Chapter 3, ruling B).
-  // Any other state keeps the 1-to-N order. A delivered record whose marks cannot be read has nothing to group by.
-  const grouped=readonly&&sub.status==='delivered'&&Array.isArray(sub.marks)&&!sub.marks_error;
+  // Companion Chapter 4: the note is with the agency (delivered, resubmitted) or the claim is filed — locked, as a
+  // delivered note was in Chapter 3; accepted (a send in flight) is locked too. revision_requested is the
+  // physician's turn: the cards open for re-marking, prefilled from the marks on record (handler.py _AGENCY_HOLDS,
+  // _SUBMITTED_STATES, tests/test_return_path.py).
+  const withAgency=!!(sub&&(sub.status==='delivered'||sub.status==='resubmitted'||sub.status==='claim_filed'));
+  // Editable is the whitelist, so an unrecognised status locks the form rather than inviting a mark the engine
+  // would refuse: the physician's turn is no record at all, send_failed (Chapter 2b's retry) and
+  // revision_requested (Chapter 4). Everything else — accepted, delivered, resubmitted, claim_filed, and any
+  // status this page does not know — is read-only, and the strip says the state is unexpected.
+  const editable=!sub||sub.status==='send_failed'||sub.status==='revision_requested';
+  const readonly=!editable;
+  // With the agency: the cards re-sorted into the four sections, with the tally under the case title (Chapter 3,
+  // ruling B). Any other state keeps the 1-to-N order. A record whose marks cannot be read has nothing to group by.
+  const grouped=withAgency&&Array.isArray(sub.marks)&&!sub.marks_error;
   const groupedEl=document.getElementById('cn-grouped'), tallyEl=document.getElementById('cn-tally');
   if(grouped){
     document.getElementById('cn-signals').innerHTML='';
@@ -1356,6 +1448,28 @@ function _cnRender(b){
   document.getElementById('cn-marking').style.display=grouped?'none':'';
   groupedEl.style.display=grouped?'':'none';
   tallyEl.style.display=grouped?'':'none';
+  // Companion Chapter 4: in revision_requested the agency's request is pinned above the cards, and the cards it
+  // names (0-based indices into the marks; the cards print 1-based) are marked so the physician finds them.
+  const pin=document.getElementById('cn-revision');
+  if(sub&&sub.status==='revision_requested'){
+    const rev=(sub.revision&&typeof sub.revision==='object')?sub.revision:null;
+    pin.innerHTML='<div class="cn-mark" style="margin-top:0">Revision requested by your billing agency</div>'
+      +(rev?'<div>'+_cnRevisionHtml(rev,true).replace(/^ &middot; /,'')+'</div>'
+           :'<div>The record reads revision_requested but carries no request ('+_cnMarker('revision: '+String(sub.revision))+'). Tell Foundry One Sciences.</div>')
+      +'<div style="margin-top:.6rem">Re-mark the signals it names (the numbers match the cards below), attest to both statements again, type your signature and press <strong>'+_CN_RESEND_LABEL+'</strong>.</div>';
+    pin.style.display='';
+    if(rev&&Array.isArray(rev.signals)){
+      rev.signals.forEach(i=>{
+        const card=document.getElementById('cn-signal-'+i);
+        if(!card){return;}
+        card.classList.add('cn-named');
+        (card.querySelector('.cn-rationale')||card.querySelector('.cn-desc')).insertAdjacentHTML('afterend','<div class="cn-named-note">Named in the agency\'s revision request.</div>');
+      });
+    }
+  }else{
+    pin.innerHTML='';
+    pin.style.display='none';
+  }
   const att=b.attestation&&Array.isArray(b.attestation.statements)?b.attestation.statements:[];
   document.getElementById('cn-attestation').innerHTML=att.map(s=>'<div class="cn-attest">'+_escHtml(s)+'</div>').join('');
   const content=document.getElementById('cn-content');
@@ -1371,7 +1485,12 @@ function _cnRender(b){
 }
 
 function _cnExplainSubmission(sub){
+  // The status strip: one sentence naming the state, then (Companion Chapter 4) the timeline of the return path
+  // from the submission body (_cnTimelineHtml). The send button's label and state follow the record; the reminder
+  // block beside the strip follows it too (_cnRemindBlock).
   const btn=document.getElementById('cn-send-btn');
+  btn.textContent=(sub&&sub.status==='revision_requested')?_CN_RESEND_LABEL:_CN_SEND_LABEL;
+  _cnRemindBlock(sub);
   // The marks on record, when the record carries them; said so when it does not.
   const marksNote=_cnMarksUnreadable
     ?' <strong>The marks on record could not be read</strong> (marks_error: '+_escHtml(String(sub&&sub.marks_error))+'); the cards below are blank for that reason, not because none were made. Tell Foundry One Sciences.'
@@ -1386,24 +1505,46 @@ function _cnExplainSubmission(sub){
     btn.disabled=!_cnAgencyOk;
     return;
   }
-  const when=sub.delivered_at||sub.signed_at;
-  const whenText=when?new Date(when).toLocaleString('en-US',{dateStyle:'medium',timeStyle:'short'}):'';
+  const tl=_cnTimelineHtml(sub,{at:sub.opened_at,error:sub.opened_at_error});
+  // Each sentence below names the field it means and prints the marker when the record does not carry it: no
+  // branch falls back to another field's value, so the sentence and the timeline row for the same field can never
+  // disagree (_cnTimeOrMarker, _cnNameOrMarker — the agency page's rule, applied here too).
   if(sub.status==='delivered'){
-    _cnStatus('alert-info','<strong>Delivered.</strong> The completed Chart Note went to '+_escHtml(sub.agency_email||'your billing agency')+(whenText?' on '+_escHtml(whenText):'')+', signed /s/ '+_escHtml(sub.signature||'')+'. '+(_cnMarksUnreadable?'Nothing':'The marks below are as you sent them; nothing')+' here can be changed or sent again.'+marksNote);
+    _cnStatus('alert-info','<strong>Delivered.</strong> The completed Chart Note went to '+_cnNameOrMarker(sub.agency_email,'no agency email on record')+' on '+_cnTimeOrMarker(sub.delivered_at,'no delivery time on record')+', signed /s/ '+_cnNameOrMarker(sub.signature,'no signature on record')+'. '+(_cnMarksUnreadable?'Nothing':'The marks below are as you sent them; nothing')+' here can be changed or sent again.'+marksNote+tl);
+    btn.disabled=true;
+    return;
+  }
+  if(sub.status==='resubmitted'){
+    const n=sub.resubmission_count;
+    _cnStatus('alert-info','<strong>Resubmitted.</strong> '+(Number.isInteger(n)&&n>0?'Resubmission '+n+' of the':'The')+' completed Chart Note went to '+_cnNameOrMarker(sub.agency_email,'no agency email on record')+' on '+_cnTimeOrMarker(sub.resubmitted_at,'no resubmission time on record')+', signed /s/ '+_cnNameOrMarker(sub.signature,'no signature on record')+'. The agency has it now. '+(_cnMarksUnreadable?'Nothing':'The marks below are as you sent them; nothing')+' here can be changed or sent again.'+marksNote+tl);
+    btn.disabled=true;
+    return;
+  }
+  if(sub.status==='revision_requested'){
+    const rev=(sub.revision&&typeof sub.revision==='object')?sub.revision:null;
+    const asked=rev
+      ?(rev.agency_name===undefined||rev.agency_name===null||rev.agency_name===''?_cnMarker('no name on record'):'<strong>'+_escHtml(rev.agency_name)+'</strong>')+' asked'+(rev.requested_at?' on '+_escHtml(_cnWhen(rev.requested_at)):'')+' for a revision; the note and the signals named are pinned above the cards.'
+      :'The record reads revision_requested but carries no request ('+_cnMarker('revision: '+String(sub.revision))+').';
+    _cnStatus('alert-blue','<strong>Revision requested.</strong> '+asked+' Re-mark, attest to both statements again, type your signature, and press <strong>'+_CN_RESEND_LABEL+'</strong>.'+(_cnMarksUnreadable?' The marks on record could not be read, so the cards are blank: mark every signal.':' Your earlier marks are filled in below.')+marksNote+tl);
+    btn.disabled=!_cnAgencyOk;
+    return;
+  }
+  if(sub.status==='claim_filed'){
+    _cnStatus('alert-info','<strong>Claim filed.</strong> '+(sub.claim_filed_by===undefined||sub.claim_filed_by===null||sub.claim_filed_by===''?_cnMarker('no name on record'):'<strong>'+_escHtml(sub.claim_filed_by)+'</strong>')+' marked the claim filed'+(sub.claim_filed_at?' on '+_escHtml(_cnWhen(sub.claim_filed_at)):' ('+_cnMarker('no time on record')+')')+'. Nothing further is needed from you on this Chart Note; '+(_cnMarksUnreadable?'nothing':'the marks below are as you sent them, and nothing')+' here can be changed or sent again.'+marksNote+tl);
     btn.disabled=true;
     return;
   }
   if(sub.status==='accepted'){
-    _cnStatus('alert-danger','<strong>In flight.</strong> A send of this Chart Note is recorded as accepted'+(whenText?' at '+_escHtml(whenText):'')+' and has not finished recording. Reload this page in a minute; if it still says this, tell Foundry One Sciences — it is not resent automatically.');
+    _cnStatus('alert-danger','<strong>In flight.</strong> A send of this Chart Note is recorded as accepted at '+_cnTimeOrMarker(sub.signed_at,'no signing time on record')+' and has not finished recording. Reload this page in a minute; if it still says this, tell Foundry One Sciences — it is not resent automatically.'+tl);
     btn.disabled=true;
     return;
   }
   if(sub.status==='send_failed'){
-    _cnStatus('alert-danger','<strong>The last send failed</strong>'+(whenText?' ('+_escHtml(whenText)+')':'')+': <span class="cn-mono">'+_escHtml(sub.error||'no detail')+'</span>. Nothing reached the agency. '+(_cnMarksUnreadable?'Mark every signal again, then send.':'Your marks are filled in below as you made them; check them and send again.')+marksNote);
+    _cnStatus('alert-danger','<strong>The last send failed</strong> at '+_cnTimeOrMarker(sub.signed_at,'no signing time on record')+': '+(sub.error===undefined||sub.error===null||sub.error===''?_cnMarker('no error text on record'):'<span class="cn-mono">'+_escHtml(sub.error)+'</span>')+'. Nothing reached the agency. '+(_cnMarksUnreadable?'Mark every signal again, then send.':'Your marks are filled in below as you made them; check them and send again.')+marksNote+tl);
     btn.disabled=!_cnAgencyOk;
     return;
   }
-  _cnStatus('alert-danger','<strong>Unexpected submission state:</strong> <span class="cn-mono">'+_escHtml(String(sub.status))+'</span>. Tell Foundry One Sciences before sending again.');
+  _cnStatus('alert-danger','<strong>Unexpected submission state:</strong> <span class="cn-mono">'+_escHtml(String(sub.status))+'</span>. Tell Foundry One Sciences before sending again.'+tl);
   btn.disabled=true;
 }
 
@@ -1458,6 +1599,8 @@ async function submitChartNote(){
   if(!_cnCase){_cnSetError('Open a Chart Note first.');return;}
   const onRecord=_cnCase.submission&&_cnCase.submission.status;
   if(onRecord==='delivered'){_cnSetError('This Chart Note was already delivered to your billing agency; it cannot be sent again.');return;}
+  if(onRecord==='resubmitted'){_cnSetError('This Chart Note was already resubmitted to your billing agency and is with them now; it cannot be sent again.');return;}
+  if(onRecord==='claim_filed'){_cnSetError('Your billing agency has marked the claim filed; this Chart Note cannot be sent again.');return;}
   if(onRecord==='accepted'){_cnSetError('A send of this Chart Note is in flight; reload the page before anything else.');return;}
   if(_cnNoSignals){_cnSetError('This Chart Note carries no billing signals; nothing can be sent.');return;}
   let marks;
@@ -1475,13 +1618,29 @@ async function submitChartNote(){
   btn.textContent=label;
   const b=r.body;
   if(r.status===200){
-    _cnCase.submission={status:b.status,agency_email:b.agency_email,signature:signature,signed_at:b.signed_at,delivered_at:b.signed_at,ses_message_id:b.ses_message_id,signed_pdf_key:b.signed_pdf_key,marks:marks};
+    // The send's answer (handler.py _handle_submit, 200): case_uuid, status (delivered, or resubmitted for a
+    // resubmission), agency_email, signed_at, ses_message_id, signed_pdf_key, resubmission_count. Submit wrote the
+    // row fresh: delivered_at — and resubmitted_at on a resubmission — are the same clock reading as signed_at
+    // (`now`), the new link's token row is not yet opened, no reminder has gone, and the request a resubmission
+    // answers is kept on the row as answered_revision. The history (events) is not in the answer and is said so
+    // by the timeline until the case is opened again.
+    const prev=_cnCase.submission||{};
+    const answered=(prev.status==='revision_requested'&&prev.revision&&typeof prev.revision==='object')?prev.revision
+      :(prev.answered_revision===undefined?null:prev.answered_revision);
+    _cnCase.submission={status:b.status,agency_email:b.agency_email,signature:signature,signed_at:b.signed_at,delivered_at:b.signed_at,ses_message_id:b.ses_message_id,signed_pdf_key:b.signed_pdf_key,marks:marks,marks_error:null,
+      opened_at:null,opened_at_error:null,revision:null,answered_revision:answered,physician_notice_error:null,
+      resubmitted_at:b.status==='resubmitted'?b.signed_at:null,resubmission_count:b.resubmission_count,
+      claim_filed_at:null,claim_filed_by:null,last_reminded_at:null,reminder_count:0,reminder_error:null};
     _cnRender(_cnCase);
-    showToast('Chart Note sent to '+(b.agency_email||'your billing agency'));
+    showToast('Chart Note '+(b.status==='resubmitted'?'resubmitted':'sent')+' to '+(b.agency_email||'(no agency email in the answer)'));
     return;
   }
   if(r.status===409&&b.error==='already_submitted'){
-    _cnSetError('This Chart Note was already delivered to your billing agency. Reloading it.');
+    // The engine names the state (handler.py _submission_blocked): delivered, resubmitted or claim_filed.
+    const said={delivered:'was already delivered to your billing agency',
+                resubmitted:'was already resubmitted to your billing agency and is with them now',
+                claim_filed:'is closed: your billing agency has marked the claim filed'};
+    _cnSetError('This Chart Note '+(said[b.status]||('was refused as already_submitted with status '+String(b.status)))+'. Reloading it.');
     loadChartNote(_cnCase.case_uuid);
     return;
   }
@@ -1496,7 +1655,9 @@ async function submitChartNote(){
     return;
   }
   if(r.status===409){
-    _cnSetError(b.message||('The engine refused the send ('+(b.error||'409')+').'));
+    // Every other 409 the engine can give here, named by its code as the other generic branches name theirs: a
+    // Chapter 4 state_changed reaches the physician only through this branch, and the code is what names it.
+    _cnSetError('The engine refused the send ('+(b.error||'409')+')'+(b.message?': '+b.message+_cnEndStop(b.message):'.')+' Nothing was retried.');
     btn.disabled=false;
     return;
   }
@@ -1606,12 +1767,278 @@ function _cnTallyText(signals,marks){
   return t;
 }
 
-// The billing agency's page (Chapter 3, ruling C). One engine route, no sign-in:
+// Companion Chapter 4 — the return path. The submission body (handler.py _submission_body) carries, beside the
+// Chapter 2b/3 fields: opened_at, opened_at_error, revision ({agency_name, note, signals, requested_at[,
+// signals_error]} or null), answered_revision (same shape or null [+ answered_revision_error]),
+// physician_notice_error, resubmitted_at, resubmission_count [+ resubmission_count_error], claim_filed_at,
+// claim_filed_by, last_reminded_at, reminder_count [+ reminder_count_error], reminder_error, events
+// ([{event, at[, by]}] or null), events_error. Both pages render it with the functions below. Every value is shown
+// as received: null is "not yet", an absent key is said absent, a *_error is printed as the marker it is; a time is
+// printed in the viewer's local time by _cnWhen and never computed from another, except the reminder's "available
+// again" (last_reminded_at + 24 hours, the engine's _REMINDER_INTERVAL), which is labelled as that.
+const _CN_EVENT_WORDS = {submitted:'Submitted', delivered:'Delivered', send_failed:'Send failed', revision_requested:'Revision requested',
+                         resubmitted:'Resubmitted', claim_filed:'Claim filed', reminder_sent:'Reminder sent'};
+const _CN_REMIND_MS = 24*60*60*1000;   // handler.py _REMINDER_INTERVAL = timedelta(hours=24)
+
+function _cnMarker(text){
+  return '<span class="cn-mono">'+_escHtml(String(text))+'</span>';
+}
+
+function _cnTimeOrMarker(iso,absent){
+  // A time from the record, in the viewer's local time, or the marker naming its absence in parentheses (the
+  // agency page's form). Never another field's time: a sentence about delivered_at that printed signed_at would
+  // contradict the timeline row beneath it.
+  return iso?_escHtml(_cnWhen(iso)):'('+_cnMarker(absent)+')';
+}
+
+function _cnNameOrMarker(value,absent){
+  // A name or address from the record, or the marker naming its absence — never a confident stand-in phrase.
+  return (value===undefined||value===null||value==='')?'('+_cnMarker(absent)+')':_escHtml(value);
+}
+
+function _cnSignalNumbers(rev){
+  // The request's signals are 0-based indices into the marks (handler.py _validate_signal_indices); the cards and
+  // the engine's emails print them 1-based (_signals_by_number).
+  if(rev.signals_error!==undefined&&rev.signals_error!==null){return _cnMarker('unreadable: '+String(rev.signals_error));}
+  if(rev.signals===undefined){return _cnMarker('signals not in the engine\'s answer');}
+  if(!Array.isArray(rev.signals)){return _cnMarker('signals: '+JSON.stringify(rev.signals));}
+  if(rev.signals.length===0){return 'none named';}
+  return _escHtml(rev.signals.map(i=>Number.isInteger(i)?String(i+1):'?'+String(i)).join(', '));
+}
+
+function _cnRevisionHtml(rev,withTime){
+  // A revision request as the engine returns it: who, when (withTime), the signals by card number, the note in full.
+  const who=rev.agency_name===undefined?_cnMarker('agency_name not in the engine\'s answer')
+    :(rev.agency_name===null||rev.agency_name===''?_cnMarker('no name on record'):'<strong>'+_escHtml(rev.agency_name)+'</strong>');
+  const note=rev.note===undefined?_cnMarker('note not in the engine\'s answer'):(rev.note===null?_cnMarker('no note on record'):_escHtml(rev.note));
+  return ' &middot; by '+who
+    +(withTime?(rev.requested_at?' on '+_escHtml(_cnWhen(rev.requested_at)):' '+_cnMarker('no request time on record')):'')
+    +' &middot; Signals named: '+_cnSignalNumbers(rev)
+    +'<div class="cn-tl-note">'+note+'</div>';
+}
+
+function _cnTimelineHtml(sub,opened){
+  // The return path as the record carries it: one row per event, each with its time in the viewer's local time or
+  // "not yet" (null); an absent key is said absent, never read as "not yet". `opened` is {at, error}: the token
+  // row's stamp, which the physician's body carries inside submission and the agency's body at the top level.
+  // The history (events) is printed when it holds an entry no row shows: an event whose name and time are not a
+  // row's (the first submission's, once a resubmission moved the rows' times; a send_failed), a malformed entry,
+  // or a name this page does not know. The engine stamps a transition's field and its event with one clock
+  // reading, so the comparison is on the strings as sent.
+  const shown={};
+  function cover(ev,v){if(v!==undefined&&v!==null){shown[ev+'@'+v]=1;}}
+  const rows=[];
+  function at(v){
+    if(v===undefined){return {has:false,html:'<span class="cn-tl-when">'+_cnMarker('not in the engine\'s answer')+'</span>'};}
+    if(v===null){return {has:false,html:'<span class="cn-tl-when">not yet</span>'};}
+    return {has:true,html:'<span class="cn-tl-when">'+_escHtml(_cnWhen(v))+'</span>'};
+  }
+  function row(label,v,detail){
+    const a=at(v);
+    rows.push('<div class="cn-tl-row'+(a.has?'':' cn-tl-notyet')+'"><span class="cn-tl-label">'+label+'</span><span>'+a.html+(detail||'')+'</span></div>');
+  }
+  function by(name,what){
+    if(name===undefined){return ' &middot; '+_cnMarker(what+' not in the engine\'s answer');}
+    if(name===null||name===''){return ' &middot; '+_cnMarker('no '+what+' on record');}
+    return ' &middot; by '+_escHtml(name);
+  }
+  function count(n,err,word,timePresent){
+    if(err!==undefined&&err!==null){return ' &middot; '+_cnMarker(word+'_count unreadable: '+String(err));}
+    if(n===undefined){return ' &middot; '+_cnMarker(word+'_count not in the engine\'s answer');}
+    if(!Number.isInteger(n)){return ' &middot; '+_cnMarker(word+'_count: '+JSON.stringify(n));}
+    if(n>0){return ' &middot; '+word+' '+n;}
+    return timePresent?' &middot; '+_cnMarker(word+'_count: 0 beside a time on record'):'';
+  }
+  function notice(){
+    if(sub.physician_notice_error===undefined||sub.physician_notice_error===null){return '';}
+    return '<div class="cn-tl-note cn-tl-bad">The email to the physician did not go out: '+_cnMarker(sub.physician_notice_error)+'</div>';
+  }
+  // 1 Submitted — this attempt's signing (after a resubmission, the resubmission's).
+  row('Submitted',sub.signed_at,at(sub.signed_at).has?by(sub.signature,'signature'):'');
+  cover('submitted',sub.signed_at);cover('resubmitted',sub.signed_at);
+  // 2 Delivered — the latest delivery.
+  row('Delivered',sub.delivered_at,'');
+  cover('delivered',sub.delivered_at);
+  // 3 Opened — the current link's token row.
+  if(opened.error!==undefined&&opened.error!==null){
+    rows.push('<div class="cn-tl-row cn-tl-notyet"><span class="cn-tl-label">Opened</span><span><span class="cn-tl-when">not recorded: '+_cnMarker(opened.error)+'</span></span></div>');
+  }else{
+    row('Opened',opened.at,'');
+  }
+  // 4 Revision requested — the open request; after a resubmission the answered one (kept on the row), said so.
+  const rev=sub.revision;
+  let noticeShown=false;
+  if(rev===undefined){
+    row('Revision requested',undefined,'');
+  }else if(rev!==null&&typeof rev==='object'){
+    row('Revision requested',rev.requested_at,_cnRevisionHtml(rev,false)+(sub.status==='revision_requested'?notice():''));
+    cover('revision_requested',rev.requested_at);
+    noticeShown=sub.status==='revision_requested';
+  }else if(rev===null){
+    const ans=sub.answered_revision;
+    if(ans!==undefined&&ans!==null&&typeof ans==='object'){
+      row('Revision requested',ans.requested_at,' &middot; answered by the resubmission'+_cnRevisionHtml(ans,false));
+      cover('revision_requested',ans.requested_at);
+    }else if(sub.answered_revision_error!==undefined&&sub.answered_revision_error!==null){
+      rows.push('<div class="cn-tl-row cn-tl-notyet"><span class="cn-tl-label">Revision requested</span><span><span class="cn-tl-when">'+_cnMarker('answered_revision unreadable: '+String(sub.answered_revision_error))+'</span></span></div>');
+    }else if(ans===undefined){
+      row('Revision requested',null,' &middot; '+_cnMarker('answered_revision not in the engine\'s answer'));
+    }else if(ans===null){
+      row('Revision requested',null,'');
+    }else{
+      row('Revision requested',null,' &middot; '+_cnMarker('answered_revision: '+JSON.stringify(ans)));
+    }
+  }else{
+    rows.push('<div class="cn-tl-row cn-tl-notyet"><span class="cn-tl-label">Revision requested</span><span><span class="cn-tl-when">'+_cnMarker('revision: '+JSON.stringify(rev))+'</span></span></div>');
+  }
+  // 5 Resubmitted — the latest resubmission and its count.
+  row('Resubmitted',sub.resubmitted_at,count(sub.resubmission_count,sub.resubmission_count_error,'resubmission',at(sub.resubmitted_at).has));
+  cover('resubmitted',sub.resubmitted_at);
+  // 6 Claim filed — terminal.
+  row('Claim filed',sub.claim_filed_at,(at(sub.claim_filed_at).has?by(sub.claim_filed_by,'name'):'')+(sub.status==='claim_filed'?notice():''));
+  cover('claim_filed',sub.claim_filed_at);
+  if(sub.status==='claim_filed'){noticeShown=true;}
+  // 7 Reminder sent — the latest reminder and its count.
+  const rErr=(sub.reminder_error!==undefined&&sub.reminder_error!==null)
+    ?'<div class="cn-tl-note cn-tl-bad">The email to the agency did not go out: '+_cnMarker(sub.reminder_error)+'</div>':'';
+  row('Reminder sent',sub.last_reminded_at,count(sub.reminder_count,sub.reminder_count_error,'reminder',at(sub.last_reminded_at).has)+rErr);
+  cover('reminder_sent',sub.last_reminded_at);
+  if(!noticeShown&&notice()){
+    rows.push('<div class="cn-tl-row cn-tl-notyet"><span class="cn-tl-label">Notice</span><span>'+notice()+'</span></div>');
+  }
+  // History.
+  let hist='';
+  const ev=sub.events;
+  if(ev===undefined){
+    hist='<div class="cn-tl-history"><strong>History</strong> &middot; '+_cnMarker('not in the engine\'s answer')+' &mdash; open the case again to read the record.</div>';
+  }else if(ev===null||!Array.isArray(ev)){
+    hist='<div class="cn-tl-history"><strong>History</strong> &middot; unreadable ('+_cnMarker('events_error: '+String(sub.events_error))+')</div>';
+  }else{
+    if(ev.some(e=>!e||typeof e!=='object'||!((e.event+'@'+e.at) in shown))){
+      hist='<div class="cn-tl-history"><strong>History</strong> &middot; '+ev.length+(ev.length===1?' entry':' entries')
+        +ev.map(e=>{
+          if(!e||typeof e!=='object'){return '<div>'+_cnMarker('malformed entry: '+JSON.stringify(e))+'</div>';}
+          const words=_CN_EVENT_WORDS[e.event];
+          return '<div>'+(words?_escHtml(words):_cnMarker('event: '+String(e.event)))
+            +' &middot; '+(e.at===undefined||e.at===null?_cnMarker('no time'):_escHtml(_cnWhen(e.at)))
+            +(e.by!==undefined&&e.by!==null?' &middot; by '+_escHtml(String(e.by)):'')+'</div>';
+        }).join('')+'</div>';
+    }
+    if(sub.events_error!==undefined&&sub.events_error!==null){
+      hist+='<div class="cn-tl-history">'+_cnMarker('events_error beside a readable history: '+String(sub.events_error))+'</div>';
+    }
+  }
+  return '<div class="cn-timeline">'+rows.join('')+hist+'</div>';
+}
+
+function _cnEndStop(text){
+  // The engine's messages end with a full stop; a page sentence that follows one must not add a second.
+  return /[.!?]$/.test(text)?'':'.';
+}
+
+function _cnErrorRecordedWords(b,where){
+  // A 502 notify_failed (handler.py _record_notice_error): the transition landed and the email did not; a second
+  // conditioned write puts the email error on the row. error_recorded says whether that write landed — true: the
+  // error is on the row and the re-read shows it; false: record_error names why it is not, and this message is the
+  // only record of it. An answer without the key is said so.
+  if(b.error_recorded===true){return 'The email failure is recorded on the row and shows '+where+' after the re-read.';}
+  if(b.error_recorded===false){return 'The email failure could NOT be recorded on the row ('+(b.record_error===undefined?'record_error not in the engine\'s answer':String(b.record_error))+'); the re-read will not show it, so this message is the only record of it.';}
+  return 'Whether the email failure was recorded on the row is not in the engine\'s answer (error_recorded: '+String(b.error_recorded)+').';
+}
+
+function _cnRemindMsg(text,ok){
+  const el=document.getElementById('cn-remind-msg');
+  el.textContent=text||'';
+  el.className='cn-action-msg'+(ok?' cn-ok':'');
+  el.style.display=text?'block':'none';
+}
+
+function _cnRemindBlock(sub){
+  // Remind my agency: shown whenever a submission exists; enabled only while the agency holds the note (delivered,
+  // resubmitted — handler.py _AGENCY_HOLDS) and no reminder went in the last 24 hours by this browser's clock;
+  // otherwise disabled, with the reason in words. The engine decides the same way and answers 409 when it differs.
+  const wrap=document.getElementById('cn-remind'), btn=document.getElementById('cn-remind-btn'), why=document.getElementById('cn-remind-why');
+  if(!sub){wrap.style.display='none';btn.disabled=true;why.textContent='';return;}
+  wrap.style.display='flex';
+  const holds=sub.status==='delivered'||sub.status==='resubmitted';
+  let reason='';
+  if(sub.status==='revision_requested'){reason='The agency has requested a revision — resubmit instead.';}
+  else if(sub.status==='claim_filed'){reason='Claim filed — nothing to remind about.';}
+  else if(sub.status==='accepted'){reason='A send is in flight — nothing to remind about until it finishes recording.';}
+  else if(sub.status==='send_failed'){reason='The last send failed — send again instead.';}
+  else if(!holds){reason='The submission is '+String(sub.status)+'; a reminder goes only while the agency holds the note.';}
+  else if(sub.last_reminded_at===undefined){reason='last_reminded_at is not in the engine\'s answer; open the case again.';}
+  else if(sub.last_reminded_at!==null){
+    const t=new Date(sub.last_reminded_at).getTime();
+    if(isNaN(t)){reason='The reminder time on record does not parse: '+String(sub.last_reminded_at)+'.';}
+    else if(Date.now()-t<_CN_REMIND_MS){reason='Reminder sent '+_cnWhen(sub.last_reminded_at)+' — available again '+_cnWhen(new Date(t+_CN_REMIND_MS).toISOString())+' (24 hours after).';}
+  }
+  btn.disabled=!!reason;
+  why.textContent=reason||'Emails your billing agency the link to this submission again, with no attachment. Once per 24 hours.';
+}
+
+async function remindAgency(){
+  // POST /consultation/chart-note/<uuid>/remind, Bearer, body {} (handler.py _handle_remind). 200 {reminded_at,
+  // reminder_count, agency_email} → the case is read again and the strip re-rendered. An answer that names a row
+  // state this page did not show (409 reminder_too_soon / not_waiting / not_submitted, 502 notify_failed: the
+  // stamp landed, the email did not — with whether the failure was recorded on the row) is shown in words and the
+  // case is read again; any other answer (502 token_row_absent, 502 record_malformed, 409 state_changed, …) is shown
+  // as its code and the engine's message, and nothing was written for those. Nothing is retried.
+  _cnRemindMsg('');
+  if(!_cnCase){_cnRemindMsg('Open a Chart Note first.');return;}
+  const btn=document.getElementById('cn-remind-btn');
+  const uuid=_cnCase.case_uuid;
+  btn.disabled=true;
+  const label=btn.textContent;
+  btn.textContent='Sending…';
+  let r;
+  try{r=await _cnFetch('/chart-note/'+encodeURIComponent(uuid)+'/remind','POST',{});}
+  catch(e){_cnRemindMsg(e.message);btn.textContent=label;_cnRemindBlock(_cnCase.submission);return;}
+  btn.textContent=label;
+  const b=r.body;
+  if(r.status===200){
+    _cnRemindMsg('Reminder'+(Number.isInteger(b.reminder_count)?' '+b.reminder_count:'')+' sent to '+(b.agency_email||'(no agency email in the answer)')+(b.reminded_at?' at '+_cnWhen(b.reminded_at):'')+'.',true);
+    showToast('Reminder sent to '+(b.agency_email||'(no agency email in the answer)'));
+    loadChartNote(uuid);
+    return;
+  }
+  if(r.status===409&&b.error==='reminder_too_soon'){
+    _cnRemindMsg('Too soon: '+(b.last_reminded_at?'a reminder went at '+_cnWhen(b.last_reminded_at)+'; ':'')+'the next may go at '+(b.next_allowed_at?_cnWhen(b.next_allowed_at):'(next_allowed_at not in the answer)')+'. Reloading the case.');
+    loadChartNote(uuid);
+    return;
+  }
+  if(r.status===409&&b.error==='not_waiting'){
+    _cnRemindMsg('Nothing to remind about: the submission is '+String(b.status)+'. '+(b.message||'')+' Reloading the case.');
+    loadChartNote(uuid);
+    return;
+  }
+  if(r.status===409&&b.error==='not_submitted'){
+    _cnRemindMsg((b.message||'This Chart Note has not been submitted; there is nothing to remind the agency of.')+' Reloading the case.');
+    loadChartNote(uuid);
+    return;
+  }
+  if(r.status===502&&b.error==='notify_failed'){
+    _cnRemindMsg('Recorded'+(b.reminded_at?' at '+_cnWhen(b.reminded_at):'')+', not sent — the engine says: '+(b.message||'(no message)')+' '+_cnErrorRecordedWords(b,'on the Reminder sent row')+' Reloading the case.');
+    loadChartNote(uuid);
+    return;
+  }
+  _cnRemindMsg('The engine answered '+r.status+(b.error?' '+b.error:'')+(b.message?': '+b.message+_cnEndStop(b.message):' with no message.')+' Nothing was retried.');
+  _cnRemindBlock(_cnCase.submission);   // the button's state follows the record on screen, not the failed call
+}
+
+// The billing agency's page (Chapter 3, ruling C). Two engine routes, no sign-in:
 // GET /submission/<token>, the token from the agency's email link
-// (?submission=<token>), read once at load. Its own state; nothing of the
-// physician's sign-in is read or written here.
+// (?submission=<token>), read once at load; and (Companion Chapter 4)
+// POST /submission/<token> with {action: "revision", agency_name, note[, signals]}
+// or {action: "filed", agency_name} — the agency's answers (_subAct). Its own
+// state; nothing of the physician's sign-in is read or written here.
 const _SUB_BASE = 'https://ily73480dd.execute-api.us-east-2.amazonaws.com/prod/submission';
 const _SUB_TOKEN = /^[A-Za-z0-9_-]{32}$/;
+const _SUB_NAME_MAX = 120;      // handler.py _SIGNATURE_MAX — the typed name's limit
+const _SUB_NOTE_MAX = 2000;     // handler.py _REVISION_NOTE_MAX
+// The 409 codes whose answer names a state the page is not showing: the body on screen is stale, so the page reads
+// the row again instead of restoring its buttons from it (_subAct). A read, never a re-POST.
+const _SUB_STALE_AFTER = ['claim_filed','link_superseded','revision_pending','submission_not_delivered','state_changed'];
 let _subToken = null;   // the link's token, once it has passed the shape test
 let _subBody = null;    // the GET body on screen
 
@@ -1626,6 +2053,8 @@ async function _subLoad(token){
   document.getElementById('sub-content').style.display='none';
   document.getElementById('sub-solo-content').style.display='none';
   document.getElementById('sub-tally').style.display='none';
+  document.getElementById('sub-timeline').style.display='none';
+  document.getElementById('sub-actions').style.display='none';
   document.getElementById('sub-doc-title').innerHTML='Case &nbsp;&middot;&nbsp; loading';
   _subStatus('alert-blue','Loading the submission&hellip;');
   let res;
@@ -1677,11 +2106,29 @@ function _subRender(b){
   if(b.opened_at){opened='Opened '+_escHtml(_cnWhen(b.opened_at));}
   else if(b.opened_at_error){opened='Opened — not recorded: <span class="cn-mono">'+_escHtml(String(b.opened_at_error))+'</span>';}
   else{opened='Opened — not recorded (the engine returned neither opened_at nor opened_at_error)';}
+  // Companion Chapter 4: the four states GET /submission/<token> serves (handler.py _AGENCY_PAGE_STATES), in the
+  // words the physician's timeline uses; the timeline itself follows under the strip (_cnTimelineHtml).
+  let cls='alert-info';
   if(sub.status==='delivered'){
-    _subStatus('alert-info','Delivered to '+_escHtml(sub.agency_email||'(no agency email on record)')+(sub.delivered_at?' on '+_escHtml(_cnWhen(sub.delivered_at)):' (no delivery time on record)')+' &middot; '+opened+marksNote);
+    _subStatus(cls,'Delivered to '+_escHtml(sub.agency_email||'(no agency email on record)')+(sub.delivered_at?' on '+_escHtml(_cnWhen(sub.delivered_at)):' (no delivery time on record)')+' &middot; '+opened+marksNote);
+  }else if(sub.status==='resubmitted'){
+    const n=sub.resubmission_count;
+    _subStatus(cls,'<strong>Resubmitted</strong>'+(Number.isInteger(n)&&n>0?' &mdash; resubmission '+n+' &mdash;':'')+' to '+_escHtml(sub.agency_email||'(no agency email on record)')+(sub.resubmitted_at?' on '+_escHtml(_cnWhen(sub.resubmitted_at)):' ('+_cnMarker('no resubmission time on record')+')')+'. The physician answered the revision request; the Chart Note below is as resubmitted. &middot; '+opened+marksNote);
+  }else if(sub.status==='revision_requested'){
+    const rev=(sub.revision&&typeof sub.revision==='object')?sub.revision:null;
+    _subStatus(cls,'<strong>Revision requested</strong>'+(rev?_cnRevisionHtml(rev,true):' &middot; '+_cnMarker('the record reads revision_requested but carries no request (revision: '+String(sub.revision)+')'))
+      +'<div>The physician has been asked to resubmit; the Chart Note below is as it stands until then. &middot; '+opened+'</div>'+marksNote);
+  }else if(sub.status==='claim_filed'){
+    _subStatus(cls,'<strong>Claim filed</strong> by '+(sub.claim_filed_by===undefined||sub.claim_filed_by===null||sub.claim_filed_by===''?_cnMarker('no name on record'):'<strong>'+_escHtml(sub.claim_filed_by)+'</strong>')+(sub.claim_filed_at?' on '+_escHtml(_cnWhen(sub.claim_filed_at)):' ('+_cnMarker('no time on record')+')')+'. This submission is closed; nothing here can be changed. &middot; '+opened+marksNote);
   }else{
-    _subStatus('alert-danger','<strong>Not delivered.</strong> The engine returned this submission with status <span class="cn-mono">'+_escHtml(String(sub.status))+'</span>; what follows is the record as it stands. &middot; '+opened+marksNote);
+    cls='alert-danger';
+    _subStatus(cls,'<strong>Not delivered.</strong> The engine returned this submission with status <span class="cn-mono">'+_escHtml(String(sub.status))+'</span>; what follows is the record as it stands. &middot; '+opened+marksNote);
   }
+  const tlEl=document.getElementById('sub-timeline');
+  tlEl.className='alert '+cls;
+  tlEl.style.borderTop='none';tlEl.style.paddingTop='0';
+  tlEl.innerHTML=_cnTimelineHtml(sub,{at:b.opened_at,error:b.opened_at_error});
+  tlEl.style.display='';
   document.getElementById('sub-tally').textContent=_cnTallyText(signals,marks);
   document.getElementById('sub-tally').style.display='';
   document.getElementById('sub-grouped').innerHTML=_cnSectionsHtml('sub',signals,marks,true);
@@ -1695,9 +2142,170 @@ function _subRender(b){
   document.getElementById('sub-signature').innerHTML=
     '<div class="cn-sig-name">/s/ '+_escHtml(sub.signature||'(no signature on record)')+'</div>'
     +'<div>Signed '+_escHtml(sub.signed_at?_cnWhen(sub.signed_at):'(no signing time on record)')+' (UTC on the PDF)</div>'
-    +'<div>Physician of record: '+_escHtml(b.physician_email||'(not on record)')+' — questions go there.</div>';
+    +'<div>Physician of record: '+_escHtml(b.physician_email||'(not on record)')+' — answer below: request a revision, or mark the claim filed; questions still reach the physician at that address.</div>';
   document.querySelectorAll('#sub-content input, #sub-content textarea').forEach(el=>{el.disabled=true;});
   document.getElementById('sub-content').style.display='';
+  _subActions(b);
+}
+
+function _subActions(b){
+  // Companion Chapter 4: the agency's answer form. Request a revision is allowed while the agency holds the note
+  // (delivered, resubmitted); Mark claim filed also while a revision is open (revision_requested); claim_filed is
+  // terminal and the page is read-only (handler.py _agency_action_gate). A link that is not the row's current
+  // token (link_current false) accepts no returns (409 link_superseded) — said here, and the actions disabled;
+  // an answer that does not say link_current is not acted on either. The name typed stays in the field across
+  // re-renders; the signal checkboxes are rebuilt from the body, numbered as the cards are.
+  const sub=b.submission||{};
+  const honey=b.honey||{}, syn=honey.synthesis||{};
+  const signals=Array.isArray(syn.billing_signals)?syn.billing_signals:[];
+  const wrap=document.getElementById('sub-actions');
+  document.getElementById('sub-rev-signals').innerHTML=signals.map((sig,i)=>
+    '<label><input type="checkbox" id="sub-rev-sig-'+i+'" value="'+i+'"> '+(i+1)+'. '+_escHtml(sig.description||'')+'</label>').join('');
+  const notice=document.getElementById('sub-link-notice');
+  let blocked='';
+  if(b.link_current===false){
+    notice.innerHTML='<strong>A newer link exists.</strong> The physician has resubmitted this Chart Note since this link was issued; this link no longer accepts a revision request or a claim-filed mark. Use the link in the latest email.';
+    blocked='This link is not the current one (see above).';
+  }else if(b.link_current!==true){
+    notice.innerHTML='<strong>Not acting on this link.</strong> The engine\'s answer does not say whether this link is the current one ('+_cnMarker('link_current: '+JSON.stringify(b.link_current))+'); nothing is sent from it until it does. Reload the page.';
+    blocked='The engine did not say whether this link is current (see above).';
+  }
+  notice.style.display=blocked?'':'none';
+  const filed=sub.status==='claim_filed';
+  const holds=sub.status==='delivered'||sub.status==='resubmitted';
+  let revWhy='', filedWhy='';
+  if(blocked){revWhy=filedWhy=blocked;}
+  else if(filed){
+    revWhy=filedWhy='Claim filed by '+(sub.claim_filed_by===undefined||sub.claim_filed_by===null||sub.claim_filed_by===''?'(no name on record)':sub.claim_filed_by)+(sub.claim_filed_at?' on '+_cnWhen(sub.claim_filed_at):' (no time on record)')+' — this submission is closed; nothing here can be changed.';
+  }else if(sub.status==='revision_requested'){
+    revWhy='A revision is already requested (above); one request is open at a time, until the physician resubmits. You may still mark the claim filed on what you have.';
+  }else if(!holds){
+    revWhy=filedWhy='The submission reads '+String(sub.status)+'; a return goes only while it is delivered or resubmitted (a claim-filed mark also while a revision is open).';
+  }
+  document.getElementById('sub-rev-btn').disabled=!!revWhy;
+  document.getElementById('sub-rev-why').textContent=revWhy||'Emails the physician of record your name, the note and the signals named, with the link to the Chart Note page.';
+  document.getElementById('sub-rev-note').disabled=!!revWhy;
+  document.querySelectorAll('#sub-rev-signals input').forEach(el=>{el.disabled=!!revWhy;});
+  document.getElementById('sub-filed-btn').disabled=!!filedWhy;
+  document.getElementById('sub-filed-why').textContent=filedWhy||'Closes this submission and emails the physician of record that the claim is filed, with your name.';
+  document.getElementById('sub-name').disabled=!!(filed||blocked);
+  document.getElementById('sub-filed-yes').disabled=false;
+  document.getElementById('sub-filed-confirm').style.display='none';
+  wrap.style.display='';
+}
+
+function _subMsg(html,ok){
+  const el=document.getElementById('sub-action-msg');
+  el.innerHTML=html||'';
+  el.className='cn-action-msg'+(ok?' cn-ok':'');
+  el.style.display=html?'block':'none';
+}
+
+function _subName(){
+  // 1–_SUB_NAME_MAX printable characters on one line, the engine's rule for agency_name (handler.py _validate_typed_name).
+  const name=document.getElementById('sub-name').value.trim();
+  if(!name){throw new Error('Type your name first; it is recorded with your answer and the physician sees who answered.');}
+  if(name.length>_SUB_NAME_MAX){throw new Error('Your name must be at most '+_SUB_NAME_MAX+' characters.');}
+  // The engine applies Python's str.isprintable() (handler.py _validate_typed_name): every Cc, Cf, Cs, Co, Cn,
+  // Zl and Zp codepoint is refused, and every Zs but the ASCII space — so NBSP (U+00A0) and ZWJ (U+200D) are
+  // refused there. The page refuses the same set here rather than spending a round trip on a bare 400.
+  if(/[\p{C}\p{Zl}\p{Zp}]/u.test(name)||/\p{Zs}/u.test(name.replace(/ /g,''))){throw new Error('Your name must be printable text on one line: no control, formatting or zero-width characters, and no space other than a plain one.');}
+  return name;
+}
+
+async function _subPost(payload){
+  // POST /submission/<token>: the token is the credential, so no Authorization header, like the GET.
+  let res;
+  try{res=await fetch(_SUB_BASE+'/'+encodeURIComponent(_subToken),{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});}
+  catch(e){throw new Error('Could not reach the engine; nothing was recorded. Check your connection and try again.');}
+  let b=null;
+  try{b=await res.json();}catch(e){}
+  return {status:res.status,body:b||{}};
+}
+
+async function subRequestRevision(){
+  _subMsg('');
+  let name;
+  try{name=_subName();}catch(e){_subMsg(_escHtml(e.message));return;}
+  const note=document.getElementById('sub-rev-note').value;
+  if(!note.trim()){_subMsg('Say what revision is requested; the note is required.');return;}
+  if(note.length>_SUB_NOTE_MAX){_subMsg('The note must be at most '+_SUB_NOTE_MAX+' characters.');return;}
+  const signals=[...document.querySelectorAll('#sub-rev-signals input:checked')].map(el=>Number(el.value));
+  const payload={action:'revision',agency_name:name,note:note};
+  if(signals.length>0){payload.signals=signals;}   // omitted when none are ticked: the engine reads absent as []
+  await _subAct(payload,'revision request');
+}
+
+function subAskFiled(){
+  _subMsg('');
+  let name;
+  try{name=_subName();}catch(e){_subMsg(_escHtml(e.message));return;}
+  document.getElementById('sub-filed-confirm-text').textContent='This closes the submission. Mark the claim filed as '+name+'?';
+  document.getElementById('sub-filed-confirm').style.display='flex';
+}
+
+function subCancelFiled(){
+  document.getElementById('sub-filed-confirm').style.display='none';
+}
+
+async function subConfirmFiled(){
+  // Disabled first, like the other three action buttons: two clicks dispatched in one tick must send one POST.
+  document.getElementById('sub-filed-yes').disabled=true;
+  _subMsg('');
+  document.getElementById('sub-filed-confirm').style.display='none';
+  let name;
+  try{name=_subName();}catch(e){_subMsg(_escHtml(e.message));return;}
+  await _subAct({action:'filed',agency_name:name},'claim-filed mark');
+}
+
+async function _subAct(payload,what){
+  // The engine's answers (handler.py _handle_submission_post), in words. 200 → the submission is read again and the
+  // page re-rendered from that; 502 notify_failed → the row was written and the physician's email failed: said in
+  // the engine's words, then the submission is read again, since the record changed. A 409 that NAMES a state this
+  // page is not showing (claim_filed, link_superseded, revision_pending, submission_not_delivered, state_changed —
+  // handler.py _agency_action_gate, _agency_refused_409) is also read again: the answer has just said the body on
+  // screen is stale, so restoring the buttons from it would leave controls live against a row that has moved. A
+  // read is not a retry — nothing re-POSTs, here or anywhere. Every other answer (400, an unknown code, a network
+  // failure, which leave the row as the page has it) is shown, and the buttons return to the body on screen.
+  const revBtn=document.getElementById('sub-rev-btn'), filedBtn=document.getElementById('sub-filed-btn');
+  revBtn.disabled=true;filedBtn.disabled=true;
+  let r;
+  try{r=await _subPost(payload);}
+  catch(e){_subMsg(_escHtml(e.message));_subActions(_subBody);return;}
+  const b=r.body;
+  if(r.status===200){
+    if(payload.action==='revision'){
+      document.getElementById('sub-rev-note').value='';
+      document.querySelectorAll('#sub-rev-signals input:checked').forEach(el=>{el.checked=false;});
+    }
+    _subMsg('<strong>Recorded.</strong> The physician of record has been emailed your '+_escHtml(what)+'. The page now shows the submission as it stands.',true);
+    _subLoad(_subToken);
+    return;
+  }
+  let said;
+  if(r.status===409&&b.error==='revision_pending'){
+    const rev=(b.revision&&typeof b.revision==='object')?b.revision:null;
+    said='<strong>A revision is already open on this submission</strong>; one request is open at a time, until the physician resubmits.'
+      +(rev?'<div style="font-weight:400">The open request'+_cnRevisionHtml(rev,true)+'</div>':' '+_cnMarker('revision: '+JSON.stringify(b.revision)));
+  }else if(r.status===409&&b.error==='claim_filed'){
+    said='<strong>The claim for this submission is already marked filed</strong>'+(b.claim_filed_by?' by '+_escHtml(b.claim_filed_by):' ('+_cnMarker('no name in the answer')+')')+(b.claim_filed_at?' on '+_escHtml(_cnWhen(b.claim_filed_at)):' ('+_cnMarker('no time in the answer')+')')+'; nothing can be changed from this link. Reload the page to see the record.';
+  }else if(r.status===409&&b.error==='link_superseded'){
+    said='<strong>This link is from an earlier delivery.</strong> '+_escHtml(b.message||'The physician has resubmitted this Chart Note since; use the link in the latest email.');
+  }else if(r.status===409&&b.error==='submission_not_delivered'){
+    said='<strong>The submission reads '+_cnMarker(String(b.status))+'</strong>; the engine took no '+_escHtml(what)+'. '+_escHtml(b.message||'');
+  }else if(r.status===400){
+    said='<strong>The engine did not accept the '+_escHtml(what)+'</strong> ('+_cnMarker(b.error||'400')+'): '+_escHtml(b.message||'(no message)');
+  }else if(r.status===502&&b.error==='notify_failed'){
+    said='<strong>Recorded; the physician\'s email did not go out:</strong> '+_escHtml(b.message||'(no message)')+' The '+_escHtml(what)+' shows on the physician\'s page. '+_escHtml(_cnErrorRecordedWords(b,'in the timeline'));
+    _subMsg(said);
+    _subLoad(_subToken);
+    return;
+  }else{
+    said='<strong>The engine answered '+r.status+(b.error?' '+_cnMarker(b.error):'')+'</strong>'+(b.message?': '+_escHtml(b.message)+_cnEndStop(b.message):' with no message.')+' Nothing was retried.';
+  }
+  _subMsg(said);
+  if(r.status===409&&_SUB_STALE_AFTER.indexOf(b.error)>=0){_subLoad(_subToken);return;}
+  _subActions(_subBody);
 }
 
 // At load: an agency link (?submission=<token>) opens its page at once, before and without any sign-in.
