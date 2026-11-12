@@ -761,10 +761,89 @@ textarea {
           <p id="ba-error" style="margin-top:1rem;font-size:13.5px;color:var(--red);font-weight:600;display:none;"></p>
         </div>
       </div>
+      <!-- Companion Chapter 5: text updates. GET and POST /consultation/sms-settings (_smsFetch). -->
+      <div class="section" id="sms-section">
+        <div class="section-header">
+          <span class="sec-label">Text updates</span>
+          <h2>Texts about your submitted Chart Notes</h2>
+          <span class="sec-note">Saved to your practice, not to a case</span>
+        </div>
+        <div class="section-body">
+          <div class="alert alert-info">
+            Foundry One Sciences texts you when your billing agency asks for a revision or marks a claim filed, and when a Chart Note is still sitting after three automatic reminders. A text carries the case number and a link, never patient information. Reply STOP to any text to turn them off.
+          </div>
+          <div id="sms-status" class="alert alert-blue" style="margin-top:1.25rem;">Loading your text settings&hellip;</div>
+          <div class="grid-2" style="margin-top:1.25rem;">
+            <div class="field">
+              <label for="sms-phone">Cell number <span class="note">US numbers only. Leave empty to keep texts off.</span></label>
+              <input type="text" id="sms-phone" inputmode="tel" autocomplete="tel" placeholder="(555) 555-0123">
+            </div>
+            <div class="field check-group" style="display:flex;align-items:flex-end;">
+              <label><input type="checkbox" id="sms-enabled"> Text me updates</label>
+            </div>
+          </div>
+          <div style="margin-top:1.5rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap;">
+            <button type="button" class="submit-btn" id="sms-save-btn" onclick="saveSmsSettings()">Save text settings</button>
+          </div>
+          <p id="sms-error" style="margin-top:1rem;font-size:13.5px;color:var(--red);font-weight:600;display:none;"></p>
+        </div>
+      </div>
     </div>
   </div>
 </div>
 
+
+<!-- Companion Chapter 5: the Sent/Waiting page for one case (openSentWaiting, _swLoad). Reached from the Chart Note
+     page by "Where it stands". A separate screen; the Chart Note page's status box is unchanged. -->
+<div id="sent-waiting-screen" class="screen">
+  <div class="topbar">
+    <div><div class="tb-logo">Foundry One Sciences</div><div class="tb-tag">&hellip;&nbsp; we have not stopped looking</div></div>
+    <div class="tb-right">
+      <div class="tb-user"><span class="sdot"></span>Logged in as <span id="sw-doctor-name">Physician</span></div>
+      <button class="btn-logout" onclick="showScreen('chart-note-screen')">&#8592; Chart Note</button>
+      <button class="btn-logout" onclick="showScreen('intake-screen')">Intake</button>
+      <button class="btn-logout" onclick="openSettings()">Settings</button>
+      <button class="btn-logout" onclick="doLogout()">Logout</button>
+    </div>
+  </div>
+  <div style="flex:1;overflow-y:auto;background:#EFEFEC;padding:2rem 1rem;">
+    <div class="page-wrap">
+      <div class="form-header">
+        <div class="eyebrow">Foundry One Sciences LLC &mdash; Medical Research Solitaire Engine</div>
+        <h1 id="sw-title">Sent to &hellip;</h1>
+        <div class="tagline" id="sw-clock"></div>
+        <div class="doc-title" id="sw-doc-title">Case &nbsp;&middot;&nbsp; not yet opened</div>
+      </div>
+      <div id="sw-status" class="alert alert-blue">Open a Chart Note, then press Where it stands.</div>
+      <div id="sw-content" style="display:none;">
+        <div class="section">
+          <div class="section-header"><span class="sec-label">Where it stands</span><h2>Four steps</h2></div>
+          <div class="section-body"><div id="sw-steps" class="cn-timeline" style="margin-top:0;border-top:0;padding-top:0;"></div><div id="sw-state"></div></div>
+        </div>
+        <div class="section">
+          <div class="section-header"><span class="sec-label">What you sent</span><h2>The signed Chart Note</h2></div>
+          <div class="section-body" id="sw-sent"></div>
+        </div>
+        <div class="section">
+          <div class="section-header"><span class="sec-label">Waiting on your agency</span><h2>Reminders</h2></div>
+          <div class="section-body">
+            <div style="display:flex;align-items:center;gap:1rem;flex-wrap:wrap;">
+              <button type="button" class="btn-back" id="sw-remind-btn" onclick="remindAgency('sw')" disabled>Remind my agency</button>
+              <span id="sw-remind-why" class="cn-why"></span>
+            </div>
+            <p id="sw-remind-msg" class="cn-action-msg" style="display:none;"></p>
+            <div style="margin-top:1rem;font-size:13.5px;">FOS also reminds them after 3 business days without a step from them.</div>
+            <div id="sw-auto" class="cn-timeline" style="margin-top:.6rem;"></div>
+          </div>
+        </div>
+        <div class="section">
+          <div class="section-header"><span class="sec-label">Text updates</span><h2>Texts to you</h2></div>
+          <div class="section-body"><div id="sw-sms"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
 <div id="chart-note-screen" class="screen">
   <div class="topbar">
@@ -808,6 +887,7 @@ textarea {
           <div id="cn-remind" style="display:none;margin-top:1rem;align-items:center;gap:1rem;flex-wrap:wrap;">
             <button type="button" class="btn-back" id="cn-remind-btn" onclick="remindAgency()" disabled>Remind my agency</button>
             <span id="cn-remind-why" class="cn-why"></span>
+            <a href="#" id="cn-where-link" onclick="openSentWaiting();return false;" style="font-size:13.5px;font-weight:600;">Where it stands</a>
           </div>
           <p id="cn-remind-msg" class="cn-action-msg" style="display:none;"></p>
           <p id="cn-error-top" style="margin-top:1rem;font-size:13.5px;color:var(--red);font-weight:600;display:none;"></p>
@@ -1168,8 +1248,10 @@ function openSettings(){
   if(!_idToken){alert('Please log in first.');return;}
   document.getElementById('settings-doctor-name').textContent=document.getElementById('doctor-name').textContent;
   _baSetError('');
+  _smsSetError('');
   showScreen('settings-screen');
   loadBillingAgency();
+  loadSmsSettings();
 }
 
 function _baSetError(msg){
@@ -1260,6 +1342,94 @@ async function resendBillingAgencyConfirmation(){
   await saveBillingAgency();
 }
 
+// Practice Settings — text updates (Companion Chapter 5). GET and POST /consultation/sms-settings, the same Bearer
+// token and tenant resolution as the billing agency. Response {phone, texts_enabled, opted_out_at, updated_at}; this
+// screen shows what the engine returns and nothing else. A 400 carries the engine's message naming the problem.
+function _smsUrl(){return _CN_BASE+'/sms-settings';}
+
+function _smsSetError(msg){
+  const el=document.getElementById('sms-error');
+  el.textContent=msg||'';
+  el.style.display=msg?'block':'none';
+}
+
+function _smsMask(phone){
+  // E.164 (+1XXXXXXXXXX) shown as (•••) •••-XXXX, its last four digits; any other shape is printed as the marker, not guessed at.
+  const m=/^\+1(\d{6})(\d{4})$/.exec(String(phone));
+  return m?'(\u2022\u2022\u2022) \u2022\u2022\u2022-'+m[2]:null;
+}
+
+async function _smsFetch(method,payload){
+  const init={method:method,headers:{'Content-Type':'application/json',Authorization:'Bearer '+_idToken}};
+  if(payload!==undefined){init.body=JSON.stringify(payload);}
+  let res;
+  try{res=await fetch(_smsUrl(),init);}
+  catch(e){throw new Error('Could not reach the engine. Check your connection and try again.');}
+  let body=null;
+  try{body=await res.json();}catch(e){}
+  if(res.status===401){throw new Error('Session expired. Please log out and sign in again.');}
+  if(res.status===400){throw new Error('The engine did not accept the text settings: '+((body&&body.message)||'no message returned')+'. Nothing was saved.');}
+  if(res.status===409){throw new Error((body&&body.message)||'This sign-in is not linked to a practice record.');}
+  if(res.status===502){throw new Error('The engine could not complete this: '+((body&&body.message)||'no detail returned')+'. Try again, and tell Foundry One Sciences if it repeats.');}
+  if(!res.ok){throw new Error('Unexpected response from the engine (status '+res.status+').');}
+  if(body===null||typeof body!=='object'){throw new Error('The engine answered '+res.status+' with no readable body.');}
+  return body;
+}
+
+function _smsWords(b){
+  // The state in words, for the Settings strip and the Sent/Waiting page. Returns {cls, html}. A key the engine did
+  // not return is said absent, never read as off.
+  if(b.texts_enabled===undefined){return {cls:'alert-danger',html:'<strong>Not known.</strong> '+_cnMarker('texts_enabled not in the engine\'s answer')+'.'};}
+  if(typeof b.texts_enabled!=='boolean'){return {cls:'alert-danger',html:'<strong>Not known.</strong> '+_cnMarker('texts_enabled: '+JSON.stringify(b.texts_enabled))+'.'};}
+  if(b.opted_out_at===undefined){return {cls:'alert-danger',html:'<strong>Not known.</strong> '+_cnMarker('opted_out_at not in the engine\'s answer')+'.'};}
+  if(b.opted_out_at!==null){
+    return {cls:'alert-danger',html:'<strong>Opted out.</strong> You replied STOP, recorded '+_escHtml(_cnWhen(b.opted_out_at))+'. No texts are sent while this is recorded.'};
+  }
+  if(!b.texts_enabled){
+    return {cls:'alert-blue',html:'<strong>Off.</strong> No texts are sent.'+(b.phone?' Your number is saved; tick Text me updates and save to turn texts on.':' Add your cell number and tick Text me updates to turn them on.')};
+  }
+  if(b.phone===undefined||b.phone===null||b.phone===''){
+    return {cls:'alert-danger',html:'<strong>Marked on, with no number.</strong> '+_cnMarker('phone: '+JSON.stringify(b.phone))+'. No text can be sent.'};
+  }
+  const masked=_smsMask(b.phone);
+  return {cls:'alert-info',html:'<strong>On.</strong> Texts go to '+(masked?_escHtml(masked):_cnMarker('phone: '+String(b.phone)))+'.'+(b.updated_at?' Saved '+_escHtml(_cnWhen(b.updated_at))+'.':'')};
+}
+
+function _smsShow(b){
+  const s=document.getElementById('sms-status');
+  const w=_smsWords(b);
+  s.className='alert '+w.cls;
+  s.innerHTML=w.html;
+  document.getElementById('sms-phone').value=b.phone||'';
+  document.getElementById('sms-enabled').checked=b.texts_enabled===true;
+}
+
+async function loadSmsSettings(){
+  _smsSetError('');
+  const s=document.getElementById('sms-status');
+  s.className='alert alert-blue';
+  s.textContent='Loading your text settings\u2026';
+  try{_smsShow(await _smsFetch('GET'));}
+  catch(e){s.className='alert alert-danger';s.textContent=e.message;}
+}
+
+async function saveSmsSettings(){
+  _smsSetError('');
+  const phone=document.getElementById('sms-phone').value.trim();
+  const enabled=document.getElementById('sms-enabled').checked;
+  const btn=document.getElementById('sms-save-btn');
+  btn.disabled=true;
+  try{
+    const body=await _smsFetch('POST',{phone:phone===''?null:phone,texts_enabled:enabled});
+    _smsShow(body);
+    showToast('Text settings saved');
+  }catch(e){
+    _smsSetError(e.message);
+  }finally{
+    btn.disabled=false;
+  }
+}
+
 
 // Chart Note page (Companion Chapter 2c). Two engine routes behind the same
 // Bearer token as the intake: GET /consultation/chart-note/<uuid> (the
@@ -1294,6 +1464,7 @@ try{
 
 function _cnReset(){
   // Sign-out: nothing of one sign-in's case stays on screen for the next.
+  _swReset();
   _cnCase=null;_cnAgencyOk=false;_cnMarksUnreadable=false;_cnNoSignals=false;_pendingChartNote=null;_pendingChartNoteBad=null;
   const content=document.getElementById('cn-content');
   content.style.display='none';content.classList.remove('cn-readonly');
@@ -1960,6 +2131,13 @@ function _cnRemindBlock(sub){
   const wrap=document.getElementById('cn-remind'), btn=document.getElementById('cn-remind-btn'), why=document.getElementById('cn-remind-why');
   if(!sub){wrap.style.display='none';btn.disabled=true;why.textContent='';return;}
   wrap.style.display='flex';
+  const reason=_cnRemindReason(sub);
+  btn.disabled=!!reason;
+  why.textContent=reason||'Emails your billing agency the link to this submission again, with no attachment. Once per 24 hours.';
+}
+
+function _cnRemindReason(sub){
+  // The one rule for both pages (Chart Note and Sent/Waiting): the reason the button is off, in words, or '' when it is on.
   const holds=sub.status==='delivered'||sub.status==='resubmitted';
   let reason='';
   if(sub.status==='revision_requested'){reason='The agency has requested a revision — resubmit instead.';}
@@ -1973,57 +2151,299 @@ function _cnRemindBlock(sub){
     if(isNaN(t)){reason='The reminder time on record does not parse: '+String(sub.last_reminded_at)+'.';}
     else if(Date.now()-t<_CN_REMIND_MS){reason='Reminder sent '+_cnWhen(sub.last_reminded_at)+' — available again '+_cnWhen(new Date(t+_CN_REMIND_MS).toISOString())+' (24 hours after).';}
   }
-  btn.disabled=!!reason;
-  why.textContent=reason||'Emails your billing agency the link to this submission again, with no attachment. Once per 24 hours.';
+  return reason;
 }
 
-async function remindAgency(){
+async function remindAgency(where){
   // POST /consultation/chart-note/<uuid>/remind, Bearer, body {} (handler.py _handle_remind). 200 {reminded_at,
   // reminder_count, agency_email} → the case is read again and the strip re-rendered. An answer that names a row
   // state this page did not show (409 reminder_too_soon / not_waiting / not_submitted, 502 notify_failed: the
   // stamp landed, the email did not — with whether the failure was recorded on the row) is shown in words and the
   // case is read again; any other answer (502 token_row_absent, 502 record_malformed, 409 state_changed, …) is shown
   // as its code and the engine's message, and nothing was written for those. Nothing is retried.
-  _cnRemindMsg('');
-  if(!_cnCase){_cnRemindMsg('Open a Chart Note first.');return;}
-  const btn=document.getElementById('cn-remind-btn');
-  const uuid=_cnCase.case_uuid;
+  // Companion Chapter 5: the same action from the Sent/Waiting page (where==='sw'): the message, the reload and the
+  // button's settle go to that page; the request and every answer's wording are the same.
+  const sw=where==='sw';
+  const cur=sw?_swCase:_cnCase;
+  const say=sw?_swRemindMsg:_cnRemindMsg;
+  const reload=u=>sw?_swLoad(u):loadChartNote(u);
+  const settle=()=>sw?_swRemindBlock(_swCase.submission):_cnRemindBlock(_cnCase.submission);
+  say('');
+  if(!cur){say('Open a Chart Note first.');return;}
+  const btn=document.getElementById(sw?'sw-remind-btn':'cn-remind-btn');
+  const uuid=cur.case_uuid;
   btn.disabled=true;
   const label=btn.textContent;
   btn.textContent='Sending…';
   let r;
   try{r=await _cnFetch('/chart-note/'+encodeURIComponent(uuid)+'/remind','POST',{});}
-  catch(e){_cnRemindMsg(e.message);btn.textContent=label;_cnRemindBlock(_cnCase.submission);return;}
+  catch(e){say(e.message);btn.textContent=label;settle();return;}
   btn.textContent=label;
   const b=r.body;
   if(r.status===200){
-    _cnRemindMsg('Reminder'+(Number.isInteger(b.reminder_count)?' '+b.reminder_count:'')+' sent to '+(b.agency_email||'(no agency email in the answer)')+(b.reminded_at?' at '+_cnWhen(b.reminded_at):'')+'.',true);
+    say('Reminder'+(Number.isInteger(b.reminder_count)?' '+b.reminder_count:'')+' sent to '+(b.agency_email||'(no agency email in the answer)')+(b.reminded_at?' at '+_cnWhen(b.reminded_at):'')+'.',true);
     showToast('Reminder sent to '+(b.agency_email||'(no agency email in the answer)'));
-    loadChartNote(uuid);
+    reload(uuid);
     return;
   }
   if(r.status===409&&b.error==='reminder_too_soon'){
-    _cnRemindMsg('Too soon: '+(b.last_reminded_at?'a reminder went at '+_cnWhen(b.last_reminded_at)+'; ':'')+'the next may go at '+(b.next_allowed_at?_cnWhen(b.next_allowed_at):'(next_allowed_at not in the answer)')+'. Reloading the case.');
-    loadChartNote(uuid);
+    say('Too soon: '+(b.last_reminded_at?'a reminder went at '+_cnWhen(b.last_reminded_at)+'; ':'')+'the next may go at '+(b.next_allowed_at?_cnWhen(b.next_allowed_at):'(next_allowed_at not in the answer)')+'. Reloading the case.');
+    reload(uuid);
     return;
   }
   if(r.status===409&&b.error==='not_waiting'){
-    _cnRemindMsg('Nothing to remind about: the submission is '+String(b.status)+'. '+(b.message||'')+' Reloading the case.');
-    loadChartNote(uuid);
+    say('Nothing to remind about: the submission is '+String(b.status)+'. '+(b.message||'')+' Reloading the case.');
+    reload(uuid);
     return;
   }
   if(r.status===409&&b.error==='not_submitted'){
-    _cnRemindMsg((b.message||'This Chart Note has not been submitted; there is nothing to remind the agency of.')+' Reloading the case.');
-    loadChartNote(uuid);
+    say((b.message||'This Chart Note has not been submitted; there is nothing to remind the agency of.')+' Reloading the case.');
+    reload(uuid);
     return;
   }
   if(r.status===502&&b.error==='notify_failed'){
-    _cnRemindMsg('Recorded'+(b.reminded_at?' at '+_cnWhen(b.reminded_at):'')+', not sent — the engine says: '+(b.message||'(no message)')+' '+_cnErrorRecordedWords(b,'on the Reminder sent row')+' Reloading the case.');
-    loadChartNote(uuid);
+    say('Recorded'+(b.reminded_at?' at '+_cnWhen(b.reminded_at):'')+', not sent — the engine says: '+(b.message||'(no message)')+' '+_cnErrorRecordedWords(b,'on the Reminder sent row')+' Reloading the case.');
+    reload(uuid);
     return;
   }
-  _cnRemindMsg('The engine answered '+r.status+(b.error?' '+b.error:'')+(b.message?': '+b.message+_cnEndStop(b.message):' with no message.')+' Nothing was retried.');
-  _cnRemindBlock(_cnCase.submission);   // the button's state follows the record on screen, not the failed call
+  say('The engine answered '+r.status+(b.error?' '+b.error:'')+(b.message?': '+b.message+_cnEndStop(b.message):' with no message.')+' Nothing was retried.');
+  settle();   // the button's state follows the record on screen, not the failed call
+}
+
+// The Sent/Waiting page (Companion Chapter 5): one case, its four steps, what was sent, what the agency is being
+// reminded of, and the physician's text state. Reached from the Chart Note page by "Where it stands" (openSentWaiting).
+// Reads GET /consultation/chart-note/<uuid> (the submission body, with the Chapter 5 fields auto_reminder_count,
+// last_auto_reminded_at, next_auto_reminder_due, stall_notified_at), GET /consultation/billing-agency (the agency's
+// name, which the submission does not carry) and GET /consultation/sms-settings. It shows the case number only. Every
+// value is shown as received: null is "not yet" or "none", an absent key is said absent (_cnMarker), nothing is computed
+// from another field. The three reads are independent: one failing is said in its own place and does not hide the others.
+const _SW_AUTO_MAX = 3;   // Fred's ruling 1 (2026-11-11): at most 3 automatic reminders. The count itself comes from the engine.
+let _swCase = null;       // the chart-note GET body on this page
+let _swSeq = 0;           // the newest load; an older answer arriving late is dropped
+
+function _swReset(){
+  _swCase=null;_swSeq++;
+  const c=document.getElementById('sw-content');
+  if(!c){return;}
+  c.style.display='none';
+  ['sw-steps','sw-state','sw-sent','sw-auto','sw-sms'].forEach(id=>{document.getElementById(id).innerHTML='';});
+  document.getElementById('sw-title').textContent='Sent to …';
+  document.getElementById('sw-clock').textContent='';
+  document.getElementById('sw-doc-title').innerHTML='Case &nbsp;&middot;&nbsp; not yet opened';
+  document.getElementById('sw-status').className='alert alert-blue';
+  document.getElementById('sw-status').textContent='Open a Chart Note, then press Where it stands.';
+  _swRemindMsg('');
+}
+
+function _swStatus(cls,html){
+  const s=document.getElementById('sw-status');
+  s.className='alert '+cls;
+  s.innerHTML=html;
+  s.style.display=html?'':'none';
+}
+
+function _swRemindMsg(text,ok){
+  const el=document.getElementById('sw-remind-msg');
+  el.textContent=text||'';
+  el.className='cn-action-msg'+(ok?' cn-ok':'');
+  el.style.display=text?'block':'none';
+}
+
+function _swRemindBlock(sub){
+  const btn=document.getElementById('sw-remind-btn'), why=document.getElementById('sw-remind-why');
+  if(!sub){btn.disabled=true;why.textContent='';return;}
+  const reason=_cnRemindReason(sub);
+  btn.disabled=!!reason;
+  why.textContent=reason||'Emails your billing agency the link to this submission again, with no attachment. Once per 24 hours.';
+}
+
+function openSentWaiting(){
+  if(!_idToken){alert('Please log in first.');return;}
+  if(!_cnCase){return;}
+  document.getElementById('sw-doctor-name').textContent=document.getElementById('doctor-name').textContent;
+  _swRemindMsg('');
+  showScreen('sent-waiting-screen');
+  _swLoad(_cnCase.case_uuid);
+}
+
+async function _swLoad(uuid){
+  const seq=++_swSeq;
+  document.getElementById('sw-doc-title').innerHTML='Case '+_escHtml(uuid);
+  _swStatus('alert-blue','Loading where case '+_escHtml(uuid)+' stands&hellip;');
+  const agencyP=_baFetch('GET').then(v=>({body:v}),e=>({error:e.message}));
+  const smsP=_smsFetch('GET').then(v=>({body:v}),e=>({error:e.message}));
+  let r;
+  try{r=await _cnFetch('/chart-note/'+encodeURIComponent(uuid),'GET');}
+  catch(e){if(seq===_swSeq){_swStatus('alert-danger',_escHtml(e.message));}return;}
+  const agency=await agencyP, sms=await smsP;
+  if(seq!==_swSeq){return;}
+  const b=r.body;
+  if(r.status!==200){
+    const detail=b&&(b.error||b.message)?(b.error?b.error+': ':'')+(b.message||''):'';
+    _swStatus('alert-danger','<strong>Not opened.</strong> The engine answered '+r.status+' for that case.'+(detail?' <span class="cn-mono">'+_escHtml(detail)+'</span>':''));
+    document.getElementById('sw-content').style.display='none';
+    return;
+  }
+  _swCase=b;
+  _swRender(b,agency,sms);
+}
+
+function _swAt(v,absent){
+  // A time as received: absent key → marker, null → "not yet", else the viewer's local time.
+  if(v===undefined){return {has:false,html:'<span class="cn-tl-when">'+_cnMarker(absent+' not in the engine\'s answer')+'</span>'};}
+  if(v===null){return {has:false,html:'<span class="cn-tl-when">not yet</span>'};}
+  return {has:true,html:'<span class="cn-tl-when">'+_escHtml(_cnWhen(v))+'</span>'};
+}
+
+function _swRow(label,a,detail){
+  return '<div class="cn-tl-row'+(a.has?'':' cn-tl-notyet')+'"><span class="cn-tl-label">'+label+'</span><span>'+a.html+(detail||'')+'</span></div>';
+}
+
+function _swMarksHtml(sub){
+  // The marks as the record holds them, by disposition, with the cards' printed numbers (the mark's signal is 0-based).
+  if(sub.marks_error!==undefined&&sub.marks_error!==null){return _cnMarker('marks unreadable: '+String(sub.marks_error));}
+  if(sub.marks===undefined){return _cnMarker('marks not in the engine\'s answer');}
+  if(!Array.isArray(sub.marks)){return _cnMarker('marks: '+JSON.stringify(sub.marks));}
+  const by={affirm:[],decline:[],not_addressed:[]}, ordered=[], odd=[];
+  sub.marks.forEach(m=>{
+    if(!m||typeof m!=='object'||!Number.isInteger(m.signal)){odd.push(m);return;}
+    const n=m.signal+1;
+    if(by[m.disposition]){by[m.disposition].push(n);if(m.rider===true&&m.disposition==='affirm'){ordered.push(n);}}
+    else{odd.push(m);}
+  });
+  const nums=a=>a.length?_escHtml(a.join(', ')):'none';
+  const line=(label,a)=>'<div>'+label+': <strong>'+nums(a)+'</strong></div>';
+  return line('Affirm',by.affirm)+line('Decline',by.decline)+line('Not addressed this encounter',by.not_addressed)
+    +line('And I ordered',ordered)
+    +odd.map(m=>'<div>'+_cnMarker('unreadable mark: '+JSON.stringify(m))+'</div>').join('');
+}
+
+function _swStateHtml(sub,opened){
+  // The state in words. Each branch names its own field's value or its marker.
+  const who=n=>(n===undefined||n===null||n==='')?_cnMarker('no name on record'):'<strong>'+_escHtml(n)+'</strong>';
+  const st=sub.status;
+  const openedWords=opened.error!==undefined&&opened.error!==null
+    ?'whether it was opened is not recorded ('+_cnMarker(opened.error)+')'
+    :(opened.at===undefined?'whether it was opened is '+_cnMarker('opened_at not in the engine\'s answer')
+      :(opened.at===null?'it has not been opened yet':'it was opened on '+_escHtml(_cnWhen(opened.at))));
+  if(st==='delivered'){
+    return '<div class="alert alert-info" style="margin-top:1rem"><strong>Delivered.</strong> Your agency has the Chart Note; '+openedWords+'. It has not asked for a revision or filed the claim.</div>';
+  }
+  if(st==='resubmitted'){
+    const n=sub.resubmission_count;
+    return '<div class="alert alert-info" style="margin-top:1rem"><strong>Resubmitted.</strong> '+(Number.isInteger(n)&&n>0?'Resubmission '+n+' of the':'The')+' Chart Note went back to your agency on '+_cnTimeOrMarker(sub.resubmitted_at,'no resubmission time on record')+'; '+openedWords+'. It has not asked for another revision or filed the claim.</div>';
+  }
+  if(st==='revision_requested'){
+    const rev=(sub.revision&&typeof sub.revision==='object')?sub.revision:null;
+    return '<div class="alert alert-blue" style="margin-top:1rem"><strong>Revision requested.</strong> '
+      +(rev?'Your agency'+_cnRevisionHtml(rev,true):'The record reads revision_requested but carries no request ('+_cnMarker('revision: '+String(sub.revision))+').')
+      +'<div style="margin-top:.5rem">It is your turn: <a href="#" onclick="openChartNote(_swCase.case_uuid);return false;">open the Chart Note</a> to re-mark and resubmit.</div></div>';
+  }
+  if(st==='claim_filed'){
+    return '<div class="alert alert-info" style="margin-top:1rem"><strong>Claim filed.</strong> '+who(sub.claim_filed_by)+' marked the claim filed on '+_cnTimeOrMarker(sub.claim_filed_at,'no time on record')+'. Nothing further is needed from you.</div>';
+  }
+  if(st==='send_failed'){
+    return '<div class="alert alert-danger" style="margin-top:1rem"><strong>Send failed.</strong> The last send did not reach your agency: '+(sub.error===undefined||sub.error===null||sub.error===''?_cnMarker('no error text on record'):'<span class="cn-mono">'+_escHtml(sub.error)+'</span>')+'. <a href="#" onclick="openChartNote(_swCase.case_uuid);return false;">Open the Chart Note</a> to send again.</div>';
+  }
+  if(st==='accepted'){
+    return '<div class="alert alert-danger" style="margin-top:1rem"><strong>In flight.</strong> The send is recorded as accepted and has not finished recording. Reload in a minute; if it still says this, tell Foundry One Sciences.</div>';
+  }
+  return '<div class="alert alert-danger" style="margin-top:1rem"><strong>Unexpected submission state:</strong> '+_cnMarker(String(st))+'. Tell Foundry One Sciences.</div>';
+}
+
+function _swAutoHtml(sub){
+  const holds=sub.status==='delivered'||sub.status==='resubmitted';
+  const rows=[];
+  // Count
+  const n=sub.auto_reminder_count;
+  let countA;
+  if(n===undefined){countA={has:false,html:'<span class="cn-tl-when">'+_cnMarker('auto_reminder_count not in the engine\'s answer')+'</span>'};}
+  else if(!Number.isInteger(n)){countA={has:false,html:'<span class="cn-tl-when">'+_cnMarker('auto_reminder_count: '+JSON.stringify(n))+'</span>'};}
+  else{countA={has:true,html:'<span class="cn-tl-when">'+n+' of '+_SW_AUTO_MAX+'</span>'};}
+  rows.push(_swRow('Automatic reminders sent',countA,''));
+  rows.push(_swRow('Last automatic reminder',_swAt(sub.last_auto_reminded_at,'last_auto_reminded_at'),''));
+  // Next due
+  const nd=sub.next_auto_reminder_due;
+  let ndHtml, ndHas=false;
+  if(nd===undefined){ndHtml='<span class="cn-tl-when">'+_cnMarker('next_auto_reminder_due not in the engine\'s answer')+'</span>';}
+  else if(nd!==null){ndHas=true;ndHtml='<span class="cn-tl-when">'+_escHtml(_cnWhen(nd))+'</span>';}
+  else if(!holds){ndHtml='<span class="cn-tl-when">none; your agency does not hold the note ('+_escHtml(String(sub.status))+')</span>';}
+  else if(Number.isInteger(n)&&n>=_SW_AUTO_MAX){ndHtml='<span class="cn-tl-when">none; all '+_SW_AUTO_MAX+' automatic reminders have gone</span>';}
+  else{ndHtml='<span class="cn-tl-when">'+_cnMarker('next_auto_reminder_due: null while the agency holds the note and fewer than '+_SW_AUTO_MAX+' have gone')+'</span>';}
+  rows.push(_swRow('Next automatic reminder',{has:ndHas,html:ndHtml},''));
+  // Stall notice
+  const sn=sub.stall_notified_at;
+  if(sn===undefined){rows.push(_swRow('Still-sitting notice to you',{has:false,html:'<span class="cn-tl-when">'+_cnMarker('stall_notified_at not in the engine\'s answer')+'</span>'},''));}
+  else if(sn===null){rows.push(_swRow('Still-sitting notice to you',{has:false,html:'<span class="cn-tl-when">not sent</span>'},''));}
+  else{rows.push(_swRow('Still-sitting notice to you',{has:true,html:'<span class="cn-tl-when">sent '+_escHtml(_cnWhen(sn))+'</span>'},''));}
+  // The physician's own reminders, as the Chart Note page shows them
+  const lr=_swAt(sub.last_reminded_at,'last_reminded_at');
+  const rc=sub.reminder_count;
+  const rcHtml=(Number.isInteger(rc)&&rc>0)?' &middot; reminder '+rc:'';
+  rows.push(_swRow('Your last reminder',lr,lr.has?rcHtml:''));
+  return rows.join('');
+}
+
+function _swSmsHtml(sms){
+  if(sms.error!==undefined){
+    return '<div class="alert alert-danger">Your text settings could not be read: '+_escHtml(sms.error)+'</div>';
+  }
+  const w=_smsWords(sms.body);
+  return '<div class="alert '+w.cls+'">'+w.html+'</div>'
+    +'<div style="margin-top:.6rem;font-size:13.5px;"><a href="#" onclick="openSettings();return false;">Change text updates in Practice Settings</a></div>';
+}
+
+function _swRender(b,agency,sms){
+  const sub=b.submission;
+  document.getElementById('sw-doc-title').innerHTML='Case '+_escHtml(b.case_uuid);
+  if(!sub){
+    document.getElementById('sw-content').style.display='none';
+    _swRemindBlock(null);
+    _swStatus('alert-blue','<strong>Not sent yet.</strong> This Chart Note has not been submitted to a billing agency, so there is nothing to wait on. <a href="#" onclick="openChartNote(_swCase.case_uuid);return false;">Open the Chart Note</a>.');
+    document.getElementById('sw-title').textContent='Not sent yet';
+    document.getElementById('sw-clock').textContent='';
+    return;
+  }
+  _swStatus('','');
+  // Header: the agency's name is the practice setting, so it is used only when its email is the one this submission went to.
+  let to;
+  const ab=agency.body;
+  if(sub.agency_email===undefined||sub.agency_email===null||sub.agency_email===''){to=_cnMarker('no agency email on record');}
+  else if(ab&&ab.agency_name&&String(ab.agency_email||'').toLowerCase()===String(sub.agency_email).toLowerCase()){to=_escHtml(ab.agency_name)+' ('+_escHtml(sub.agency_email)+')';}
+  else{to=_escHtml(sub.agency_email);}
+  document.getElementById('sw-title').innerHTML='Sent to '+to;
+  const sa=sub.signed_at;
+  document.getElementById('sw-clock').innerHTML=sa===undefined?_cnMarker('signed_at not in the engine\'s answer')
+    :(sa===null?_cnMarker('no submitted time on record'):'Submitted '+_escHtml(_cnWhen(sa))+'. The clock started then.');
+  // Four steps
+  const opened={at:sub.opened_at,error:sub.opened_at_error};
+  const steps=[];
+  steps.push(_swRow('1 &middot; Submitted',_swAt(sub.signed_at,'signed_at'),''));
+  steps.push(_swRow('2 &middot; Delivered',_swAt(sub.delivered_at,'delivered_at'),''));
+  if(opened.error!==undefined&&opened.error!==null){
+    steps.push('<div class="cn-tl-row cn-tl-notyet"><span class="cn-tl-label">3 &middot; Opened</span><span><span class="cn-tl-when">not recorded: '+_cnMarker(opened.error)+'</span></span></div>');
+  }else{
+    steps.push(_swRow('3 &middot; Opened',_swAt(sub.opened_at,'opened_at'),''));
+  }
+  const cfA=_swAt(sub.claim_filed_at,'claim_filed_at');
+  steps.push(_swRow('4 &middot; Claim filed',cfA,cfA.has?(sub.claim_filed_by?' &middot; by '+_escHtml(sub.claim_filed_by):' &middot; '+_cnMarker('no name on record')):''));
+  document.getElementById('sw-steps').innerHTML=steps.join('');
+  document.getElementById('sw-state').innerHTML=_swStateHtml(sub,opened);
+  // What you sent
+  const attested=(sub.attestation_version===undefined)?_cnMarker('attestation_version not in the engine\'s answer')
+    :((sub.attestation_version===null||sub.attestation_version==='')?_cnMarker('no attestation on record')
+      :'Yes (statement version '+_escHtml(sub.attestation_version)+')');
+  document.getElementById('sw-sent').innerHTML=
+    '<div><a href="#" onclick="openChartNote(_swCase.case_uuid);return false;">The signed Chart Note</a> &mdash; opens on the Chart Note page, exactly as you sent it.</div>'
+    +'<div style="margin-top:.8rem">'+_swMarksHtml(sub)+'</div>'
+    +'<div style="margin-top:.8rem">Signed by: '+_cnNameOrMarker(sub.signature,'no signature on record')+'</div>'
+    +'<div>Signed: '+_cnTimeOrMarker(sub.signed_at,'no signing time on record')+'</div>'
+    +'<div>Attested: '+attested+'</div>';
+  // Waiting
+  _swRemindBlock(sub);
+  document.getElementById('sw-auto').innerHTML=_swAutoHtml(sub);
+  document.getElementById('sw-sms').innerHTML=_swSmsHtml(sms);
+  document.getElementById('sw-content').style.display='';
 }
 
 // The billing agency's page (Chapter 3, ruling C). Two engine routes, no sign-in:
