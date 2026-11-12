@@ -2087,14 +2087,21 @@ function _cnTimelineHtml(sub,opened){
   }else if(ev===null||!Array.isArray(ev)){
     hist='<div class="cn-tl-history"><strong>History</strong> &middot; unreadable ('+_cnMarker('events_error: '+String(sub.events_error))+')</div>';
   }else{
+    // Chapter 5: an auto_reminder_sent / stall_notice_sent entry is written with the stamp; when the engine recorded that
+    // the email failed (auto_reminder_error, stall_notice_error) the entry says so. The reminder error belongs to the
+    // last auto_reminder_sent entry (the row carries one error field, for the latest reminder).
+    let lastAuto=-1;
+    ev.forEach((e,i)=>{if(e&&typeof e==='object'&&e.event==='auto_reminder_sent'){lastAuto=i;}});
+    const failed=(err)=>(err===undefined||err===null)?'':' &middot; the email did not go out: '+_cnMarker(err===''?'no error text on record':String(err));
     if(ev.some(e=>!e||typeof e!=='object'||!((e.event+'@'+e.at) in shown))){
       hist='<div class="cn-tl-history"><strong>History</strong> &middot; '+ev.length+(ev.length===1?' entry':' entries')
-        +ev.map(e=>{
+        +ev.map((e,i)=>{
           if(!e||typeof e!=='object'){return '<div>'+_cnMarker('malformed entry: '+JSON.stringify(e))+'</div>';}
           const words=_CN_EVENT_WORDS[e.event];
           return '<div>'+(words?_escHtml(words):_cnMarker('event: '+String(e.event)))
             +' &middot; '+(e.at===undefined||e.at===null?_cnMarker('no time'):_escHtml(_cnWhen(e.at)))
             +(e.by!==undefined&&e.by!==null?' &middot; by '+_escHtml(String(e.by)):'')
+            +(i===lastAuto?failed(sub.auto_reminder_error):'')+(e.event==='stall_notice_sent'?failed(sub.stall_notice_error):'')
             +((e.event==='text_sent'||e.event==='text_failed')
               ?' &middot; about '+(e.about===undefined||e.about===null?_cnMarker('about not in the entry'):_escHtml(String(e.about)))
                 +(e.reason!==undefined&&e.reason!==null?' &middot; reason '+_cnMarker(String(e.reason))
@@ -2382,7 +2389,7 @@ function _swAutoHtml(sub){
   else if(!holds){ndHtml='<span class="cn-tl-when">none; your agency does not hold the note ('+_escHtml(String(sub.status))+')'+ndErr+'</span>';}
   else if(Number.isInteger(n)&&n>=_SW_AUTO_MAX){ndHtml='<span class="cn-tl-when">none; all '+_SW_AUTO_MAX+' automatic reminders have gone'+ndErr+'</span>';}
   else{ndHtml='<span class="cn-tl-when">'+_cnMarker('next_auto_reminder_due: null while the agency holds the note and fewer than '+_SW_AUTO_MAX+' have gone')+ndErr+'</span>';}
-  rows.push(_swRow('Next automatic reminder',{has:ndHas,html:ndHtml},''));
+  rows.push(_swRow('Next automatic reminder, on or after',{has:ndHas,html:ndHtml},''));
   // Stall notice
   const sn=sub.stall_notified_at, sErr=sub.stall_notice_error;
   const sFailed=sErr!==undefined&&sErr!==null;
