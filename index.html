@@ -1368,9 +1368,9 @@ async function _smsFetch(method,payload){
   let body=null;
   try{body=await res.json();}catch(e){}
   if(res.status===401){throw new Error('Session expired. Please log out and sign in again.');}
-  if(res.status===400){throw new Error('The engine did not accept the text settings: '+((body&&body.message)||'no message returned')+'. Nothing was saved.');}
+  if(res.status===400){{const m=(body&&body.message)||'no message returned';throw new Error('The engine did not accept the text settings: '+m+_cnEndStop(m)+' Nothing was saved.');}}
   if(res.status===409){throw new Error((body&&body.message)||'This sign-in is not linked to a practice record.');}
-  if(res.status===502){throw new Error('The engine could not complete this: '+((body&&body.message)||'no detail returned')+'. Try again, and tell Foundry One Sciences if it repeats.');}
+  if(res.status===502){{const m=(body&&body.message)||'no detail returned';throw new Error('The engine could not complete this: '+m+_cnEndStop(m)+' Try again, and tell Foundry One Sciences if it repeats.');}}
   if(!res.ok){throw new Error('Unexpected response from the engine (status '+res.status+').');}
   if(body===null||typeof body!=='object'){throw new Error('The engine answered '+res.status+' with no readable body.');}
   return body;
@@ -1383,7 +1383,7 @@ function _smsWords(b){
   if(typeof b.texts_enabled!=='boolean'){return {cls:'alert-danger',html:'<strong>Not known.</strong> '+_cnMarker('texts_enabled: '+JSON.stringify(b.texts_enabled))+'.'};}
   if(b.opted_out_at===undefined){return {cls:'alert-danger',html:'<strong>Not known.</strong> '+_cnMarker('opted_out_at not in the engine\'s answer')+'.'};}
   if(b.opted_out_at!==null){
-    return {cls:'alert-danger',html:'<strong>Opted out.</strong> You replied STOP, recorded '+_escHtml(_cnWhen(b.opted_out_at))+'. No texts are sent while this is recorded.'};
+    return {cls:'alert-danger',html:'<strong>Opted out.</strong> You replied STOP, recorded '+_escHtml(_cnWhen(b.opted_out_at))+'. No texts are sent while this is recorded. To turn texts back on, first text START to the FOS number, then tick Text me updates and save.'};
   }
   if(!b.texts_enabled){
     return {cls:'alert-blue',html:'<strong>Off.</strong> No texts are sent.'+(b.phone?' Your number is saved; tick Text me updates and save to turn texts on.':' Add your cell number and tick Text me updates to turn them on.')};
@@ -1948,7 +1948,9 @@ function _cnTallyText(signals,marks){
 // printed in the viewer's local time by _cnWhen and never computed from another, except the reminder's "available
 // again" (last_reminded_at + 24 hours, the engine's _REMINDER_INTERVAL), which is labelled as that.
 const _CN_EVENT_WORDS = {submitted:'Submitted', delivered:'Delivered', send_failed:'Send failed', revision_requested:'Revision requested',
-                         resubmitted:'Resubmitted', claim_filed:'Claim filed', reminder_sent:'Reminder sent'};
+                         resubmitted:'Resubmitted', claim_filed:'Claim filed', reminder_sent:'Reminder sent',
+                         // Companion Chapter 5 (handler.py _EVENT_* constants; text_* entries carry about, text_failed also reason):
+                         auto_reminder_sent:'Automatic reminder sent', stall_notice_sent:'Still-sitting notice sent', text_sent:'Text sent', text_failed:'Text failed'};
 const _CN_REMIND_MS = 24*60*60*1000;   // handler.py _REMINDER_INTERVAL = timedelta(hours=24)
 
 function _cnMarker(text){
@@ -2092,7 +2094,12 @@ function _cnTimelineHtml(sub,opened){
           const words=_CN_EVENT_WORDS[e.event];
           return '<div>'+(words?_escHtml(words):_cnMarker('event: '+String(e.event)))
             +' &middot; '+(e.at===undefined||e.at===null?_cnMarker('no time'):_escHtml(_cnWhen(e.at)))
-            +(e.by!==undefined&&e.by!==null?' &middot; by '+_escHtml(String(e.by)):'')+'</div>';
+            +(e.by!==undefined&&e.by!==null?' &middot; by '+_escHtml(String(e.by)):'')
+            +((e.event==='text_sent'||e.event==='text_failed')
+              ?' &middot; about '+(e.about===undefined||e.about===null?_cnMarker('about not in the entry'):_escHtml(String(e.about)))
+                +(e.reason!==undefined&&e.reason!==null?' &middot; reason '+_cnMarker(String(e.reason))
+                  :(e.event==='text_failed'?' &middot; '+_cnMarker('reason not in the entry'):''))
+              :'')+'</div>';
         }).join('')+'</div>';
     }
     if(sub.events_error!==undefined&&sub.events_error!==null){
@@ -2352,35 +2359,41 @@ function _swStateHtml(sub,opened){
 }
 
 function _swAutoHtml(sub){
+  // Every email failure the engine recorded is printed beside its row (the Chart Note page's rule for reminder_error):
+  // a time on a row is the stamp the engine wrote, and a failed email never reads as sent.
   const holds=sub.status==='delivered'||sub.status==='resubmitted';
+  const bad=(who,err)=>(err===undefined||err===null)?'':'<div class="cn-tl-note cn-tl-bad">The email to '+who+' did not go out: '+_cnMarker(String(err))+'</div>';
   const rows=[];
   // Count
   const n=sub.auto_reminder_count;
+  const cErr=sub.auto_reminder_count_error;
   let countA;
   if(n===undefined){countA={has:false,html:'<span class="cn-tl-when">'+_cnMarker('auto_reminder_count not in the engine\'s answer')+'</span>'};}
   else if(!Number.isInteger(n)){countA={has:false,html:'<span class="cn-tl-when">'+_cnMarker('auto_reminder_count: '+JSON.stringify(n))+'</span>'};}
   else{countA={has:true,html:'<span class="cn-tl-when">'+n+' of '+_SW_AUTO_MAX+'</span>'};}
-  rows.push(_swRow('Automatic reminders sent',countA,''));
-  rows.push(_swRow('Last automatic reminder',_swAt(sub.last_auto_reminded_at,'last_auto_reminded_at'),''));
+  rows.push(_swRow('Automatic reminders',countA,(cErr!==undefined&&cErr!==null)?'<div class="cn-tl-note cn-tl-bad">The count could not be read: '+_cnMarker('auto_reminder_count_error: '+String(cErr))+'</div>':''));
+  rows.push(_swRow('Last automatic reminder',_swAt(sub.last_auto_reminded_at,'last_auto_reminded_at'),bad('the agency',sub.auto_reminder_error)));
   // Next due
   const nd=sub.next_auto_reminder_due;
+  const ndErr=(sub.next_auto_reminder_due_error!==undefined&&sub.next_auto_reminder_due_error!==null)?' '+_cnMarker('next_auto_reminder_due_error: '+String(sub.next_auto_reminder_due_error)):'';
   let ndHtml, ndHas=false;
-  if(nd===undefined){ndHtml='<span class="cn-tl-when">'+_cnMarker('next_auto_reminder_due not in the engine\'s answer')+'</span>';}
-  else if(nd!==null){ndHas=true;ndHtml='<span class="cn-tl-when">'+_escHtml(_cnWhen(nd))+'</span>';}
-  else if(!holds){ndHtml='<span class="cn-tl-when">none; your agency does not hold the note ('+_escHtml(String(sub.status))+')</span>';}
-  else if(Number.isInteger(n)&&n>=_SW_AUTO_MAX){ndHtml='<span class="cn-tl-when">none; all '+_SW_AUTO_MAX+' automatic reminders have gone</span>';}
-  else{ndHtml='<span class="cn-tl-when">'+_cnMarker('next_auto_reminder_due: null while the agency holds the note and fewer than '+_SW_AUTO_MAX+' have gone')+'</span>';}
+  if(nd===undefined){ndHtml='<span class="cn-tl-when">'+_cnMarker('next_auto_reminder_due not in the engine\'s answer')+ndErr+'</span>';}
+  else if(nd!==null){ndHas=true;ndHtml='<span class="cn-tl-when">'+_escHtml(_cnWhen(nd))+ndErr+'</span>';}
+  else if(!holds){ndHtml='<span class="cn-tl-when">none; your agency does not hold the note ('+_escHtml(String(sub.status))+')'+ndErr+'</span>';}
+  else if(Number.isInteger(n)&&n>=_SW_AUTO_MAX){ndHtml='<span class="cn-tl-when">none; all '+_SW_AUTO_MAX+' automatic reminders have gone'+ndErr+'</span>';}
+  else{ndHtml='<span class="cn-tl-when">'+_cnMarker('next_auto_reminder_due: null while the agency holds the note and fewer than '+_SW_AUTO_MAX+' have gone')+ndErr+'</span>';}
   rows.push(_swRow('Next automatic reminder',{has:ndHas,html:ndHtml},''));
   // Stall notice
-  const sn=sub.stall_notified_at;
-  if(sn===undefined){rows.push(_swRow('Still-sitting notice to you',{has:false,html:'<span class="cn-tl-when">'+_cnMarker('stall_notified_at not in the engine\'s answer')+'</span>'},''));}
-  else if(sn===null){rows.push(_swRow('Still-sitting notice to you',{has:false,html:'<span class="cn-tl-when">not sent</span>'},''));}
-  else{rows.push(_swRow('Still-sitting notice to you',{has:true,html:'<span class="cn-tl-when">sent '+_escHtml(_cnWhen(sn))+'</span>'},''));}
+  const sn=sub.stall_notified_at, sErr=sub.stall_notice_error;
+  const sFailed=sErr!==undefined&&sErr!==null;
+  if(sn===undefined){rows.push(_swRow('Still-sitting notice to you',{has:false,html:'<span class="cn-tl-when">'+_cnMarker('stall_notified_at not in the engine\'s answer')+'</span>'},bad('you',sErr)));}
+  else if(sn===null){rows.push(_swRow('Still-sitting notice to you',{has:false,html:'<span class="cn-tl-when">not sent</span>'},bad('you',sErr)));}
+  else{rows.push(_swRow('Still-sitting notice to you',{has:true,html:'<span class="cn-tl-when">'+(sFailed?'recorded ':'sent ')+_escHtml(_cnWhen(sn))+'</span>'},bad('you',sErr)));}
   // The physician's own reminders, as the Chart Note page shows them
   const lr=_swAt(sub.last_reminded_at,'last_reminded_at');
   const rc=sub.reminder_count;
   const rcHtml=(Number.isInteger(rc)&&rc>0)?' &middot; reminder '+rc:'';
-  rows.push(_swRow('Your last reminder',lr,lr.has?rcHtml:''));
+  rows.push(_swRow('Your last reminder',lr,(lr.has?rcHtml:'')+bad('the agency',sub.reminder_error)));
   return rows.join('');
 }
 
