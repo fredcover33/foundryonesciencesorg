@@ -784,8 +784,10 @@ textarea {
           </div>
           <div style="margin-top:1.5rem;display:flex;align-items:center;gap:1rem;flex-wrap:wrap;">
             <button type="button" class="submit-btn" id="sms-save-btn" onclick="saveSmsSettings()">Save text settings</button>
+            <button type="button" class="submit-btn" id="sms-test-btn" onclick="sendTestText()">Send me a test text</button>
           </div>
           <p id="sms-error" style="margin-top:1rem;font-size:13.5px;color:var(--red);font-weight:600;display:none;"></p>
+          <div id="sms-test-result" class="alert" style="margin-top:1rem;display:none;"></div>
         </div>
       </div>
     </div>
@@ -1411,6 +1413,44 @@ async function loadSmsSettings(){
   s.textContent='Loading your text settings\u2026';
   try{_smsShow(await _smsFetch('GET'));}
   catch(e){s.className='alert alert-danger';s.textContent=e.message;}
+}
+
+// The test text (2026-11-21): POST /consultation/sms-settings/test sends one text to the number saved on file, not to
+// what is typed in the box. 200 {sent, at, message_id}; every other answer names why nothing was sent, and this shows
+// the engine's own message. A 404 means the engine in service does not offer the test text yet.
+function _smsTestShow(cls,html){
+  const el=document.getElementById('sms-test-result');
+  el.className='alert '+cls;
+  el.innerHTML=html;
+  el.style.display='block';
+}
+
+async function sendTestText(){
+  const btn=document.getElementById('sms-test-btn');
+  btn.disabled=true;
+  _smsTestShow('alert-blue','Sending a test text to the number saved on file&hellip;');
+  let res,body=null;
+  try{
+    try{res=await fetch(_smsUrl()+'/test',{method:'POST',headers:{'Content-Type':'application/json',Authorization:'Bearer '+_idToken},body:'{}'});}
+    catch(e){_smsTestShow('alert-danger','<strong>Not sent.</strong> Could not reach the engine. Check your connection and try again.');return;}
+    try{body=await res.json();}catch(e){body=null;}
+    const msg=(body&&typeof body.message==='string'&&body.message)?_escHtml(body.message):null;
+    if(res.status===200&&body&&body.sent===true){
+      _smsTestShow('alert-info','<strong>Sent.</strong> A test text went to your saved number'+(body.at?' at '+_escHtml(_cnWhen(body.at)):'')+'. If it does not arrive within a few minutes, tell Foundry One Sciences'+(body.message_id?' and quote message '+_escHtml(String(body.message_id)):'')+'.');
+    }else if(res.status===200){
+      _smsTestShow('alert-danger','<strong>Not known.</strong> '+_cnMarker('the engine answered 200 without sent: true')+'.');
+    }else if(res.status===401){
+      _smsTestShow('alert-danger','<strong>Not sent.</strong> Session expired. Please log out and sign in again.');
+    }else if(res.status===404){
+      _smsTestShow('alert-danger','<strong>Not sent.</strong> The engine in service does not offer test texts yet.');
+    }else if(res.status===409||res.status===503||res.status===502){
+      _smsTestShow(res.status===409?'alert-blue':'alert-danger','<strong>Not sent.</strong> '+(msg||_cnMarker('status '+res.status+' with no message')));
+    }else{
+      _smsTestShow('alert-danger','<strong>Not sent.</strong> Unexpected response from the engine (status '+res.status+').');
+    }
+  }finally{
+    btn.disabled=false;
+  }
 }
 
 async function saveSmsSettings(){
